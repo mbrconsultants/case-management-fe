@@ -202,7 +202,8 @@ export default function CreateStaff() {
                   <CFormLabel htmlFor="validationCustom02">
                     Phone No.
                   </CFormLabel>
-                  <CFormInput
+                                  <CFormInput
+                                      onChange={(e)=> e.target.file}
                     type="text"
                     name="phone"
                     {...register("phone")}
