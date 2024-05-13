@@ -1,0 +1,18 @@
+.modal-dialog {
+    width:15cm
+    }
+    
+    .modal-header {
+    
+    background-color: #20b56d;
+    
+    color:#FFF;
+    
+    }
+    @media print{
+    .hidden-print{display:none!important}
+     .dt-buttons, .dataTables_info, .dataTables_paginate, .dataTables_filter
+    {
+    display:none!important
+    }
+    }
