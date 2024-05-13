@@ -30,13 +30,11 @@ export const AllUsers = () => {
     setLoading(true);
     await endpoint.get('/user/list/1')
       .then((res) => {
-        // console.log("users list response", res.data.data)
         setUsersList(res.data.data)
         setLoading(false)
       })
       .catch((err) => {
         setLoading(false)
-        // console.log(err)
       })
   }
      //get roles
@@ -44,7 +42,6 @@ export const AllUsers = () => {
       setLoading(true);
       await endpoint.get('/role/getRoles')
         .then((res) => {
-          //  console.log("roles", res.data.data)
           setRoles(res.data.data)
           setLoading(false)
         })
@@ -69,13 +66,11 @@ const handleShowDeleteModal = (row) => {
 useEffect(() => {
   getUsersList()
   getRoles()
-  // console.log("value", value);
 }, [])
 
 
 //Edit department
 const modifyUser = async (data) => {
-  // console.log("data", data, value.id);
   await endpoint.put(`/user/modify/${value.id}`, data)
   .then((res) => {
     setLoading(false);
