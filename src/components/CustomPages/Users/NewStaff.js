@@ -21,7 +21,22 @@ import { useForm } from "react-hook-form";
 export default function CreateStaff() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
-  const [roles, setRoles] = useState([]);
+  const [courtList, setCourtList] = useState([]);
+  const [statesList, setStatesList] = useState([]);
+  const [lgasList, setLgasList] = useState([]);
+  const [titleList, setTitleList] = useState([]);
+  const [details, setDetails] = useState({
+    surname: "",
+    first_name: "",
+    middle_name: "",
+    title_id: "",
+    court_id: "",
+    state_id: "",
+    lga_id: "",
+    signature: null,
+    phone: "",
+    email: "",
+  });
   const {
     register,
     handleSubmit,
@@ -29,14 +44,14 @@ export default function CreateStaff() {
     reset,
   } = useForm();
 
-  //get roles
-  const getRoles = async () => {
+  //get court list
+  const getCourtList = async () => {
     setLoading(true);
     await endpoint
-      .get("/role/getRoles")
+      .get("/court/list")
       .then((res) => {
         //  console.log("roles", res.data.data)
-        setRoles(res.data.data);
+        setCourtList(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -44,8 +59,59 @@ export default function CreateStaff() {
         // console.log(err)
       });
   };
+
+  //get states list
+  const getStatestList = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/state/list")
+      .then((res) => {
+        //  console.log("roles", res.data.data)
+        setStatesList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
+  //get states list
+  const getLGAstList = async (id) => {
+    setLoading(true);
+    await endpoint
+      .get("/state/list")
+      .then((res) => {
+        //  console.log("roles", res.data.data)
+        setLgasList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
+  //get title list
+  const getTitletList = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/title/list")
+      .then((res) => {
+        //  console.log("roles", res.data.data)
+        setTitleList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
   useEffect(() => {
-    getRoles();
+    getCourtList();
+    getStatestList();
+    getTitletList();
   }, []);
 
   const handleCreateUser = async (data) => {
@@ -63,7 +129,7 @@ export default function CreateStaff() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">New Staff</h1>
+          <h1 className="page-title">New Legal officer</h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item
               className="breadcrumb-item"
@@ -73,18 +139,18 @@ export default function CreateStaff() {
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
               aria-current="page">
-              New Staff
+              New Legal officer
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
         <div className="ms-auto pageheader-btn">
           <Link
-            to={`${process.env.PUBLIC_URL}/staff-list`}
+            to={`${process.env.PUBLIC_URL}/staff-list/`}
             className="btn btn-primary btn-icon text-white me-3">
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
-            View Staff
+            View Legal officer
           </Link>
         </div>
       </div>
@@ -96,7 +162,7 @@ export default function CreateStaff() {
           <Card>
             <Card.Header>
               <Col className="card-title text-center">
-                <span> Enter Staff Credentials </span>
+                <span> Enter Legal officer Credentials </span>
                 <span className="fe fe-user"></span>
               </Col>
             </Card.Header>
@@ -107,10 +173,61 @@ export default function CreateStaff() {
                 onSubmit={handleSubmit(handleCreateUser)}
                 className="row g-3 needs-validation">
                 <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustomUsername">
+                    Title
+                  </CFormLabel>
+
+                  <select
+                    className="form-control"
+                    {...register("title_id", {
+                      required: "Please select title",
+                    })}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        title_id: e.target.value,
+                      })
+                    }>
+                    <option value=""> --Select Title-- </option>
+                    {titleList.map((title) => (
+                      <option
+                        key={title.id}
+                        value={title.id}>
+                        {title.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {errors.r?.type === "required" && (
+                    <span className="text-danger"> Title required </span>
+                  )}
+                </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">surname</CFormLabel>
+                  <CFormInput
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        surname: e.target.value,
+                      })
+                    }
+                    type="text"
+                    required
+                    name="surname"
+                    {...register("surname")}
+                  />
+                </CCol>
+                <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom01">
                     Firstname
                   </CFormLabel>
                   <CFormInput
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        first_name: e.target.value,
+                      })
+                    }
                     type="text"
                     id="validationCustom01"
                     defaultValue=""
@@ -120,23 +237,21 @@ export default function CreateStaff() {
                   />
                   {/* <CFormFeedback valid>Looks good!</CFormFeedback> */}
                 </CCol>
-                <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">Lastname</CFormLabel>
-                  <CFormInput
-                    type="text"
-                    required
-                    name="last_name"
-                    {...register("last_name")}
-                  />
-                </CCol>
+
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom02">
                     OtherName
                   </CFormLabel>
                   <CFormInput
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        middle_name: e.target.value,
+                      })
+                    }
                     type="text"
-                    name="other_name"
-                    {...register("other_name")}
+                    name="middle_name"
+                    {...register("middle_name")}
                   />
                 </CCol>
                 <CCol md={4}>
@@ -146,6 +261,12 @@ export default function CreateStaff() {
                   <CInputGroup className="has-validation">
                     {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
                     <CFormInput
+                      onChange={(e) =>
+                        setDetails({
+                          ...details,
+                          email: e.target.value,
+                        })
+                      }
                       type="email"
                       aria-describedby="inputGroupPrepend"
                       required
@@ -154,37 +275,103 @@ export default function CreateStaff() {
                     />
                   </CInputGroup>
                 </CCol>
-                <CCol md={2}>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">
+                    Phone No.
+                  </CFormLabel>
+                  <CFormInput
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        phone: e.target.value,
+                      })
+                    }
+                    type="text"
+                    name="phone"
+                    {...register("phone")}
+                  />
+
+                  {errors.phoneNo?.type === "matchPattern" && (
+                    <span className="text-danger">
+                      {" "}
+                      <em>Phone No. is Incorrect</em>{" "}
+                    </span>
+                  )}
+                </CCol>
+                <CCol md={4}>
                   <CFormLabel htmlFor="validationCustomUsername">
-                    Gender
+                    Court
                   </CFormLabel>
 
                   <select
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        court_id: e.target.value,
+                      })
+                    }
                     className="form-control"
-                    {...register("gender", {
-                      required: "Please select gender",
+                    {...register("court_id", {
+                      required: "Please select court",
                     })}>
-                    <option value=""> --Select Gender-- </option>
-                    <option value="Male"> Male</option>
-                    <option value="Male">Female </option>
+                    <option value=""> --Select Court-- </option>
+                    {courtList.map((court, index) => (
+                      <option value={court.id}> {court.name}</option>
+                    ))}
                   </select>
 
                   {errors.r?.type === "required" && (
-                    <span className="text-danger"> Gender is required </span>
+                    <span className="text-danger"> Court is required </span>
                   )}
                 </CCol>
-                <CCol md={2}>
+                <CCol md={4}>
                   <CFormLabel htmlFor="validationCustomUsername">
-                    Roles
+                    States
                   </CFormLabel>
 
                   <select
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        state_id: e.target.value,
+                      })
+                    }
                     className="form-control"
-                    {...register("role_id", {
-                      required: "Please select roles",
+                    {...register("state_id", {
+                      required: "Please select State",
                     })}>
-                    <option value=""> --Select Roles-- </option>
-                    {roles.map((role) => (
+                    <option value=""> --Select state-- </option>
+                    {statesList.map((state) => (
+                      <option
+                        key={state.id}
+                        value={state.id}>
+                        {state.state}
+                      </option>
+                    ))}
+                  </select>
+
+                  {errors.r?.type === "required" && (
+                    <span className="text-danger"> State required </span>
+                  )}
+                </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustomUsername">
+                    LGA
+                  </CFormLabel>
+
+                  <select
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        lga_id: e.target.value,
+                      })
+                    }
+                    className="form-control"
+                    {...register("lga_id", {
+                      required: "Please select lga",
+                    })}>
+                    <option value=""> --Select lga-- </option>
+                    {lgasList.map((role) => (
                       <option
                         key={role.id}
                         value={role.id}>
@@ -194,36 +381,7 @@ export default function CreateStaff() {
                   </select>
 
                   {errors.r?.type === "required" && (
-                    <span className="text-danger"> Role required </span>
-                  )}
-                </CCol>
-
-                <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">
-                    Phone No.
-                  </CFormLabel>
-                  <CFormInput
-                    type="text"
-                    name="phone"
-                    {...register("phone")}
-                  />
-                  <input
-                    type="hidden"
-                    name="user_type"
-                    {...register("user_type")}
-                    value="1"
-                  />
-                  {errors.phoneNo?.type === "checkLength" && (
-                    <span className="text-danger">
-                      {" "}
-                      <em>Phone No. is invalid</em>{" "}
-                    </span>
-                  )}
-                  {errors.phoneNo?.type === "matchPattern" && (
-                    <span className="text-danger">
-                      {" "}
-                      <em>Phone No. is Incorrect</em>{" "}
-                    </span>
+                    <span className="text-danger"> Lga required </span>
                   )}
                 </CCol>
 

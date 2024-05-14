@@ -63,7 +63,7 @@ export default function CreateStaff() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">New User</h1>
+          <h1 className="page-title">New Chamber</h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item
               className="breadcrumb-item"
@@ -73,18 +73,18 @@ export default function CreateStaff() {
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
               aria-current="page">
-              New User
+              New Chamber
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
         <div className="ms-auto pageheader-btn">
           <Link
-            to={`${process.env.PUBLIC_URL}/all-users`}
+            to={`${process.env.PUBLIC_URL}/chamber-list/`}
             className="btn btn-primary btn-icon text-white me-3">
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
-            View Users
+            View Chambers
           </Link>
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function CreateStaff() {
           <Card>
             <Card.Header>
               <Col className="card-title text-center">
-                <span> Enter User Credentials </span>
+                <span> Enter Chamber Credentials </span>
                 <span className="fe fe-user"></span>
               </Col>
             </Card.Header>
@@ -106,6 +106,15 @@ export default function CreateStaff() {
               <CForm
                 onSubmit={handleSubmit(handleCreateUser)}
                 className="row g-3 needs-validation">
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">Surname</CFormLabel>
+                  <CFormInput
+                    type="text"
+                    required
+                    name="surname"
+                    {...register("surname")}
+                  />
+                </CCol>
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom01">
                     Firstname
@@ -120,23 +129,15 @@ export default function CreateStaff() {
                   />
                   {/* <CFormFeedback valid>Looks good!</CFormFeedback> */}
                 </CCol>
-                <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">Lastname</CFormLabel>
-                  <CFormInput
-                    type="text"
-                    required
-                    name="last_name"
-                    {...register("last_name")}
-                  />
-                </CCol>
+
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom02">
-                    OtherName
+                    Middle Name
                   </CFormLabel>
                   <CFormInput
                     type="text"
-                    name="other_name"
-                    {...register("other_name")}
+                    name="middle_name"
+                    {...register("middle_name")}
                   />
                 </CCol>
                 <CCol md={4}>

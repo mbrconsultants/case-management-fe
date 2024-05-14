@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CountUp from "react-countup";
 import ReactApexChart from "react-apexcharts";
 import { Breadcrumb, Col, Row, Card, Button } from "react-bootstrap";
-import * as AllUsers from "../../../data/Users/AllUsers";
+import  StaffList from "../../../data/Users/StaffList";
 import { Link, useNavigate } from "react-router-dom";
 import * as Search from "../../../data/Search/SearchStaff";
 import endpoint from "../../../context/endpoint";
@@ -14,7 +14,7 @@ export default function Stafflist() {
     <div>
       <div className="page-header ">
         <div>
-          <h1 className="page-title">Users </h1>
+          <h1 className="page-title">Legal Officer </h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item
               className="breadcrumb-item"
@@ -24,7 +24,7 @@ export default function Stafflist() {
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
               aria-current="page">
-              Users List
+              Legal Officer
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
@@ -38,12 +38,22 @@ export default function Stafflist() {
           className="col-12">
           <Card>
             <Card.Header>
-              <Col className="card-title text-center mb-0"> USERS LIST </Col>
+              <div className="d-flex align-items-center w-100">
+                <div className="card-title text-center mb-0 flex-grow-1">
+                  LEGAL OFFICERS LIST{" "}
+                </div>
+                <Link
+                  className="btn btn-primary ml-auto"
+                  to={"/new-staff"}>
+                  New legal officer
+                </Link>
+              </div>
             </Card.Header>
+           
             <Card.Body>
               <div className="">
                 <div className="">
-                  <AllUsers.AllUsers />
+                  <StaffList />
                 </div>
               </div>
             </Card.Body>
