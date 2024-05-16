@@ -146,12 +146,12 @@ const Sidebar = () => {
     <div className="sticky">
       <div className="app-sidebar__overlay"></div>
       <aside
-        className="app-sidebar" 
+        className="app-sidebar bg-primary-gradient" 
         onMouseOver={() => Onhover()}
         onMouseOut={() => Outhover()}
       >
         <Scrollbars>
-          <div className="header side-header">
+          <div className="header side-header bg-primary-gradient">
             <Link
               to={`${process.env.PUBLIC_URL}/dashboard`}
               className="header-brand1"
@@ -172,8 +172,9 @@ const Sidebar = () => {
                 alt={"logo-2"}
               />
               <img
-                src={require("../../assets/images/brand/njc-logo.png")}
-                className="header-brand-img light-logo1"
+                src={require("../../assets/images/brand/logo-3.png")}
+                // className="header-brand-img light-logo1"
+                className="mobile-logo logo-1"
                 alt={"logo-3"}
               />
             </Link>
@@ -554,7 +555,7 @@ const Sidebar = () => {
             </ul> */}
 
             <ul className="side-menu" id="sidebar-main">
-              <MyHrSideMenu />
+              <MyHrSideMenu/>
             </ul>
 
             <div className="slide-right" id="slide-right">
@@ -587,7 +588,9 @@ const Sidebar = () => {
               padding: '10px 5px',
               cursor: "pointer",
               marginLeft: "20px"
-            }} onClick={handleSignout}>
+            }} 
+            className="text-white"
+            onClick={handleSignout}>
                 <LogoutOutlined />
               <span>Sign out</span>
             </div>
