@@ -3,7 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import "react-data-table-component-extensions/dist/index.css";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
-import { OverlayTrigger, Tooltip, Badge } from "react-bootstrap";
+import { OverlayTrigger, Tooltip, Badge, FormSelect } from "react-bootstrap";
 import endpoint from "../../context/endpoint";
 import { Context } from "../../context/Context";
 import {
@@ -46,13 +46,22 @@ const ChamberList = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [roles, setRoles] = useState([]);
+  const [courtList, setCourtList] = useState([]);
+  const [statesList, setStatesList] = useState([]);
+  const [lgasList, setLgasList] = useState([]);
+  const [titleList, setTitleList] = useState([]);
+  const [sign, setSign] = useState();
+  const [url, setUrl] = useState();
 
   // Fetch chambers list
-  const getChambersList = async () => {
+  const getStaffList = async () => {
     setLoading(true);
     try {
-      const res = await endpoint.get("/chamber/list/1");
+      const res = await endpoint.get("/solicitor/list");
       setData(res.data.data);
+      console.log("====================================");
+      console.log(res.data.data);
+      console.log("====================================");
     } catch (err) {
       console.error(err);
     } finally {
@@ -60,25 +69,18 @@ const ChamberList = () => {
     }
   };
 
-  // Fetch roles
-  const getRoles = async () => {
-    setLoading(true);
-    try {
-      const res = await endpoint.get("/role/getRoles");
-      setRoles(res.data.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Show edit modal
-  const handleShowEditModal = (row) => {
-    setValue(row);
-    setShowEditModal(true);
-    reset();
-  };
+  const [details, setDetails] = useState({
+    surname: "",
+    first_name: "",
+    middle_name: "",
+    title_id: "",
+    court_id: "",
+    state_id: "",
+    lga_id: "",
+    signature: null,
+    phone: "",
+    email: "",
+  });
 
   // Show delete modal
   const handleShowDeleteModal = (row) => {
@@ -86,57 +88,83 @@ const ChamberList = () => {
     setShowDeleteModal(true);
   };
 
-  useEffect(() => {
-    getChambersList();
-    getRoles();
-  }, []);
-
-  // Edit chamber
-  const modifyChamber = async (formData) => {
-    try {
-      setLoading(true);
-      await endpoint.put(`/chamber/modify/${value.id}`, formData);
-      SuccessAlert("chamber updated successfully!");
-      getChambersList();
-      setShowEditModal(false);
-    } catch (error) {
-      if (error.response) {
-        ErrorAlert(error.response.data.description);
-      }
-    } finally {
-      setLoading(false);
-    }
+  //get title list
+  const getTitletList = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/title/list")
+      .then((res) => {
+        //  console.log("roles", res.data.data)
+        setTitleList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
   };
+
+  useEffect(() => {
+    getStaffList();
+    getTitletList();
+    getStatestList();
+  }, []);
 
   // Columns for DataTable
   const columns = [
     { name: "#", cell: (row, index) => index + 1, width: "65px" },
     {
-      name: "First Name",
-      selector: (row) => row.fullname,
+      name: "Fullname",
+      selector: (row) => row.surname,
       style: { textAlign: "right" },
       sortable: true,
       width: "300px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.fullname.toUpperCase()}</div>
+        <div className="fs-12 fw-bold">
+          {(row.Title ? row.Title.name : "") +
+            " " +
+            row.surname.toUpperCase() +
+            " " +
+            row.first_name.toUpperCase() +
+            " " +
+            row.middle_name.toUpperCase()}
+        </div>
       ),
     },
     {
       name: "Email",
       selector: (row) => row.email,
-      style: { textAlign: "right" },
+      style: { textAlign: "left" },
       sortable: true,
-      width: "200px",
+      width: "250px",
       cell: (row) => <div className="fs-12 fw-bold">{row.email || ""}</div>,
     },
     {
-      name: "Role",
-      selector: (row) => row.Role?.role_name,
+      name: "Phone",
+      selector: (row) => row.phone,
+      style: { textAlign: "right" },
+      sortable: true,
+      width: "180px",
+      cell: (row) => <div className="fs-12 fw-bold">{row.phone || ""}</div>,
+    },
+    {
+      name: "Court",
+      selector: (row) => row.Court?.name,
+      style: { textAlign: "left" },
+      sortable: true,
+      width: "200px",
+      cell: (row) => (
+        <div className="fs-12 fw-bold">{row.Court?.name || ""}</div>
+      ),
+    },
+    {
+      name: "State",
+      selector: (row) => row.State?.name,
       style: { textAlign: "right" },
       sortable: true,
       width: "200px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.Role?.role_name || ""}</div>
+        <div className="fs-12 fw-bold">{row.State?.name || ""}</div>
       ),
     },
     {
@@ -145,11 +173,11 @@ const ChamberList = () => {
       style: { textAlign: "right" },
       cell: (row) => (
         <div className="fs-12 fw-bold">
-          <button
-            className="btn btn-warning btn-sm my-1"
-            onClick={() => handleShowEditModal(row)}>
+          <Link
+            to={`/new-staff/${row.id}`}
+            className="btn btn-warning btn-sm my-1">
             <span className="fe fe-edit"> </span>
-          </button>
+          </Link>
           <button
             className="btn btn-danger btn-sm"
             onClick={() => handleShowDeleteModal(row)}>
@@ -159,7 +187,36 @@ const ChamberList = () => {
       ),
     },
   ];
-
+  //get states list
+  const getStatestList = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/state/list")
+      .then((res) => {
+        setStatesList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err);
+      });
+  };
+  const deletechamber = async (id) => {
+    setLoading(true);
+    await endpoint
+      .delete(`/legal-officer/delete/${id}`)
+      .then((res) => {
+        getStaffList();
+        setLoading(false);
+        SuccessAlert(res.data.message);
+        setShowDeleteModal(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setShowDeleteModal(false);
+        console.log(err);
+      });
+  };
   const tableDatas = { columns, data };
 
   return (
@@ -185,97 +242,6 @@ const ChamberList = () => {
       </DataTableExtensions>
 
       <Modal
-        show={showEditModal}
-        onHide={() => setShowEditModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Update chamber Details</Modal.Title>
-        </Modal.Header>
-        <CForm
-          onSubmit={handleSubmit(modifyChamber)}
-          className="row g-3 needs-validation">
-          <Modal.Body>
-            <Card>
-              <Card.Body>
-                <Col
-                  lg={12}
-                  md={12}>
-                  {["first_name", "last_name", "other_name"].map(
-                    (field, index) => (
-                      <FormGroup key={index}>
-                        <label>{field.replace("_", " ").toUpperCase()}</label>
-                        <Form.Control
-                          type="text"
-                          readOnly
-                          {...register(field)}
-                          defaultValue={
-                            value.Profile ? value.Profile[field] : ""
-                          }
-                          className="form-control"
-                        />
-                      </FormGroup>
-                    )
-                  )}
-                  <FormGroup>
-                    <label>Email</label>
-                    <Form.Control
-                      type="text"
-                      {...register("email")}
-                      defaultValue={value.email || ""}
-                      className="form-control"
-                    />
-                  </FormGroup>
-                  {["password", "new_password"].map((field, index) => (
-                    <FormGroup key={index}>
-                      <label>{field.replace("_", " ").toUpperCase()}</label>
-                      <Form.Control
-                        type="password"
-                        {...register(field)}
-                        className="form-control"
-                      />
-                    </FormGroup>
-                  ))}
-                  <FormGroup>
-                    <label>Roles</label>
-                    <select
-                      className="form-control"
-                      {...register("role_id", {
-                        required: "Please select roles",
-                      })}>
-                      <option value={value.Role?.id || ""}>
-                        {value.Role?.role_name || "--Select Roles--"}
-                      </option>
-                      {roles.map((role) => (
-                        <option
-                          key={role.id}
-                          value={role.id}>
-                          {role.role_name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.role_id && (
-                      <span className="text-danger">Role required</span>
-                    )}
-                  </FormGroup>
-                </Col>
-              </Card.Body>
-            </Card>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="warning"
-              onClick={() => setShowEditModal(false)}>
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              type="submit">
-              Save
-            </Button>
-          </Modal.Footer>
-        </CForm>
-      </Modal>
-
-      <Modal
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
@@ -287,7 +253,13 @@ const ChamberList = () => {
               <Col
                 lg={12}
                 md={12}>
-                Please confirm you are about to delete?
+                Please confirm you are about to delete the staff{" "}
+                {value.surname +
+                  " " +
+                  value.first_name +
+                  " " +
+                  value.middle_name}
+                ?
               </Col>
             </Card.Body>
           </Card>
@@ -299,7 +271,11 @@ const ChamberList = () => {
             Close
           </Button>
           {/* Implement the delete logic here */}
-          {/* <Button variant="danger" onClick={() => deletechamber(value.id)}>Delete</Button> */}
+          <Button
+            variant="danger"
+            onClick={() => deletechamber(value.id)}>
+            Delete
+          </Button>
         </Modal.Footer>
       </Modal>
     </>

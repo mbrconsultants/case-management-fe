@@ -33,7 +33,7 @@ import {
 import Loader from "../Loader/loader";
 import { useForm } from "react-hook-form";
 
-const StaffList = () => {
+const CaseList = () => {
   const {
     handleSubmit,
     register,
@@ -48,16 +48,13 @@ const StaffList = () => {
   const [roles, setRoles] = useState([]);
   const [courtList, setCourtList] = useState([]);
   const [statesList, setStatesList] = useState([]);
-  const [lgasList, setLgasList] = useState([]);
   const [titleList, setTitleList] = useState([]);
-  const [sign, setSign] = useState();
-  const [url, setUrl] = useState();
 
   // Fetch chambers list
-  const getStaffList = async () => {
+  const getCaseList = async () => {
     setLoading(true);
     try {
-      const res = await endpoint.get("/legal-officer/list");
+      const res = await endpoint.get("/case/list");
       setData(res.data.data);
       console.log("====================================");
       console.log(res.data.data);
@@ -105,7 +102,7 @@ const StaffList = () => {
   };
 
   useEffect(() => {
-    getStaffList();
+    getCaseList();
     getTitletList();
     getStatestList();
   }, []);
@@ -114,57 +111,79 @@ const StaffList = () => {
   const columns = [
     { name: "#", cell: (row, index) => index + 1, width: "65px" },
     {
-      name: "Fullname",
-      selector: (row) => row.surname,
+      name: "Suite No",
+      selector: (row) => row.suite_no,
       style: { textAlign: "right" },
       sortable: true,
       width: "300px",
+      cell: (row) => <div className="fs-12 fw-bold">{row.suite_no}</div>,
+    },
+    {
+      name: "Court",
+      selector: (row) => row.Court && row.Court.name,
+      style: { textAlign: "left" },
+      sortable: true,
+      width: "250px",
+      cell: (row) => (
+        <div className="fs-12 fw-bold">{row.Court ? row.Court.name : ""}</div>
+      ),
+    },
+    {
+      name: "Parties",
+      selector: (row) => row.parties,
+      style: { textAlign: "right" },
+      sortable: true,
+      width: "180px",
+      cell: (row) => <div className="fs-12 fw-bold">{row.parties || ""}</div>,
+    },
+    {
+      name: "Appellant",
+      selector: (row) => row.appellants,
+      style: { textAlign: "right" },
+      sortable: true,
+      width: "180px",
+      cell: (row) => (
+        <div className="fs-12 fw-bold">{row.appellants || ""}</div>
+      ),
+    },
+    {
+      name: "Respondent",
+      selector: (row) => row.respondent,
+      style: { textAlign: "right" },
+      sortable: true,
+      width: "180px",
+      cell: (row) => (
+        <div className="fs-12 fw-bold">{row.respondent || ""}</div>
+      ),
+    },
+    {
+      name: "Legal Officer",
+      selector: (row) => row.LegalOfficer,
+      style: { textAlign: "right" },
+      sortable: true,
+      width: "180px",
       cell: (row) => (
         <div className="fs-12 fw-bold">
-          {(row.Title ? row.Title.name : "") +
-            " " +
-            row.surname.toUpperCase() +
-            " " +
-            row.first_name.toUpperCase() +
-            " " +
-            row.middle_name.toUpperCase()}
+          {row.LegalOfficer
+            ? row.LegalOfficer.surname +
+              " " +
+              row.LegalOfficer.first_name +
+              " " +
+              row.LegalOfficer.middle_name
+            : ""}
         </div>
       ),
     },
     {
-      name: "Email",
-      selector: (row) => row.email,
-      style: { textAlign: "left" },
-      sortable: true,
-      width: "250px",
-      cell: (row) => <div className="fs-12 fw-bold">{row.email || ""}</div>,
-    },
-    {
-      name: "Phone",
-      selector: (row) => row.phone,
+      name: "Chamber/Solicitor",
+      selector: (row) => row.ChamberOrSolicitor,
       style: { textAlign: "right" },
       sortable: true,
       width: "180px",
-      cell: (row) => <div className="fs-12 fw-bold">{row.phone || ""}</div>,
-    },
-    {
-      name: "Court",
-      selector: (row) => row.Court?.name,
-      style: { textAlign: "left" },
-      sortable: true,
-      width: "200px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.Court?.name || ""}</div>
-      ),
-    },
-    {
-      name: "State",
-      selector: (row) => row.State?.name,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "200px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.State?.name || ""}</div>
+        <div className="fs-12 fw-bold">
+          {row.ChamberOrSolicitor ? row.ChamberOrSolicitor.name : ""}
+        </div>
       ),
     },
     {
@@ -174,7 +193,12 @@ const StaffList = () => {
       cell: (row) => (
         <div className="fs-12 fw-bold">
           <Link
-            to={`/new-staff/${row.id}`}
+            to={`/case/${row.id}`}
+            className="btn btn-primary btn-sm my-1">
+            <span className="fe fe-eye"> </span>
+          </Link>
+          <Link
+            to={`/edit/case/${row.id}`}
             className="btn btn-warning btn-sm my-1">
             <span className="fe fe-edit"> </span>
           </Link>
@@ -206,7 +230,7 @@ const StaffList = () => {
     await endpoint
       .delete(`/legal-officer/delete/${id}`)
       .then((res) => {
-        getStaffList();
+        getCaseList();
         setLoading(false);
         SuccessAlert(res.data.message);
         setShowDeleteModal(false);
@@ -282,4 +306,4 @@ const StaffList = () => {
   );
 };
 
-export default StaffList;
+export default CaseList;

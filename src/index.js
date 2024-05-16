@@ -349,15 +349,17 @@ const NewUser = React.lazy(() =>
 const NewStaff = React.lazy(() =>
   import("./components/CustomPages/Users/NewStaff")
 );
+
+const NewCase = React.lazy(() =>
+  import("./components/CustomPages/Cases/NewCase")
+);
+const CaseList = React.lazy(() =>
+  import("./components/CustomPages/Cases/CaseList")
+);
 const StaffList = React.lazy(() =>
   import("./components/CustomPages/Users/Stafflist")
 );
-const NewCouncil = React.lazy(() =>
-  import("./components/CustomPages/Users/NewCouncil")
-);
-const CouncilList = React.lazy(() =>
-  import("./components/CustomPages/Users/CouncilList")
-);
+
 const NewChamber = React.lazy(() =>
   import("./components/CustomPages/Users/NewChamber")
 );
@@ -494,12 +496,24 @@ const Root = () => {
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/new-staff`}
-                    element={
-                      // user ?
-                      <NewStaff />
-                      // :
-                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
-                    }
+                    element={<NewStaff />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/new-case`}
+                    element={<NewCase />}
+                  />
+
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/cases`}
+                    element={<CaseList />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/edit/case/:id`}
+                    element={<NewCase />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/new-staff/:id`}
+                    element={<NewStaff />}
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/staff-list`}
@@ -510,24 +524,7 @@ const Root = () => {
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
                   />
-                  <Route
-                    path={`${process.env.PUBLIC_URL}/new-council`}
-                    element={
-                      // user ?
-                      <NewCouncil />
-                      // :
-                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
-                    }
-                  />
-                  <Route
-                    path={`${process.env.PUBLIC_URL}/council-list`}
-                    element={
-                      // user ?
-                      <CouncilList />
-                      // :
-                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
-                    }
-                  />
+
                   <Route
                     path={`${process.env.PUBLIC_URL}/new-chamber`}
                     element={
