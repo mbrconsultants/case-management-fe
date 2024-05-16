@@ -2,7 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { Breadcrumb, Col, Row, Card, FormGroup, Button } from "react-bootstrap";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import SignatureCanvas from "react-signature-canvas";
 import {
   CForm,
   CCol,
@@ -17,6 +18,7 @@ import {
 import * as formvalidation from "../../../data/Form/formvalidations/formvalidations";
 import endpoint from "../../../context/endpoint";
 import { useForm } from "react-hook-form";
+import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 
 export default function CreateStaff() {
   const navigate = useNavigate();
@@ -25,6 +27,8 @@ export default function CreateStaff() {
   const [statesList, setStatesList] = useState([]);
   const [lgasList, setLgasList] = useState([]);
   const [titleList, setTitleList] = useState([]);
+  const [sign, setSign] = useState();
+  const [url, setUrl] = useState();
   const [details, setDetails] = useState({
     surname: "",
     first_name: "",
@@ -43,6 +47,7 @@ export default function CreateStaff() {
     formState: { errors },
     reset,
   } = useForm();
+  const params = useParams();
 
   //get court list
   const getCourtList = async () => {
@@ -60,14 +65,16 @@ export default function CreateStaff() {
       });
   };
 
-  //get states list
-  const getStatestList = async () => {
+  const id = params?.id;
+
+  //get single staff
+  const getSingleStaff = async () => {
     setLoading(true);
     await endpoint
-      .get("/state/list")
+      .get(`/legal-officer/show/${id}`)
       .then((res) => {
-        //  console.log("roles", res.data.data)
-        setStatesList(res.data.data);
+        console.log("staff", res.data.data);
+        setDetails(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -75,20 +82,30 @@ export default function CreateStaff() {
         // console.log(err)
       });
   };
-
   //get states list
-  const getLGAstList = async (id) => {
+  const getStatestList = async () => {
     setLoading(true);
     await endpoint
       .get("/state/list")
       .then((res) => {
-        //  console.log("roles", res.data.data)
-        setLgasList(res.data.data);
+        setStatesList(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
         setLoading(false);
-        // console.log(err)
+        console.log(err);
+      });
+  };
+
+  //get states list
+  const getLGAstList = async (id) => {
+    await endpoint
+      .get(`/lga/state-show/${id}`)
+      .then((res) => {
+        setLgasList(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -112,17 +129,55 @@ export default function CreateStaff() {
     getCourtList();
     getStatestList();
     getTitletList();
+    if (id) {
+      getSingleStaff();
+    }
   }, []);
 
-  const handleCreateUser = async (data) => {
-    // console.log(data)
+  const handleCreateUser = async () => {
+    // e.preventDefault();
+    console.log("====================================");
+    console.log("here");
+    console.log("====================================");
     setLoading(true);
-    await endpoint
-      .post("/user/create", data)
-      .then((res) => navigate(`${process.env.PUBLIC_URL}/all-users`))
-      .catch((err) => {
-        // console.log(err)
-      });
+
+    const data = new FormData();
+    data.append("title_id", details.title_id);
+    data.append("court_id", details.court_id);
+    data.append("first_name", details.first_name);
+    data.append("middle_name", details.middle_name);
+    data.append("surname", details.surname);
+    data.append("gender", details.gender);
+    data.append("state_id", details.state_id);
+    data.append("lga_id", details.lga_id);
+    data.append("email", details.email);
+    data.append("phone", details.phone);
+    data.append("signature", url);
+    if (id) {
+      await endpoint
+        .put(`/legal-officer/edit/${id}`, data)
+        .then((res) => navigate(`${process.env.PUBLIC_URL}/staff-list`))
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+          ErrorAlert(err.response.data.description);
+        });
+    } else {
+      await endpoint
+        .post("/legal-officer/create", data)
+        .then((res) => navigate(`${process.env.PUBLIC_URL}/staff-list`))
+        .catch((err) => {
+          setLoading(false);
+          console.log(err);
+          ErrorAlert(err.response.data.description);
+        });
+    }
+  };
+
+  //clear signature
+  const handleClear = (e) => {
+    e.preventDefault();
+    sign.clear();
   };
 
   return (
@@ -178,21 +233,20 @@ export default function CreateStaff() {
                   </CFormLabel>
 
                   <select
+                    defaultValue={details.title_id}
                     className="form-control"
-                    {...register("title_id", {
-                      required: "Please select title",
-                    })}
                     onChange={(e) =>
                       setDetails({
                         ...details,
                         title_id: e.target.value,
                       })
                     }>
-                    <option value=""> --Select Title-- </option>
+                    <option value=""> --Select title-- </option>
                     {titleList.map((title) => (
                       <option
                         key={title.id}
-                        value={title.id}>
+                        value={title.id}
+                        selected={title.id === details.title_id}>
                         {title.name}
                       </option>
                     ))}
@@ -205,6 +259,7 @@ export default function CreateStaff() {
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom02">surname</CFormLabel>
                   <CFormInput
+                    defaultValue={details.surname}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -212,9 +267,7 @@ export default function CreateStaff() {
                       })
                     }
                     type="text"
-                    required
                     name="surname"
-                    {...register("surname")}
                   />
                 </CCol>
                 <CCol md={4}>
@@ -222,6 +275,7 @@ export default function CreateStaff() {
                     Firstname
                   </CFormLabel>
                   <CFormInput
+                    defaultValue={details.first_name}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -230,10 +284,7 @@ export default function CreateStaff() {
                     }
                     type="text"
                     id="validationCustom01"
-                    defaultValue=""
-                    required
                     name="first_name"
-                    {...register("first_name")}
                   />
                   {/* <CFormFeedback valid>Looks good!</CFormFeedback> */}
                 </CCol>
@@ -243,6 +294,7 @@ export default function CreateStaff() {
                     OtherName
                   </CFormLabel>
                   <CFormInput
+                    defaultValue={details.middle_name}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -251,7 +303,6 @@ export default function CreateStaff() {
                     }
                     type="text"
                     name="middle_name"
-                    {...register("middle_name")}
                   />
                 </CCol>
                 <CCol md={4}>
@@ -261,6 +312,7 @@ export default function CreateStaff() {
                   <CInputGroup className="has-validation">
                     {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
                     <CFormInput
+                      defaultValue={details.email}
                       onChange={(e) =>
                         setDetails({
                           ...details,
@@ -269,9 +321,7 @@ export default function CreateStaff() {
                       }
                       type="email"
                       aria-describedby="inputGroupPrepend"
-                      required
                       name="email"
-                      {...register("email")}
                     />
                   </CInputGroup>
                 </CCol>
@@ -280,6 +330,7 @@ export default function CreateStaff() {
                     Phone No.
                   </CFormLabel>
                   <CFormInput
+                    defaultValue={details.phone}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -288,7 +339,6 @@ export default function CreateStaff() {
                     }
                     type="text"
                     name="phone"
-                    {...register("phone")}
                   />
 
                   {errors.phoneNo?.type === "matchPattern" && (
@@ -304,19 +354,22 @@ export default function CreateStaff() {
                   </CFormLabel>
 
                   <select
+                    defaultValue={details.court_id}
                     onChange={(e) =>
                       setDetails({
                         ...details,
                         court_id: e.target.value,
                       })
                     }
-                    className="form-control"
-                    {...register("court_id", {
-                      required: "Please select court",
-                    })}>
+                    className="form-control">
                     <option value=""> --Select Court-- </option>
                     {courtList.map((court, index) => (
-                      <option value={court.id}> {court.name}</option>
+                      <option
+                        value={court.id}
+                        selected={court.id === details.court_id}>
+                        {" "}
+                        {court.name}
+                      </option>
                     ))}
                   </select>
 
@@ -328,21 +381,21 @@ export default function CreateStaff() {
                   <CFormLabel htmlFor="validationCustomUsername">
                     States
                   </CFormLabel>
-
                   <select
-                    onChange={(e) =>
-                      setDetails({
-                        ...details,
-                        state_id: e.target.value,
-                      })
-                    }
-                    className="form-control"
-                    {...register("state_id", {
-                      required: "Please select State",
-                    })}>
+                    defaultValue={details.state_id}
+                    onChange={(e) => {
+                      const selectedStateId = e.target.value;
+                      setDetails((prevDetails) => ({
+                        ...prevDetails,
+                        state_id: selectedStateId,
+                      }));
+                      getLGAstList(selectedStateId);
+                    }}
+                    className="form-control">
                     <option value=""> --Select state-- </option>
                     {statesList.map((state) => (
                       <option
+                        selected={state.id === details.state_id}
                         key={state.id}
                         value={state.id}>
                         {state.state}
@@ -360,22 +413,28 @@ export default function CreateStaff() {
                   </CFormLabel>
 
                   <select
-                    onChange={(e) =>
+                    value={details.lga_id || ""}
+                    onChange={(e) => {
                       setDetails({
                         ...details,
                         lga_id: e.target.value,
-                      })
-                    }
-                    className="form-control"
-                    {...register("lga_id", {
-                      required: "Please select lga",
-                    })}>
+                      });
+                    }}
+                    className="form-control">
                     <option value=""> --Select lga-- </option>
-                    {lgasList.map((role) => (
+                    {id && (
                       <option
-                        key={role.id}
-                        value={role.id}>
-                        {role.role_name}
+                        selected
+                        key={details.id}
+                        value={details.Lga ? details.Lga.id : ""}>
+                        {details.Lga ? details.Lga.name : ""}
+                      </option>
+                    )}
+                    {lgasList.map((lga) => (
+                      <option
+                        key={lga.id}
+                        value={lga.id}>
+                        {lga.name}
                       </option>
                     ))}
                   </select>
@@ -384,7 +443,41 @@ export default function CreateStaff() {
                     <span className="text-danger"> Lga required </span>
                   )}
                 </CCol>
-
+                <CCol
+                  xs={6}
+                  className="text-center">
+                  <SignatureCanvas
+                    ref={(data) => setSign(data)}
+                    onEnd={() =>
+                      setUrl(sign.getTrimmedCanvas().toDataURL("image/png"))
+                    }
+                    canvasProps={{
+                      width: 500,
+                      height: 120,
+                      className: "sigCanvas",
+                    }}
+                  />
+                </CCol>
+                {id && (
+                  <CCol
+                    xs={6}
+                    className="text-center">
+                    <label>Old Signature</label>
+                    <br></br>
+                    <img
+                      src={details.signature}
+                      crossOrigin="anonymous"
+                      alt="Old Signatory..."
+                    />
+                  </CCol>
+                )}
+                <CCol xs={12}>
+                  <button
+                    className="btn btn-xs btn-warning justify-end"
+                    onClick={(e) => handleClear(e)}>
+                    Clear Signature field
+                  </button>
+                </CCol>
                 <CCol
                   xs={12}
                   className="text-center">
