@@ -32,6 +32,7 @@ import {
 } from "react-bootstrap";
 import Loader from "../Loader/loader";
 import { useForm } from "react-hook-form";
+import { color } from "echarts";
 
 const CaseList = () => {
   const {
@@ -44,11 +45,7 @@ const CaseList = () => {
   const [value, setValue] = useState({});
   const [isLoading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [roles, setRoles] = useState([]);
-  const [courtList, setCourtList] = useState([]);
-  const [statesList, setStatesList] = useState([]);
-  const [titleList, setTitleList] = useState([]);
+
 
   // Fetch chambers list
   const getCaseList = async () => {
@@ -56,9 +53,6 @@ const CaseList = () => {
     try {
       const res = await endpoint.get("/case/list");
       setData(res.data.data);
-      console.log("====================================");
-      console.log(res.data.data);
-      console.log("====================================");
     } catch (err) {
       console.error(err);
     } finally {
@@ -66,18 +60,7 @@ const CaseList = () => {
     }
   };
 
-  const [details, setDetails] = useState({
-    surname: "",
-    first_name: "",
-    middle_name: "",
-    title_id: "",
-    court_id: "",
-    state_id: "",
-    lga_id: "",
-    signature: null,
-    phone: "",
-    email: "",
-  });
+
 
   // Show delete modal
   const handleShowDeleteModal = (row) => {
@@ -85,26 +68,11 @@ const CaseList = () => {
     setShowDeleteModal(true);
   };
 
-  //get title list
-  const getTitletList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/title/list")
-      .then((res) => {
-        //  console.log("roles", res.data.data)
-        setTitleList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        // console.log(err)
-      });
-  };
+
 
   useEffect(() => {
     getCaseList();
-    getTitletList();
-    getStatestList();
+
   }, []);
 
   // Columns for DataTable
@@ -115,8 +83,32 @@ const CaseList = () => {
       selector: (row) => row.suite_no,
       style: { textAlign: "right" },
       sortable: true,
-      width: "300px",
+      width: "200px",
       cell: (row) => <div className="fs-12 fw-bold">{row.suite_no}</div>,
+    },
+    {
+      name: "Case Type",
+      selector: (row) => row.CaseType,
+      style: { textAlign: "center" },
+      sortable: true,
+      width: "300px",
+      cell: (row) => (
+        <div
+          className="fs-12 fw-bold"
+          style={{
+            backgroundColor: `${row.CaseType ? row.CaseType.case_color : ""}`,
+            color: "white",
+            width: "200px",
+            height: "50px",
+            display: "flex", // Added to enable flexbox
+            justifyContent: "center", // Centers content horizontally
+            alignItems: "center", // Centers content vertically
+          }}>
+          <span className="text-xl m-3 p-3">
+            {row.CaseType ? row.CaseType.case_type : ""}
+          </span>
+        </div>
+      ),
     },
     {
       name: "Court",
@@ -133,7 +125,7 @@ const CaseList = () => {
       selector: (row) => row.parties,
       style: { textAlign: "right" },
       sortable: true,
-      width: "180px",
+      width: "300px",
       cell: (row) => <div className="fs-12 fw-bold">{row.parties || ""}</div>,
     },
     {
@@ -141,7 +133,7 @@ const CaseList = () => {
       selector: (row) => row.appellants,
       style: { textAlign: "right" },
       sortable: true,
-      width: "180px",
+      width: "300px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.appellants || ""}</div>
       ),
@@ -151,7 +143,7 @@ const CaseList = () => {
       selector: (row) => row.respondent,
       style: { textAlign: "right" },
       sortable: true,
-      width: "180px",
+      width: "300px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.respondent || ""}</div>
       ),
@@ -170,7 +162,7 @@ const CaseList = () => {
               row.LegalOfficer.first_name +
               " " +
               row.LegalOfficer.middle_name
-            : ""}
+            : "Not yet assigned"}
         </div>
       ),
     },
@@ -182,7 +174,9 @@ const CaseList = () => {
       width: "180px",
       cell: (row) => (
         <div className="fs-12 fw-bold">
-          {row.ChamberOrSolicitor ? row.ChamberOrSolicitor.name : ""}
+          {row.ChamberOrSolicitor
+            ? row.ChamberOrSolicitor.name
+            : "Not yet assigned"}
         </div>
       ),
     },
@@ -211,24 +205,11 @@ const CaseList = () => {
       ),
     },
   ];
-  //get states list
-  const getStatestList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/state/list")
-      .then((res) => {
-        setStatesList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err);
-      });
-  };
+
   const deletechamber = async (id) => {
     setLoading(true);
     await endpoint
-      .delete(`/legal-officer/delete/${id}`)
+      .delete(`/case/delete/${id}`)
       .then((res) => {
         getCaseList();
         setLoading(false);
@@ -277,12 +258,8 @@ const CaseList = () => {
               <Col
                 lg={12}
                 md={12}>
-                Please confirm you are about to delete the staff{" "}
-                {value.surname +
-                  " " +
-                  value.first_name +
-                  " " +
-                  value.middle_name}
+                Please confirm you are about to delete the case with suite number of {" "}
+                {value.suite_no }
                 ?
               </Col>
             </Card.Body>
