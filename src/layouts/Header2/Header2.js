@@ -46,7 +46,7 @@ export function Header2() {
     document.querySelector(".header-search").classList.toggle("show");
   };
   return (
-    <Navbar expand="md" className="app-header header sticky">
+    <Navbar expand="md" className="app-header header sticky bg-primary-gradient">
       <Container fluid className="main-container">
         <div className="d-flex align-items-center">
           <Link
