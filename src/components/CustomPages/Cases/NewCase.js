@@ -35,10 +35,8 @@ export default function CreateCase() {
   const [isLoading, setLoading] = useState(false);
   const [courtList, setCourtList] = useState([]);
   const [statesList, setStatesList] = useState([]);
-  const [lgasList, setLgasList] = useState([]);
+  const [caseTypelist, setCaseTypeList] = useState([]);
   const [titleList, setTitleList] = useState([]);
-  const [sign, setSign] = useState();
-  const [url, setUrl] = useState();
 
   const [details, setDetails] = useState({
     case_type_id: "",
@@ -110,10 +108,10 @@ export default function CreateCase() {
   const getCaseType = async () => {
     setLoading(true);
     await endpoint
-      .get("/title/list")
+      .get("/case-type/list")
       .then((res) => {
-        //  console.log("roles", res.data.data)
-        setTitleList(res.data.data);
+        console.log("casetype", res.data.data);
+        setCaseTypeList(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -132,9 +130,6 @@ export default function CreateCase() {
 
   const handleCreateUser = async () => {
     // e.preventDefault();
-    console.log("====================================");
-    console.log("here");
-    console.log("====================================");
     setLoading(true);
 
     const data = new FormData();
@@ -267,6 +262,7 @@ export default function CreateCase() {
                   </CFormLabel>
                   <select
                     className="form-select"
+                    defaultValue={details.case_type_id}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -274,12 +270,15 @@ export default function CreateCase() {
                       })
                     }>
                     <option value="">--select-</option>
-                    <option
-                      value="1"
-                      className="text-dark">
-                      Motion
-                    </option>
-                    <option value="2">Appeal</option>
+                    {caseTypelist.map((caseType, index) => (
+                      <option
+                        key={index + 1}
+                        value={caseType.id}
+                        selected={details.case_type_id === caseType.id}
+                        className="text-dark">
+                        {caseType.case_type}
+                      </option>
+                    ))}
                   </select>
                 </CCol>
                 <CCol md={4}>
@@ -337,7 +336,7 @@ export default function CreateCase() {
                 </CCol>
                 <CCol md={12}>
                   <CFormLabel htmlFor="validationCustomUsername">
-                    Respondent
+                    Case Description
                   </CFormLabel>
                   <CFormTextarea
                     className="has-validation"
@@ -364,7 +363,7 @@ export default function CreateCase() {
                       onChange={(e) =>
                         setDetails({
                           ...details,
-                          doc_url: e.target.files,
+                          doc_url: e.target.files[0],
                         })
                       }
                       type="file"
