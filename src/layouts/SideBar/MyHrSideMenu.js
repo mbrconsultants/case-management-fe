@@ -209,18 +209,18 @@ const MyHrSideMenu = () => {
                 {mainn?.map((Item, i) => (
                     <Fragment key={i}>
                         <li className="sub-category">
-                            <h3>{Item.menutitle}</h3>
+                            <h3 className="text-white">{Item.menutitle}</h3>
                         </li>
                         {Item.Items.map((menuItem, i) => (
                             <li
-                                className={`slide ${menuItem.active ? "is-expanded" : ""
+                                className={`text-white slide ${menuItem.active ? "is-expanded" : ""
                                     }`}
                                 key={i}
                             >
                                 {menuItem.type === "link" ? (
                                     <NavLink
                                         to={menuItem.path + "/"}
-                                        className={`side-menu__item ${menuItem.active ? "active" : ""
+                                        className={`text-white side-menu__item ${menuItem.active ? "active" : ""
                                             }`}
                                         onClick={() => {
                                             toggletNavActive(menuItem);
@@ -229,10 +229,10 @@ const MyHrSideMenu = () => {
                                         }}
                                     >
                                         <i
-                                            className={`side-menu__icon fe fe-${menuItem.icon}`}
+                                            className={`text-white side-menu__icon fe fe-${menuItem.icon}`}
                                         ></i>
                                         <span className="side-menu__label">
-                                            {menuItem.title}
+                                            {menuItem.title.toUpperCase()}
                                         </span>
                                        
                                     </NavLink>
@@ -244,7 +244,7 @@ const MyHrSideMenu = () => {
                                     
                                     <NavLink
                                         to={menuItem.path + "/"}
-                                        className={`side-menu__item ${menuItem.active ? "active" : ""
+                                        className={`text-white side-menu__item ${menuItem.active ? "active" : ""
                                             }`}
                                         onClick={(event) => {
                                             event.preventDefault();
@@ -252,10 +252,10 @@ const MyHrSideMenu = () => {
                                         }}
                                     >
                                         <i
-                                            className={`side-menu__icon fe fe-${menuItem.icon}`}
+                                            className={`text-white side-menu__icon fe fe-${menuItem.icon}`}
                                         ></i>
                                         <span className="side-menu__label">
-                                            {menuItem.title}
+                                            {menuItem.title.toUpperCase()}
                                         </span>
                                        
                                         <i
@@ -267,7 +267,7 @@ const MyHrSideMenu = () => {
                                 )}
                                 {menuItem.children ? (
                                     <ul
-                                        className="slide-menu"
+                                        className="text-white slide-menu"
                                         style={
                                             menuItem.active
                                                 ? {
@@ -290,7 +290,7 @@ const MyHrSideMenu = () => {
                                                                 toggletNavActive(childrenItem);
                                                             }}
                                                         >
-                                                            <span className="sub-side-menu__label">
+                                                            <span className="text-white sub-side-menu__label">
                                                                 {childrenItem.title}
                                                             </span>
                                                             {childrenItem.active ? (
@@ -305,7 +305,7 @@ const MyHrSideMenu = () => {
                                                     {childrenItem.type === "link" ? (
                                                         <NavLink
                                                             to={childrenItem.path + "/"}
-                                                            className="slide-item"
+                                                            className="text-white slide-item"
                                                             onClick={() => {
                                                                 toggletNavActive(childrenItem)
                                                             }}
@@ -330,7 +330,7 @@ const MyHrSideMenu = () => {
                                                                         {childrenSubItem.type === "link" ? (
                                                                             <NavLink
                                                                                 to={childrenSubItem.path + "/"}
-                                                                                className={`${"sub-slide-item"}`}
+                                                                                className={`${"text-white sub-slide-item"}`}
                                                                                 onClick={() =>
                                                                                     toggletNavActive(
                                                                                         childrenSubItem
