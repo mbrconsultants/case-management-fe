@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { NetworkCheck } from "@mui/icons-material";
 import Stafflist from "./components/CustomPages/Users/Stafflist";
 import FileType from "./components/CustomPages/Users/FileType";
+import CaseType from "./components/CustomPages/Users/CaseType";
 
 const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -511,6 +512,15 @@ const Root = () => {
                     element={
                       // user ?
                       <FileType />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/case-type`}
+                    element={
+                      // user ?
+                      <CaseType />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
