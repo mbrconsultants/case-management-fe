@@ -375,7 +375,7 @@ export default function SingleCase() {
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal
+        {/* <Modal
           show={motionModal}
           size="lg">
           <Modal.Header>
@@ -454,7 +454,7 @@ export default function SingleCase() {
               Assign
             </Button>
           </Modal.Footer>
-        </Modal>
+        </Modal> */}
       </div>
     </>
   );
