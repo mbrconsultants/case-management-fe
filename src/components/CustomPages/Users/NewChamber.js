@@ -2,13 +2,15 @@ import React, { useState, useContext, useEffect } from "react";
 import { Breadcrumb, Col, Row, Card, FormGroup, Button } from "react-bootstrap";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import SignatureCanvas from "react-signature-canvas";
 import {
   CForm,
   CCol,
   CFormLabel,
   CFormFeedback,
   CFormInput,
+  CFormTextarea,
   CInputGroup,
   CInputGroupText,
   CButton,
@@ -17,26 +19,41 @@ import {
 import * as formvalidation from "../../../data/Form/formvalidations/formvalidations";
 import endpoint from "../../../context/endpoint";
 import { useForm } from "react-hook-form";
+import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 
-export default function CreateStaff() {
+export default function CreateChamber() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
-  const [roles, setRoles] = useState([]);
+  const [courtList, setCourtList] = useState([]);
+  const [statesList, setStatesList] = useState([]);
+  const [lgasList, setLgasList] = useState([]);
+  const [titleList, setTitleList] = useState([]);
+  const [sign, setSign] = useState();
+  const [url, setUrl] = useState();
+  const [details, setDetails] = useState({
+    chamber_head: "",
+    chamber_name: "",
+    address: "",
+    signature: null,
+    phone: "",
+    email: "",
+  });
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm();
+  const params = useParams();
 
-  //get roles
-  const getRoles = async () => {
+  //get court list
+  const getCourtList = async () => {
     setLoading(true);
     await endpoint
-      .get("/role/getRoles")
+      .get("/court/list")
       .then((res) => {
         //  console.log("roles", res.data.data)
-        setRoles(res.data.data);
+        setCourtList(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -44,26 +61,78 @@ export default function CreateStaff() {
         // console.log(err)
       });
   };
-  useEffect(() => {
-    getRoles();
-  }, []);
 
-  const handleCreateUser = async (data) => {
-    // console.log(data)
+  const id = params?.id;
+
+  //get single staff
+  const getSingleStaff = async () => {
     setLoading(true);
     await endpoint
-      .post("/user/create", data)
-      .then((res) => navigate(`${process.env.PUBLIC_URL}/all-users`))
+      .get(`/legal-officer/show/${id}`)
+      .then((res) => {
+        console.log("staff", res.data.data);
+        setDetails(res.data.data);
+        setLoading(false);
+      })
       .catch((err) => {
+        setLoading(false);
         // console.log(err)
       });
   };
+
+
+
+
+
+  useEffect(() => {
+    getCourtList();
+    if (id) {
+      getSingleStaff();
+    }
+  }, []);
+
+  const handleCreateUser = async () => {
+    // e.preventDefault();
+    console.log("====================================");
+    console.log("here");
+    console.log("====================================");
+    setLoading(true);
+
+    const data = new FormData();
+    data.append("chamber_name", details.chamber_name);
+    data.append("chamber_head", details.chamber_head);
+    data.append("address", details.address);
+    data.append("email", details.email);
+    data.append("phone", details.phone);
+    data.append("signature", url);
+    if (id) {
+      await endpoint
+        .put(`/solicitor/edit/${id}`, data)
+        .then((res) => navigate(`${process.env.PUBLIC_URL}/chamber-list`))
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+          ErrorAlert(err.response.data.description);
+        });
+    } else {
+      await endpoint
+        .post("/solicitor/create", data)
+        .then((res) => navigate(`${process.env.PUBLIC_URL}/chamber-list`))
+        .catch((err) => {
+          setLoading(false);
+          console.log(err);
+          ErrorAlert(err.response.data.description);
+        });
+    }
+  };
+
+
 
   return (
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">New Chamber</h1>
+          <h1 className="page-title">New Chamber List</h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item
               className="breadcrumb-item"
@@ -73,7 +142,7 @@ export default function CreateStaff() {
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
               aria-current="page">
-              New Chamber
+              New Chamber List
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
@@ -84,7 +153,7 @@ export default function CreateStaff() {
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
-            View Chambers
+            View Chamber List
           </Link>
         </div>
       </div>
@@ -106,126 +175,119 @@ export default function CreateStaff() {
               <CForm
                 onSubmit={handleSubmit(handleCreateUser)}
                 className="row g-3 needs-validation">
-                <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">Surname</CFormLabel>
+                <CCol md={6}>
+                  <CFormLabel htmlFor="validationCustomUsername">
+                    Chamber's Name
+                  </CFormLabel>
+
                   <CFormInput
+                    defaultValue={details.chamber_name}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        chamber_name: e.target.value,
+                      })
+                    }
                     type="text"
-                    required
-                    name="surname"
-                    {...register("surname")}
+                    name="chmabers Name"
                   />
                 </CCol>
-                <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom01">
-                    Firstname
+                <CCol md={6}>
+                  <CFormLabel htmlFor="validationCustomUsername">
+                    Chamber's Head
                   </CFormLabel>
+
                   <CFormInput
+                    defaultValue={details.chamber_head}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        chamber_head: e.target.value,
+                      })
+                    }
                     type="text"
-                    id="validationCustom01"
-                    defaultValue=""
-                    required
-                    name="first_name"
-                    {...register("first_name")}
+                    name="Chamber's Head"
                   />
-                  {/* <CFormFeedback valid>Looks good!</CFormFeedback> */}
                 </CCol>
 
-                <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">
-                    Middle Name
-                  </CFormLabel>
-                  <CFormInput
-                    type="text"
-                    name="middle_name"
-                    {...register("middle_name")}
-                  />
-                </CCol>
-                <CCol md={4}>
+                <CCol md={6}>
                   <CFormLabel htmlFor="validationCustomUsername">
                     Email
                   </CFormLabel>
                   <CInputGroup className="has-validation">
                     {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
                     <CFormInput
+                      defaultValue={details.email}
+                      onChange={(e) =>
+                        setDetails({
+                          ...details,
+                          email: e.target.value,
+                        })
+                      }
                       type="email"
                       aria-describedby="inputGroupPrepend"
-                      required
                       name="email"
-                      {...register("email")}
                     />
                   </CInputGroup>
                 </CCol>
-                <CCol md={2}>
-                  <CFormLabel htmlFor="validationCustomUsername">
-                    Gender
-                  </CFormLabel>
-
-                  <select
-                    className="form-control"
-                    {...register("gender", {
-                      required: "Please select gender",
-                    })}>
-                    <option value=""> --Select Gender-- </option>
-                    <option value="Male"> Male</option>
-                    <option value="Male">Female </option>
-                  </select>
-
-                  {errors.r?.type === "required" && (
-                    <span className="text-danger"> Gender is required </span>
-                  )}
-                </CCol>
-                <CCol md={2}>
-                  <CFormLabel htmlFor="validationCustomUsername">
-                    Roles
-                  </CFormLabel>
-
-                  <select
-                    className="form-control"
-                    {...register("role_id", {
-                      required: "Please select roles",
-                    })}>
-                    <option value=""> --Select Roles-- </option>
-                    {roles.map((role) => (
-                      <option
-                        key={role.id}
-                        value={role.id}>
-                        {role.role_name}
-                      </option>
-                    ))}
-                  </select>
-
-                  {errors.r?.type === "required" && (
-                    <span className="text-danger"> Role required </span>
-                  )}
-                </CCol>
-
-                <CCol md={4}>
+                <CCol md={6}>
                   <CFormLabel htmlFor="validationCustom02">
                     Phone No.
                   </CFormLabel>
                   <CFormInput
+                    defaultValue={details.phone}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        phone: e.target.value,
+                      })
+                    }
                     type="text"
                     name="phone"
-                    {...register("phone")}
                   />
-                  <input
-                    type="hidden"
-                    name="user_type"
-                    {...register("user_type")}
-                    value="1"
+                </CCol>
+
+                {/* <CCol
+                  xs={6}
+                  className="text-center">
+                  <SignatureCanvas
+                    ref={(data) => setSign(data)}
+                    onEnd={() =>
+                      setUrl(sign.getTrimmedCanvas().toDataURL("image/png"))
+                    }
+                    canvasProps={{
+                      width: 500,
+                      height: 120,
+                      className: "sigCanvas",
+                    }}
                   />
-                  {errors.phoneNo?.type === "checkLength" && (
-                    <span className="text-danger">
-                      {" "}
-                      <em>Phone No. is invalid</em>{" "}
-                    </span>
-                  )}
-                  {errors.phoneNo?.type === "matchPattern" && (
-                    <span className="text-danger">
-                      {" "}
-                      <em>Phone No. is Incorrect</em>{" "}
-                    </span>
-                  )}
+                </CCol>
+                {id && (
+                  <CCol
+                    xs={6}
+                    className="text-center">
+                    <label>Old Signature</label>
+                    <br></br>
+                    <img
+                      src={details.signature}
+                      crossOrigin="anonymous"
+                      alt="Old Signatory..."
+                    />
+                  </CCol>
+                )} */}
+                <CCol md={12}>
+                  <CFormLabel htmlFor="validationCustom02">Address</CFormLabel>
+                  <CFormTextarea
+                    defaultValue={details.address}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        address: e.target.value,
+                      })
+                    }
+                    type="text"
+                    name="phone"
+                  />
                 </CCol>
 
                 <CCol

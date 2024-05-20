@@ -2,19 +2,19 @@ import React, { useEffect, useState } from "react";
 import CountUp from "react-countup";
 import ReactApexChart from "react-apexcharts";
 import { Breadcrumb, Col, Row, Card, Button } from "react-bootstrap";
-import * as AllUsers from "../../../data/Users/AllUsers";
+import CaseList from "../../../data/Cases/CaseList";
 import { Link, useNavigate } from "react-router-dom";
 import * as Search from "../../../data/Search/SearchStaff";
 import endpoint from "../../../context/endpoint";
 import { useForm } from "react-hook-form";
 import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 
-export default function Councillist() {
+export default function Caselist() {
   return (
     <div>
       <div className="page-header ">
         <div>
-          <h1 className="page-title">Users </h1>
+          <h1 className="page-title">Cases List </h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item
               className="breadcrumb-item"
@@ -24,7 +24,7 @@ export default function Councillist() {
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
               aria-current="page">
-              Users List
+              Cases List
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
@@ -38,12 +38,22 @@ export default function Councillist() {
           className="col-12">
           <Card>
             <Card.Header>
-              <Col className="card-title text-center mb-0"> USERS LIST </Col>
+              <div className="d-flex align-items-center w-100">
+                <div className="card-title text-center mb-0 flex-grow-1">
+                  CASES LIST{" "}
+                </div>
+                <Link
+                  className="btn btn-primary ml-auto"
+                  to={"/new-case"}>
+                  New Case
+                </Link>
+              </div>
             </Card.Header>
+
             <Card.Body>
               <div className="">
                 <div className="">
-                  <AllUsers.AllUsers />
+                  <CaseList />
                 </div>
               </div>
             </Card.Body>

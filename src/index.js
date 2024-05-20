@@ -351,15 +351,20 @@ const NewUser = React.lazy(() =>
 const NewStaff = React.lazy(() =>
   import("./components/CustomPages/Users/NewStaff")
 );
+
+const NewCase = React.lazy(() =>
+  import("./components/CustomPages/Cases/NewCase")
+);
+const CaseList = React.lazy(() =>
+  import("./components/CustomPages/Cases/CaseList")
+);
+const SingleCase = React.lazy(() =>
+  import("./components/CustomPages/Cases/SingleCase")
+);
 const StaffList = React.lazy(() =>
   import("./components/CustomPages/Users/Stafflist")
 );
-const NewCouncil = React.lazy(() =>
-  import("./components/CustomPages/Users/NewCouncil")
-);
-const CouncilList = React.lazy(() =>
-  import("./components/CustomPages/Users/CouncilList")
-);
+
 const NewChamber = React.lazy(() =>
   import("./components/CustomPages/Users/NewChamber")
 );
@@ -491,21 +496,11 @@ const Root = () => {
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/new-staff`}
-                    element={
-                      // user ?
-                      <NewStaff />
-                      // :
-                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
-                    }
+                    element={<NewStaff />}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/staff-list`}
-                    element={
-                      // user ?
-                      <Stafflist />
-                      // :
-                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
-                    }
+                    path={`${process.env.PUBLIC_URL}/new-case`}
+                    element={<NewCase />}
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/file-type`}
@@ -526,19 +521,27 @@ const Root = () => {
                     }
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/new-council`}
-                    element={
-                      // user ?
-                      <NewCouncil />
-                      // :
-                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
-                    }
+                    path={`${process.env.PUBLIC_URL}/cases`}
+                    element={<CaseList />}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/council-list`}
+                    path={`${process.env.PUBLIC_URL}/case/:id`}
+                    element={<SingleCase />}
+                  />
+
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/edit/case/:id`}
+                    element={<NewCase />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/new-staff/:id`}
+                    element={<NewStaff />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/staff-list`}
                     element={
                       // user ?
-                      <CouncilList />
+                      <Stafflist />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
@@ -570,7 +573,6 @@ const Root = () => {
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/users`}
                     element={<AllUsers />}
@@ -579,7 +581,6 @@ const Root = () => {
                     path={`${process.env.PUBLIC_URL}/userprofile/:id`}
                     element={<UserProfile />}
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/assign-module-to-role`}
                     element={<AssignModuleToRole />}
@@ -596,7 +597,6 @@ const Root = () => {
                     path={`${process.env.PUBLIC_URL}/cadre`}
                     element={<CreateCadre />}
                   /> */}
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/module-list`}
                     element={<CreateModule />}
@@ -618,7 +618,6 @@ const Root = () => {
                     element={<CreateRoleFunction />}
                   />
                   {/* end hr links */}
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/cardsDesign`}
                     element={
@@ -635,19 +634,16 @@ const Root = () => {
                       )
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/form/filling-station`}
                     element={
                       user ? <FillingStation /> : <Navigate to={redirectPath} />
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/form/coupon`}
                     element={user ? <Coupon /> : <Navigate to={redirectPath} />}
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/form/insurance`}
                     element={
@@ -660,35 +656,30 @@ const Root = () => {
                       user ? <FullCalendar /> : <Navigate to={redirectPath} />
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/defaultChat`}
                     element={
                       user ? <DefaultChat /> : <Navigate to={redirectPath} />
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/notifications`}
                     element={
                       user ? <Notifications /> : <Navigate to={redirectPath} />
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/sweetAlerts`}
                     element={
                       user ? <SweetAlerts /> : <Navigate to={redirectPath} />
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/rangeSlider`}
                     element={
                       user ? <RangeSlider /> : <Navigate to={redirectPath} />
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/contentScrollBar`}
                     element={
@@ -699,7 +690,6 @@ const Root = () => {
                       )
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/loader`}
                     element={user ? <Loader /> : <Navigate to={redirectPath} />}
@@ -710,7 +700,6 @@ const Root = () => {
                       user ? <Counters /> : <Navigate to={redirectPath} />
                     }
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/components/rating`}
                     element={user ? <Rating /> : <Navigate to={redirectPath} />}

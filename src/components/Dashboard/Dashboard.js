@@ -50,12 +50,12 @@ export default function Dashboard() {
           sm={12}
           xl={12}>
           <h4
-            className="text-center"
+            className="text-center text-primary"
             style={{
               fontWeight: "bold",
               fontFamily: "comic sans serif",
               fontSize: "25px",
-              color: "#05A850",
+              // color: "#05A850",
             }}>
             CASE MANAGEMENT SYSTEM
           </h4>
@@ -75,13 +75,75 @@ export default function Dashboard() {
         </Col>
       </Row>
       <Row>
+        <Col sm={12} md={6} lg={6} xl={3}>
+          <Card className="card bg-primary img-card box-primary-shadow">
+            <Card.Body className="">
+              <div className="d-flex">
+                <div className="text-white">
+                  <h2 className="mb-0 number-font">157</h2>
+                  <p className="text-white mb-0">Total Cases </p>
+                </div>
+                <div className="ms-auto">
+                  <i className="fa fa-send-o text-white fs-30 me-2 mt-2"></i>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col sm={12} md={6} lg={6} xl={3}>
+          <Card className="card bg-secondary img-card box-secondary-shadow">
+            <Card.Body className="">
+              <div className="d-flex">
+                <div className="text-white">
+                  <h2 className="mb-0 number-font">83</h2>
+                  <p className="text-white mb-0">Closed Cases</p>
+                </div>
+                <div className="ms-auto">
+                  <i className="fa fa-bar-chart text-white fs-30 me-2 mt-2"></i>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col sm={12} md={6} lg={6} xl={3}>
+          <Card className="card  bg-success img-card box-success-shadow">
+            <Card.Body className="">
+              <div className="d-flex">
+                <div className="text-white">
+                  <h2 className="mb-0 number-font">28</h2>
+                  <p className="text-white mb-0">Council/Legal Officers</p>
+                </div>
+                <div className="ms-auto">
+                  <i className="fa fa-user text-white fs-30 me-2 mt-2"></i>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col sm={12} md={6} lg={6} xl={3}>
+          <Card className="card bg-info img-card box-info-shadow">
+            <Card.Body className="">
+              <div className="d-flex">
+                <div className="text-white">
+                  <h2 className="mb-0 number-font">12</h2>
+                  <p className="text-white mb-0">External Solicitors</p>
+                </div>
+                <div className="ms-auto">
+                  <i className="fa fa-user text-white fs-30 me-2 mt-2"></i>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
         <Col
           lg={12}
           md={12}
           sm={12}
           xl={12}>
           <Row>
-            <Col
+            {/* <Col
               lg={6}
               md={12}
               sm={12}
@@ -95,13 +157,13 @@ export default function Dashboard() {
                         <h3 className="">My Profile</h3>
                       </Link>
 
-                      {/* <p className="text-muted mb-0">
+                      <p className="text-muted mb-0">
                           <span className="text-primary me-1">
                             <i className="fa fa-chevron-circle-up text-primary me-1"></i>
                             <span>3% </span>
                           </span>
                           last month
-                        </p> */}
+                        </p>
                     </div>
                     <div className="col col-auto">
                       <div className="counter-icon bg-primary-gradient box-shadow-primary brround ms-auto">
@@ -114,7 +176,7 @@ export default function Dashboard() {
                   </Row>
                 </Card.Body>
               </Card>
-            </Col>
+            </Col> */}
             {/* <div className="col-lg-6 col-md-12 col-sm-12 col-xl-4">
               <div className="card overflow-hidden">
                 <div className="card-body">

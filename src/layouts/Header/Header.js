@@ -68,7 +68,7 @@ export function Header() {
   return (
     <Navbar
       expand="md"
-      className="app-header header sticky">
+      className="app-header header sticky bg-primary-gradient">
       <Container
         fluid
         className="main-container">
@@ -171,7 +171,7 @@ export function Header() {
                       </div>
                     </div>
                   </div>
-                  <div className="dropdown d-md-flex">
+                  {/* <div className="dropdown d-md-flex">
                     <Link
                       to="#"
                       className="nav-link icon theme-layout nav-link-bg layout-setting"
@@ -191,7 +191,7 @@ export function Header() {
                       onClick={Fullscreen}>
                       <i className="fe fe-minimize fullscreen-button"></i>
                     </Link>
-                  </div>
+                  </div> */}
                   {/* <Dropdown className="d-md-flex notifications">
                     <Dropdown.Toggle className="nav-link icon " variant="">
                       <i className="fe fe-bell"></i>
@@ -411,7 +411,7 @@ export function Header() {
                         )}
                       </span>
                       <span className=" ms-3 d-none d-lg-block ">
-                        <span className="text-dark">
+                        <span className="text-white">
                           <b>{currentUser?.fullname}</b>
                         </span>
                       </span>
