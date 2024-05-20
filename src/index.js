@@ -9,6 +9,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NetworkCheck } from "@mui/icons-material";
 import Stafflist from "./components/CustomPages/Users/Stafflist";
+import FileType from "./components/CustomPages/Users/FileType";
+import CaseType from "./components/CustomPages/Users/CaseType";
 
 const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -447,10 +449,7 @@ const Root = () => {
             />
 
             <Routes>
-              <Route
-                path="/login"
-                element={<Login />}
-              />
+              <Route path="/login" element={<Login />} />
 
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
@@ -460,11 +459,9 @@ const Root = () => {
                   ) : (
                     <Navigate to={`${process.env.PUBLIC_URL}/login`} />
                   )
-                }>
-                <Route
-                  index
-                  element={<Dashboard />}
-                />
+                }
+              >
+                <Route index element={<Dashboard />} />
                 <Route
                   path={`${process.env.PUBLIC_URL}/dashboard`}
                   element={
@@ -504,6 +501,24 @@ const Root = () => {
                   <Route
                     path={`${process.env.PUBLIC_URL}/new-case`}
                     element={<NewCase />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/file-type`}
+                    element={
+                      // user ?
+                      <FileType />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/case-type`}
+                    element={
+                      // user ?
+                      <CaseType />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/cases`}
@@ -1144,7 +1159,8 @@ const Root = () => {
               />
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
-                element={<Custompages />}>
+                element={<Custompages />}
+              >
                 <Route
                   path={`${process.env.PUBLIC_URL}/pages/underConstruction`}
                   element={
@@ -1201,10 +1217,7 @@ const Root = () => {
                   path={`${process.env.PUBLIC_URL}/custompages/errorpages/errorpage503`}
                   element={<Errorpage503 />}
                 />
-                <Route
-                  path="*"
-                  element={<Errorpage400 />}
-                />
+                <Route path="*" element={<Errorpage400 />} />
               </Route>
             </Routes>
 
