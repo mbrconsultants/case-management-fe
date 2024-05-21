@@ -11,6 +11,7 @@ import { NetworkCheck } from "@mui/icons-material";
 import Stafflist from "./components/CustomPages/Users/Stafflist";
 import FileType from "./components/CustomPages/Users/FileType";
 import CaseType from "./components/CustomPages/Users/CaseType";
+import CourtRoster from "./components/CustomPages/Users/CourtRoster";
 
 const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -516,6 +517,15 @@ const Root = () => {
                     element={
                       // user ?
                       <CaseType />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/court-roster`}
+                    element={
+                      // user ?
+                      <CourtRoster />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
