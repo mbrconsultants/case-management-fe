@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import endpoint from "../../../context/endpoint";
+import Select from 'react-select'
 import {
   Tabs,
   Tab,
@@ -15,6 +16,8 @@ import {
 
 import Loader from "../../../data/Loader/loader";
 
+import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
+
 export default function SingleCase() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState();
@@ -28,6 +31,14 @@ export default function SingleCase() {
   const [motionModal, setMotionModal] = useState(false);
 
   const [ChamberModal, setChamberModal] = useState(false);
+  const [attachment, setCaseAttachment] = useState([]);
+  const [motionData, setMotionData] = useState();
+  const [fileType, setFileType] = useState();
+  const [selectedCouncil, setSelectedCouncil] = useState(null);
+  const [selectedChamber, setSelectedChamber] = useState(null);
+
+
+  const navigate = useNavigate();
 
   const openLegalModal = () => {
     setLegalModal(true);
@@ -46,6 +57,7 @@ export default function SingleCase() {
   };
 
   const openMotionModal = () => {
+    setMotionData(data);
     setMotionModal(true);
   };
   const closeMotionModal = () => {
@@ -59,8 +71,16 @@ export default function SingleCase() {
     getUser();
     getLegalOfficer();
     getChambers();
+    getFileType();
   }, []);
+  const [motionDetails, setMotionDetails] = useState({
+    case_id: id,
+    motion_description: "",
+    doc_type_id: "",
+    doc_url: null,
+  });
 
+  //get all users
   const getUser = async () => {
     setLoading(true);
     await endpoint
@@ -68,6 +88,7 @@ export default function SingleCase() {
       .then(({ data }) => {
         console.log("case", data.data);
         setData(data.data);
+        setCaseAttachment(data.data.CaseAttachments);
         setLoading(false);
       })
       .catch((err) => console.log(err));
@@ -95,17 +116,98 @@ export default function SingleCase() {
       })
       .catch((err) => console.log(err));
   };
-  const handleAddLegalOfficer = () => {
-    console.log("====================================");
-    console.log(legalOfficerId);
-    console.log("====================================");
+
+  const getFileType = async () => {
+    setLoading(true);
+    await endpoint
+      .get(`/file-type/list`)
+      .then(({ data }) => {
+        console.log("fileType", data.data);
+        setFileType(data.data);
+        setLoading(false);
+      })
+      .catch((err) => console.log(err));
   };
 
-  const handleAddChamberOfficer = () => {
-    console.log("====================================");
-    console.log(chamberId);
-    console.log("====================================");
+   const judgeIDs =
+     selectedCouncil && selectedCouncil.map((option) => option.value);
+
+  const handleAddLegalOfficer = async () => {
+    try {
+      const data = new FormData();
+      data.append("case_id", id);
+      data.append("legal_officer_id", judgeIDs);
+
+      const response = await endpoint.post(`/case/assign-council`, data);
+      closeLegalModal();
+      // navigate(`${process.env.PUBLIC_URL}/cases`);
+      SuccessAlert(response.data.message);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      closeLegalModal();
+      if (err.response && err.response.data && err.response.data.description) {
+        ErrorAlert(err.response.data.description);
+      } else {
+        ErrorAlert("An error occurred. Please try again.");
+        closeLegalModal();
+      }
+    }
   };
+
+   const chambersIDs =
+     selectedChamber && selectedChamber.map((option) => option.value);
+
+
+  const handleAddChamberOfficer = async () => {
+    console.log('====================================');
+    console.log(chambersIDs);
+    console.log('====================================');
+    try {
+      const data = new FormData();
+      data.append("case_id", id);
+      data.append("chamber_solicitor_id", chambersIDs);
+
+      const response = await endpoint.post(`/case/assign-solicitor`, data);
+      closeChamberModal();
+      // navigate(`${process.env.PUBLIC_URL}/cases`);
+      SuccessAlert(response.data.message);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      closeChamberModal();
+      if (err.response && err.response.data && err.response.data.description) {
+        ErrorAlert(err.response.data.description);
+      } else {
+        ErrorAlert("An error occurred. Please try again.");
+        closeChamberModal();
+      }
+    }
+  };
+
+  const handleAddMotion = async () => {
+    try {
+      const data = new FormData();
+      data.append("case_id", motionDetails.case_id);
+      data.append("case_description", motionDetails.case_description);
+      data.append("doc_type_id", motionDetails.doc_type_id);
+      data.append("doc_url", motionDetails.doc_url);
+
+      const response = await endpoint.post(`/motion/create`, data);
+      navigate(`${process.env.PUBLIC_URL}/cases`);
+      SuccessAlert(response.data.message);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      closeMotionModal();
+      if (err.response && err.response.data && err.response.data.description) {
+        ErrorAlert(err.response.data.description);
+      } else {
+        ErrorAlert("An error occurred. Please try again.");
+      }
+    }
+  };
+
   return (
     <>
       <div>
@@ -169,12 +271,19 @@ export default function SingleCase() {
                           <div className="col-md-6">
                             {data.LegalOfficer ? (
                               <>
-                                {data.LegalOfficer.surname +
-                                  " " +
-                                  data.LegalOfficer.first_name +
-                                  " " +
-                                  data.LegalOfficer.middle_name}
-                                <button className="btn btn-primary mx-5">
+                                {
+                                  // data.LegalOfficer.Title
+                                  // ? data.LegalOfficer.Title.name
+                                  // : "" +
+                                  data.LegalOfficer.surname +
+                                    " " +
+                                    data.LegalOfficer.first_name +
+                                    " " +
+                                    data.LegalOfficer.middle_name
+                                }
+                                <button
+                                  className="btn btn-primary mx-5"
+                                  onClick={openLegalModal}>
                                   change
                                 </button>
                               </>
@@ -197,7 +306,9 @@ export default function SingleCase() {
                             {data.ChamberOrSolicitor ? (
                               <>
                                 {data.ChamberOrSolicitor.chamber_name}
-                                <button className="btn btn-primary mx-5">
+                                <button
+                                  className="btn btn-primary mx-5"
+                                  onClick={openChamberModal}>
                                   change
                                 </button>
                               </>
@@ -215,18 +326,18 @@ export default function SingleCase() {
                         <div className="row border">
                           <div className="fw-bold col-md-6">Attachment(s):</div>
                           <div className="col-md-6">
-                            {data.CaseAttachments && (
+                            {attachment.map((attach) => (
                               <a
                                 href={`${
                                   process.env.REACT_APP_UPLOAD_URL +
-                                  data.CaseAttachments.doc_url
+                                  attach.doc_url
                                 }`}
                                 target="_blank"
                                 className="btn btn-sm btn-success m-1">
                                 <span className="fa fa-eye"></span>{" "}
                                 View/Download
                               </a>
-                            )}
+                            ))}
                           </div>
                         </div>
                         <div className="row border">
@@ -236,9 +347,9 @@ export default function SingleCase() {
                               href={`#`}
                               className="btn  btn-warning m-1">
                               <i
-                                class="fa fa-file"
+                                className="fa fa-file"
                                 aria-hidden="true"></i>
-                              {data.status == 1 ? "Open" : " Closed"}
+                              {data.status == 1 ? "Pending" : " Resolved"}
                             </a>
                           </div>
                         </div>
@@ -255,7 +366,6 @@ export default function SingleCase() {
                 onClick={openMotionModal}>
                 Attach Motion
               </button>
-              {/* <button className="btn btn-primary">Attach Motion</button> */}
             </div>
           </Card>
         </Col>
@@ -279,26 +389,23 @@ export default function SingleCase() {
                   <Col
                     lg={12}
                     md={12}>
-                    <p>Please select legal Officer</p>
-
-                    <select
-                      className="form-select"
-                      name=""
-                      id=""
-                      onChange={(e) => setLegalOfficerId(e.target.value)}>
-                      <option value="">--select--</option>
-                      {legalOfficers.map((officer) => (
-                        <option
-                          value={officer.id}
-                          key={officer.id}>
-                          {officer.surname +
-                            " " +
-                            officer.first_name +
-                            " " +
-                            officer.middle_name}
-                        </option>
-                      ))}
-                    </select>
+                    <p>Please select legal Officers</p>
+                    <Select
+                      isMulti
+                      options={legalOfficers.map((judge) => ({
+                        value: judge.id,
+                        label: `${
+                          judge.surname +
+                          " " +
+                          judge.first_name +
+                          " " +
+                          judge.middle_name
+                        }`,
+                      }))}
+                      value={legalOfficerId}
+                      onChange={setSelectedCouncil}
+                      getOptionLabel={(option) => option.label} // Function to specify how options are displayed
+                    />
                   </Col>
                 </Card.Body>
               </Card>
@@ -306,7 +413,7 @@ export default function SingleCase() {
           </Modal.Body>
           <Modal.Footer>
             <Button
-              variant="warning"
+              variant="dark"
               className="me-1"
               onClick={closeLegalModal}>
               Close
@@ -340,21 +447,16 @@ export default function SingleCase() {
                     lg={12}
                     md={12}>
                     <p>Please select Chamber</p>
-
-                    <select
-                      className="form-select"
-                      name=""
-                      id=""
-                      onChange={(e) => setChamberId(e.target.value)}>
-                      <option value="">--select--</option>
-                      {chambers.map((chamber) => (
-                        <option
-                          value={chamber.id}
-                          key={chamber.id}>
-                          {chamber.chamber_name}
-                        </option>
-                      ))}
-                    </select>
+                    <Select
+                      isMulti
+                      options={chambers.map((chamber) => ({
+                        value: chamber.id,
+                        label: `${chamber.chamber_name}`,
+                      }))}
+                      value={legalOfficerId}
+                      onChange={setSelectedChamber}
+                      getOptionLabel={(option) => option.label} // Function to specify how options are displayed
+                    />
                   </Col>
                 </Card.Body>
               </Card>
@@ -362,7 +464,8 @@ export default function SingleCase() {
           </Modal.Body>
           <Modal.Footer>
             <Button
-              variant="warning"
+              variant="dark"
+
               className="me-1"
               onClick={closeChamberModal}>
               Close
@@ -399,7 +502,7 @@ export default function SingleCase() {
                     md={12}>
                     <p>
                       Please complete the details to assign motion to{" "}
-                      {data.suite_no}
+                      {motionData && motionData.suite_no}
                     </p>
                   </Col>
                   <Row className="my-5">
@@ -409,20 +512,32 @@ export default function SingleCase() {
                         className="form-select"
                         name=""
                         id=""
-                        onChange={(e) => setChamberId(e.target.value)}>
+                        onChange={(e) =>
+                          setMotionDetails({
+                            ...motionDetails,
+                            doc_type_id: e.target.value,
+                          })
+                        }>
                         <option value="">--select--</option>
-                        {chambers.map((chamber) => (
-                          <option
-                            value={chamber.id}
-                            key={chamber.id}>
-                            {chamber.chamber_name}
-                          </option>
-                        ))}
+                        {fileType &&
+                          fileType.map((file) => (
+                            <option
+                              value={file.id}
+                              key={file.id}>
+                              {file.name}
+                            </option>
+                          ))}
                       </select>
                     </Col>
                     <Col md={6}>
                       <label htmlFor="document type">Document </label>
                       <input
+                        onChange={(e) =>
+                          setMotionDetails({
+                            ...motionDetails,
+                            doc_url: e.target.files[0],
+                          })
+                        }
                         className="form-control"
                         type="file"
                         name=""
@@ -433,7 +548,14 @@ export default function SingleCase() {
                   <Row className="my-5">
                     <Col md={12}>
                       <label htmlFor="document type">Motion Description</label>
-                      <textarea className="form-control"></textarea>
+                      <textarea
+                        className="form-control"
+                        onChange={(e) =>
+                          setMotionDetails({
+                            ...motionDetails,
+                            motion_description: e.target.value,
+                          })
+                        }></textarea>
                     </Col>
                   </Row>
                 </Card.Body>
@@ -450,7 +572,7 @@ export default function SingleCase() {
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAddChamberOfficer(e)}>
+              onClick={(e) => handleAddMotion(e)}>
               Assign
             </Button>
           </Modal.Footer>

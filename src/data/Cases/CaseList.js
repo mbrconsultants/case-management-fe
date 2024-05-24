@@ -84,7 +84,9 @@ const CaseList = () => {
       style: { textAlign: "right" },
       sortable: true,
       width: "200px",
-      cell: (row) => <div className="fs-12 fw-bold">{row.suite_no}</div>,
+      cell: (row) => (
+        <div className="fs-12 fw-bold">{row.suite_no.toUpperCase()}</div>
+      ),
     },
     {
       name: "Case Type",
@@ -185,15 +187,15 @@ const CaseList = () => {
       selector: (row) => row.id,
       style: { textAlign: "right" },
       cell: (row) => (
-        <div className="fs-12 fw-bold">
+        <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
           <Link
             to={`/case/${row.id}`}
-            className="btn btn-primary btn-sm my-1">
+            className="btn btn-primary btn-sm my-1 mx-1">
             <span className="fe fe-eye"> </span>
           </Link>
           <Link
             to={`/edit/case/${row.id}`}
-            className="btn btn-warning btn-sm my-1">
+            className="btn btn-warning btn-sm my-1 mx-1">
             <span className="fe fe-edit"> </span>
           </Link>
           <button

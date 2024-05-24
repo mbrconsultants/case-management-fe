@@ -80,7 +80,6 @@ export default function CreateCase() {
     await endpoint
       .get(`/case/show/${id}`)
       .then((res) => {
-        console.log("case", res.data.data);
         setDetails(res.data.data);
         setLoading(false);
       })
