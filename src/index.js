@@ -12,6 +12,7 @@ import Stafflist from "./components/CustomPages/Users/Stafflist";
 import FileType from "./components/CustomPages/Users/FileType";
 import CaseType from "./components/CustomPages/Users/CaseType";
 import CourtRoster from "./components/CustomPages/Users/CourtRoster";
+import TestRoster from "./components/CustomPages/Users/TestRoster";
 
 const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -526,6 +527,15 @@ const Root = () => {
                     element={
                       // user ?
                       <CourtRoster />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/test-roster`}
+                    element={
+                      // user ?
+                      <TestRoster />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }

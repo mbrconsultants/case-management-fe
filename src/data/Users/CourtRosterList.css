@@ -1,0 +1,19 @@
+.attachment-badge {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  margin-right: 5px;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 12px;
+  text-decoration: none;
+  display: inline-block;
+  max-width: 95px;
+  min-width: 95px;
+}
+
+.attachment-badge:hover {
+  background-color: #0056b3;
+  text-decoration: none;
+  color: white;
+}

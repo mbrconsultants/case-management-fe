@@ -1,29 +1,103 @@
-import React, { useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import CountUp from "react-countup";
 import ReactApexChart from "react-apexcharts";
 import { Breadcrumb, Col, Row, Card } from "react-bootstrap";
 import * as dashboard from "../../data/dashboard/dashboard";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../../context/Context.js";
+import endpoint from "../../context/endpoint";
 // import { useAuthDispatch, logout, useAuthState } from '../../context'
 
 export default function Dashboard() {
   const { user } = useContext(Context);
   // console.log(user)
+  const [totalCases, setTotalCases] = useState([]);
+  const [closedCases, setClosedCases] = useState([]);
+  //const [openCases, setOpenCases] = useState([]);
+  //const [externalSolicitors, setExternalSolicitors] = useState([]);
+  const [councilLegalOfficers, setCouncilLegalOfficers] = useState([]);
+
+  useEffect(() => {
+    getTotalCases();
+    //getTotalOpenCases();
+    getTotalClosedCases();
+    //getExternalSolicitors();
+    getCouncilLegalOfficers();
+  }, []);
+
+  const getTotalCases = async () => {
+    await endpoint
+      .get(`/case/total-cases`)
+      .then((res) => {
+        // console.log("total cases", res.data.data.count);
+        setTotalCases(res.data.data.count);
+      })
+      .catch((err) => {
+        // console.log(err)
+      });
+  };
+
+  // const getTotalOpenCases = async () => {
+  //   await endpoint
+  //     .get(`/case/total-open-cases`)
+  //     .then((res) => {
+  //       // console.log("total open cases", res.data);
+  //       setOpenCases(res.data);
+  //     })
+  //     .catch((err) => {
+  //       // console.log(err)
+  //     });
+  // };
+
+  const getTotalClosedCases = async () => {
+    await endpoint
+      .get(`/case/total-closed-cases`)
+      .then((res) => {
+        // console.log("total closed cases", res.data.data);
+        setClosedCases(res.data.data);
+      })
+      .catch((err) => {
+        // console.log(err)
+      });
+  };
+
+  const getCouncilLegalOfficers = async () => {
+    await endpoint
+      .get(`/legal-officer/count-all`)
+      .then((res) => {
+        // console.log("council / legal officers", res.data.data.count);
+        setCouncilLegalOfficers(res.data.data.count);
+      })
+      .catch((err) => {
+        // console.log(err)
+      });
+  };
+
+  // const getExternalSolicitors = async () => {
+  // //   await endpoint
+  // //     .get(`/solicitor/count-all`)
+  // //     .then((res) => {
+  // //       // console.log("external solicitors", res.data.data);
+  // //       setExternalSolicitors(res.data.data);
+  // //     })
+  // //     .catch((err) => {
+  // //       // console.log(err)
+  // //     });
+  // // };
+
   return (
     <div>
       <div className="page-header ">
         <div>
           <h1 className="page-title">Dashboard </h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Home
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+              aria-current="page"
+            >
               Dashboard
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -44,11 +118,7 @@ export default function Dashboard() {
         </div>
       </div>
       <Row>
-        <Col
-          lg={12}
-          md={12}
-          sm={12}
-          xl={12}>
+        <Col lg={12} md={12} sm={12} xl={12}>
           <h4
             className="text-center text-primary"
             style={{
@@ -56,17 +126,14 @@ export default function Dashboard() {
               fontFamily: "comic sans serif",
               fontSize: "25px",
               // color: "#05A850",
-            }}>
+            }}
+          >
             CASE MANAGEMENT SYSTEM
           </h4>
         </Col>
       </Row>
       <Row>
-        <Col
-          lg={12}
-          md={12}
-          sm={12}
-          xl={12}>
+        <Col lg={12} md={12} sm={12} xl={12}>
           <h5 className="">
             <strong>
               Welcome <em>{user.user ? user.user.fullname : ""}</em>
@@ -79,12 +146,22 @@ export default function Dashboard() {
           <Card className="card bg-primary img-card box-primary-shadow">
             <Card.Body className="">
               <div className="d-flex">
-                <div className="text-white">
-                  <h2 className="mb-0 number-font">157</h2>
-                  <p className="text-white mb-0">Total Cases </p>
+                {/* <div className="text-white">
+                  <h2 className="mb-0 number-font">83</h2>
+                  <p className="text-white mb-0">Closed Cases</p>
+                </div> */}
+                <div>
+                  {totalCases !== null ? (
+                    <div className="text-white">
+                      <h2 className="mb-0 number-font">{totalCases}</h2>
+                      <p className="text-white mb-0">Total Cases</p>
+                    </div>
+                  ) : (
+                    <p className="text-white">Loading...</p>
+                  )}
                 </div>
                 <div className="ms-auto">
-                  <i className="fa fa-send-o text-white fs-30 me-2 mt-2"></i>
+                  <i className="fa fa-bar-chart text-white fs-30 me-2 mt-2"></i>
                 </div>
               </div>
             </Card.Body>
@@ -94,9 +171,19 @@ export default function Dashboard() {
           <Card className="card bg-secondary img-card box-secondary-shadow">
             <Card.Body className="">
               <div className="d-flex">
-                <div className="text-white">
+                {/* <div className="text-white">
                   <h2 className="mb-0 number-font">83</h2>
                   <p className="text-white mb-0">Closed Cases</p>
+                </div> */}
+                <div>
+                  {closedCases !== null ? (
+                    <div className="text-white">
+                      <h2 className="mb-0 number-font">{closedCases}</h2>
+                      <p className="text-white mb-0">Closed Cases</p>
+                    </div>
+                  ) : (
+                    <p className="text-white">Loading...</p>
+                  )}
                 </div>
                 <div className="ms-auto">
                   <i className="fa fa-bar-chart text-white fs-30 me-2 mt-2"></i>
@@ -109,9 +196,21 @@ export default function Dashboard() {
           <Card className="card  bg-success img-card box-success-shadow">
             <Card.Body className="">
               <div className="d-flex">
-                <div className="text-white">
+                {/* <div className="text-white">
                   <h2 className="mb-0 number-font">28</h2>
                   <p className="text-white mb-0">Council/Legal Officers</p>
+                </div> */}
+                <div>
+                  {councilLegalOfficers !== null ? (
+                    <div className="text-white">
+                      <h2 className="mb-0 number-font">
+                        {councilLegalOfficers}
+                      </h2>
+                      <p className="text-white mb-0">Council/Legal Officers</p>
+                    </div>
+                  ) : (
+                    <p className="text-white">Loading...</p>
+                  )}
                 </div>
                 <div className="ms-auto">
                   <i className="fa fa-user text-white fs-30 me-2 mt-2"></i>
@@ -128,6 +227,16 @@ export default function Dashboard() {
                   <h2 className="mb-0 number-font">12</h2>
                   <p className="text-white mb-0">External Solicitors</p>
                 </div>
+                {/* <div>
+                  {externalSolicitors !== null ? (
+                    <div className="text-white">
+                      <h2 className="mb-0 number-font">{externalSolicitors}</h2>
+                      <p className="text-white mb-0">External Solicitors</p>
+                    </div>
+                  ) : (
+                    <p className="text-white">Loading...</p>
+                  )}
+                </div> */}
                 <div className="ms-auto">
                   <i className="fa fa-user text-white fs-30 me-2 mt-2"></i>
                 </div>
@@ -137,11 +246,7 @@ export default function Dashboard() {
         </Col>
       </Row>
       <Row>
-        <Col
-          lg={12}
-          md={12}
-          sm={12}
-          xl={12}>
+        <Col lg={12} md={12} sm={12} xl={12}>
           <Row>
             {/* <Col
               lg={6}
