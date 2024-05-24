@@ -157,14 +157,14 @@ export const FileList = () => {
     },
 
     {
-      name: "File Name",
+      name: "Name",
       selector: (row) => [row.name],
       sortable: true,
       width: "30%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.name}</h6>,
     },
     {
-      name: "File Description",
+      name: "Description",
       selector: (row) => [row.description],
       sortable: true,
       width: "45%",
@@ -234,7 +234,7 @@ export const FileList = () => {
                       <div className="form-horizontal">
                         <div className="form-group">
                           <label className="col-md-6  cecontrol-label">
-                            File Name
+                            Document type
                           </label>
                           <div className="col-md-12">
                             <input
@@ -294,7 +294,7 @@ export const FileList = () => {
           </div>
           <Card>
             <Card.Body>
-              <h3 className="text-center">ALL FILES</h3>
+              <h3 className="text-center">Motion Document types</h3>
               <Row className="row">
                 <Col md={12} className="col-md-12">
                   <DataTable

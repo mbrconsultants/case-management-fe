@@ -172,10 +172,10 @@ const StaffList = () => {
       selector: (row) => row.id,
       style: { textAlign: "right" },
       cell: (row) => (
-        <div className="fs-12 fw-bold">
+        <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
           <Link
             to={`/new-staff/${row.id}`}
-            className="btn btn-warning btn-sm my-1"
+            className="btn btn-warning btn-sm my-1 mx-3"
           >
             <span className="fe fe-edit"> </span>
           </Link>

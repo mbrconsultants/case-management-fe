@@ -52,10 +52,13 @@ export const AssignModuleToRole = () => {
 
     //get list of assigned submodules
     const getAlreadyAssigned = async (role_id) => {
+        console.log('====================================');
+        console.log('here');
+        console.log('====================================');
         if (role_id) {
             await endpoint.get(`/assignsubmodule/list/${role_id}`)
                 .then((res) => {
-                    // console.log("already assigned", res.data.data)
+                    console.log("already assigned", res.data.data)
                     setAlreadyAssigned(res.data.data.map(({ submodule_id }) => submodule_id))
                     if(res.data.data == ''){
                         setSelectedSubmodules([])

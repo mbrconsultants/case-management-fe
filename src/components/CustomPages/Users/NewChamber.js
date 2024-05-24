@@ -46,21 +46,7 @@ export default function CreateChamber() {
   } = useForm();
   const params = useParams();
 
-  //get court list
-  const getCourtList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/court/list")
-      .then((res) => {
-        //  console.log("roles", res.data.data)
-        setCourtList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        // console.log(err)
-      });
-  };
+
 
   const id = params?.id;
 
@@ -68,15 +54,15 @@ export default function CreateChamber() {
   const getSingleStaff = async () => {
     setLoading(true);
     await endpoint
-      .get(`/legal-officer/show/${id}`)
+      .get(`/solicitor/show/${id}`)
       .then((res) => {
-        console.log("staff", res.data.data);
+        console.log("solicitor", res.data.data);
         setDetails(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
         setLoading(false);
-        // console.log(err)
+        console.log(err)
       });
   };
 
@@ -85,7 +71,6 @@ export default function CreateChamber() {
 
 
   useEffect(() => {
-    getCourtList();
     if (id) {
       getSingleStaff();
     }

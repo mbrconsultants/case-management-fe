@@ -114,21 +114,24 @@ const ChamberList = () => {
   const columns = [
     { name: "#", cell: (row, index) => index + 1, width: "65px" },
     {
-      name: "Fullname",
+      name: "Chamber name",
       selector: (row) => row.surname,
       style: { textAlign: "right" },
       sortable: true,
       width: "300px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">
-          {(row.Title ? row.Title.name : "") +
-            " " +
-            row.surname.toUpperCase() +
-            " " +
-            row.first_name.toUpperCase() +
-            " " +
-            row.middle_name.toUpperCase()}
-        </div>
+        <div className="fs-12 fw-bold">{row.chamber_name.toUpperCase()}</div>
+      ),
+    },
+
+    {
+      name: "Email",
+      selector: (row) => row.chamber_head,
+      style: { textAlign: "left" },
+      sortable: true,
+      width: "250px",
+      cell: (row) => (
+        <div className="fs-12 fw-bold">{row.chamber_head || ""}</div>
       ),
     },
     {
@@ -148,38 +151,27 @@ const ChamberList = () => {
       cell: (row) => <div className="fs-12 fw-bold">{row.phone || ""}</div>,
     },
     {
-      name: "Court",
-      selector: (row) => row.Court?.name,
+      name: "Address",
+      selector: (row) => row.address,
       style: { textAlign: "left" },
       sortable: true,
       width: "200px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.Court?.name || ""}</div>
-      ),
+      cell: (row) => <div className="fs-12 fw-bold">{row.address || ""}</div>,
     },
-    {
-      name: "State",
-      selector: (row) => row.State?.name,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "200px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.State?.name || ""}</div>
-      ),
-    },
+
     {
       name: "Action",
       selector: (row) => row.id,
       style: { textAlign: "right" },
       cell: (row) => (
-        <div className="fs-12 fw-bold">
+        <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
           <Link
-            to={`/new-staff/${row.id}`}
-            className="btn btn-warning btn-sm my-1">
+            to={`/new-chamber/${row.id}`}
+            className="btn btn-warning btn-sm me-2 my-1">
             <span className="fe fe-edit"> </span>
           </Link>
           <button
-            className="btn btn-danger btn-sm"
+            className="btn btn-danger btn-sm my-1"
             onClick={() => handleShowDeleteModal(row)}>
             <span className="fe fe-trash"> </span>
           </button>

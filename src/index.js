@@ -451,7 +451,10 @@ const Root = () => {
             />
 
             <Routes>
-              <Route path="/login" element={<Login />} />
+              <Route
+                path="/login"
+                element={<Login />}
+              />
 
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
@@ -461,9 +464,11 @@ const Root = () => {
                   ) : (
                     <Navigate to={`${process.env.PUBLIC_URL}/login`} />
                   )
-                }
-              >
-                <Route index element={<Dashboard />} />
+                }>
+                <Route
+                  index
+                  element={<Dashboard />}
+                />
                 <Route
                   path={`${process.env.PUBLIC_URL}/dashboard`}
                   element={
@@ -568,6 +573,15 @@ const Root = () => {
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/new-chamber`}
+                    element={
+                      // user ?
+                      <NewChamber />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/new-chamber/:id`}
                     element={
                       // user ?
                       <NewChamber />
@@ -1179,8 +1193,7 @@ const Root = () => {
               />
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
-                element={<Custompages />}
-              >
+                element={<Custompages />}>
                 <Route
                   path={`${process.env.PUBLIC_URL}/pages/underConstruction`}
                   element={
@@ -1237,7 +1250,10 @@ const Root = () => {
                   path={`${process.env.PUBLIC_URL}/custompages/errorpages/errorpage503`}
                   element={<Errorpage503 />}
                 />
-                <Route path="*" element={<Errorpage400 />} />
+                <Route
+                  path="*"
+                  element={<Errorpage400 />}
+                />
               </Route>
             </Routes>
 
