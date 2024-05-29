@@ -12,6 +12,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Loader from "../Loader/loader";
 import { log } from "nvd3";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import "./CourtRosterList.css";
 import "./RosterList.css";
 
@@ -26,7 +28,7 @@ export const RosterList = () => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [idToDelete, setIdToDelete] = useState("");
-
+  const [headerText, setHeaderText] = useState("");
   const [hearingdate, setHearingdate] = useState({
     hearing_date: "",
     //case_color: "",
@@ -40,6 +42,7 @@ export const RosterList = () => {
 
   useEffect(() => {
     getAllData();
+    retrieveHeaderText();
   }, []);
 
   const getAllData = async () => {
@@ -65,6 +68,17 @@ export const RosterList = () => {
   const handleSubmit = async (e) => {
     console.log("hearingdate", hearingdate);
     e.preventDefault();
+
+    // Extract month and year from the input date
+    const date = new Date(hearingdate.hearing_date);
+    const month = date.toLocaleString("default", { month: "long" });
+    const year = date.getFullYear();
+    const newHeaderText = `COURT ROSTER FOR THE MONTH OF ${month.toUpperCase()}, ${year}`;
+    setHeaderText(newHeaderText);
+
+    // Save header text to local storage
+    localStorage.setItem("headerText", newHeaderText);
+
     await endpoint
       .post(`/case/list-by-hearing-date`, hearingdate)
       .then((res) => {
@@ -78,6 +92,30 @@ export const RosterList = () => {
         setLoading(false);
         ErrorAlert(err.response.data.message);
         console.log(err);
+      });
+  };
+
+  const retrieveHeaderText = () => {
+    const savedHeaderText = localStorage.getItem("headerText");
+    if (savedHeaderText) {
+      setHeaderText(savedHeaderText);
+    }
+  };
+
+  const printTable = () => {
+    const input = document.getElementById("table-to-print");
+    html2canvas(input)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save("table.pdf");
+      })
+      .catch((error) => {
+        console.error("Could not generate PDF", error);
       });
   };
 
@@ -266,53 +304,59 @@ export const RosterList = () => {
           </div>
           <Card>
             <div>
-              <table border="1" className="table-responsive">
-                <colgroup>
-                  <col style={{ width: "150px" }} />
-                  <col style={{ width: "200px" }} />
-                  <col style={{ width: "500px" }} />
-                  <col style={{ width: "250px" }} />
-                  <col style={{ width: "300px" }} />
-                  <col style={{ width: "300px" }} />
-                  <col style={{ width: "150px" }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th>S/N</th>
-                    <th>DATE</th>
-                    <th className="w-15s">CASE</th>
-                    <th>COURT</th>
-                    <th>COUNSEL</th>
-                    <th>EXTERNAL SOLICITOR</th>
-                    <th>NEXT ADJOURNED DATE</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      <td>{rowIndex + 1}</td>
-                      <td>{rowIndex}</td>
-                      <td>
-                        {row.suite_no}
-                        <br /> {row.parties}
-                      </td>
-                      <td>{row.Court ? row.Court.name : ""}</td>
-                      <td>
-                        {row.LegalOfficer ? row.LegalOfficer.surname : ""}
-                      </td>
-                      {/* {row.legalOfficer &&
-                        row.legalOfficer.map((law, index) => (
-                          <td>{law.surname}</td>
-                        ))} */}
-                      <td>{rowIndex}</td>
-                      <td>{rowIndex}</td>
-                      ))
+              <Button onClick={printTable} style={{ marginBottom: "20px" }}>
+                Print Table as PDF
+              </Button>
+              <div id="table-to-print">
+                {headerText && (
+                  <h2 className="rostertable-header">{headerText}</h2>
+                )}
+                <table border="1" className="table-responsive">
+                  <colgroup>
+                    <col style={{ width: "150px" }} />
+                    <col style={{ width: "200px" }} />
+                    <col style={{ width: "500px" }} />
+                    <col style={{ width: "250px" }} />
+                    <col style={{ width: "300px" }} />
+                    <col style={{ width: "300px" }} />
+                    <col style={{ width: "150px" }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>S/N</th>
+                      <th>DATE</th>
+                      <th className="w-15s">CASE</th>
+                      <th>COURT</th>
+                      <th>COUNSEL</th>
+                      <th>EXTERNAL SOLICITOR</th>
+                      <th>NEXT ADJOURNED DATE</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {data.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        <td>{rowIndex + 1}</td>
+                        <td>{row.hearing_date ? row.hearing_date : ""}</td>
+                        <td>
+                          {row.suite_no}
+                          <br /> {row.parties}
+                        </td>
+                        <td>{row.Court ? row.Court.name : ""}</td>
+                        <td>
+                          {row.LegalOfficer ? row.LegalOfficer.surname : ""}
+                        </td>
+                        <td>
+                          {row.externalSolicitor
+                            ? row.externalSolicitor
+                            : "Not Assigned"}
+                        </td>
+                        <td>{row.nextAdjournedDate}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            {/*  */}
           </Card>
         </div>
       )}

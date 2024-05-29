@@ -29,3 +29,12 @@ tbody tr:hover {
 tbody td {
   color: #555;
 }
+
+.rostertable-header {
+  text-align: center;
+}
+
+/* Hide the sort icons in table headers */
+.table-responsive th::after {
+  display: none !important;
+}
