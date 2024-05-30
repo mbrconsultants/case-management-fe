@@ -17,3 +17,25 @@
   text-decoration: none;
   color: white;
 }
+@media print {
+  body * {
+    visibility: hidden;
+    font-family: "Times New Roman", Times, serif;
+  }
+  #divToPrint,
+  #divToPrint * {
+    display: block;
+  }
+  #divToPrint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    zoom: 100%;
+    font-size: 15px;
+    page-break-inside: avoid;
+  }
+  #hideBtn {
+    display: none;
+  }
+}

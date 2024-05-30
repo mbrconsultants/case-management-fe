@@ -84,7 +84,8 @@ export const RosterList = () => {
       .then((res) => {
         console.log(res);
         setHearingdate({ ...hearingdate, hearing_date: " " });
-        getAllData();
+        setData(res.data.data);
+        // getAllData();
         SuccessAlert(res.data.message);
         setLoading(false);
       })
@@ -222,44 +223,41 @@ export const RosterList = () => {
 
   return (
     <>
-      {load ? (
-        <Loader />
-      ) : (
-        <div>
-          <div id="page-wrapper" className="box box-default">
-            <div className="container-fluid">
-              <div className="col-md-12 text-success"></div>
-              <br />
-              <hr />
-              <Row className="row">
-                <Col xs={2} md={2}></Col>
-                <Col xs={8} md={8}>
-                  {" "}
-                  <br />
-                  <Card>
-                    <Card.Body>
-                      <div className="form-horizontal">
-                        <div className="form-group">
-                          <label className="col-md-6  cecontrol-label">
-                            Hearing Date
-                          </label>
-                          <div className="col-md-12">
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={hearingdate.hearing_date}
-                              onChange={(e) => {
-                                setHearingdate({
-                                  ...hearingdate,
-                                  hearing_date: e.target.value,
-                                });
-                              }}
-                              required
-                            />
-                          </div>
+      <div>
+        <div id="page-wrapper" className="box box-default">
+          <div className="container-fluid">
+            <div className="col-md-12 text-success"></div>
+            <br />
+            <hr />
+            <Row className="row">
+              <Col xs={2} md={2}></Col>
+              <Col xs={8} md={8}>
+                {" "}
+                <br />
+                <Card>
+                  <Card.Body>
+                    <div className="form-horizontal">
+                      <div className="form-group">
+                        <label className="col-md-6  cecontrol-label">
+                          Hearing Date
+                        </label>
+                        <div className="col-md-12">
+                          <input
+                            type="date"
+                            className="form-control"
+                            value={hearingdate.hearing_date}
+                            onChange={(e) => {
+                              setHearingdate({
+                                ...hearingdate,
+                                hearing_date: e.target.value,
+                              });
+                            }}
+                            required
+                          />
                         </div>
+                      </div>
 
-                        {/* <div className="form-group">
+                      {/* <div className="form-group">
                           <label className="col-md-6  cecontrol-label">
                             Case Colour
                           </label>
@@ -279,87 +277,90 @@ export const RosterList = () => {
                           </div>
                         </div> */}
 
-                        <div className="form-group">
-                          <div className="col-sm-offset-2 text-center col-sm-9">
-                            <button
-                              className={
-                                isLoading
-                                  ? "btn btn-success pull-right btn-loading"
-                                  : "btn btn-success pull-right"
-                              }
-                              disabled={isLoading}
-                              onClick={handleSubmit}
-                            >
-                              Get All Cases
-                            </button>
-                          </div>
+                      <div className="form-group">
+                        <div className="col-sm-offset-2 text-center col-sm-9">
+                          <button
+                            className={
+                              isLoading
+                                ? "btn btn-success pull-right btn-loading"
+                                : "btn btn-success pull-right"
+                            }
+                            disabled={isLoading}
+                            onClick={handleSubmit}
+                          >
+                            Get All Cases
+                          </button>
                         </div>
                       </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col xs={3} md={4}></Col>
-              </Row>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col xs={3} md={4}></Col>
+            </Row>
+          </div>
+        </div>
+        <Card id="divToPrint">
+          <div>
+            <Button
+              onClick={window.print}
+              style={{ marginBottom: "20px" }}
+              id="hideBtn"
+            >
+              Print
+            </Button>
+            <div id="table-to-print">
+              {headerText && (
+                <h2 className="rostertable-header">{headerText}</h2>
+              )}
+              <table border="1" className="table-responsive">
+                <colgroup>
+                  <col style={{ width: "150px" }} />
+                  <col style={{ width: "200px" }} />
+                  <col style={{ width: "500px" }} />
+                  <col style={{ width: "250px" }} />
+                  <col style={{ width: "300px" }} />
+                  <col style={{ width: "300px" }} />
+                  <col style={{ width: "150px" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>S/N</th>
+                    <th>DATE</th>
+                    <th className="w-15s">CASE</th>
+                    <th>COURT</th>
+                    <th>COUNSEL</th>
+                    <th>EXTERNAL SOLICITOR</th>
+                    <th>NEXT ADJOURNED DATE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      <td>{rowIndex + 1}</td>
+                      <td>{row.hearing_date ? row.hearing_date : ""}</td>
+                      <td>
+                        {row.suite_no}
+                        <br /> {row.parties}
+                      </td>
+                      <td>{row.Court ? row.Court.name : ""}</td>
+                      <td>
+                        {row.LegalOfficer ? row.LegalOfficer.surname : ""}
+                      </td>
+                      <td>
+                        {row.externalSolicitor
+                          ? row.externalSolicitor
+                          : "Not Assigned"}
+                      </td>
+                      <td>{row.nextAdjournedDate}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-          <Card>
-            <div>
-              <Button onClick={printTable} style={{ marginBottom: "20px" }}>
-                Print Table as PDF
-              </Button>
-              <div id="table-to-print">
-                {headerText && (
-                  <h2 className="rostertable-header">{headerText}</h2>
-                )}
-                <table border="1" className="table-responsive">
-                  <colgroup>
-                    <col style={{ width: "150px" }} />
-                    <col style={{ width: "200px" }} />
-                    <col style={{ width: "500px" }} />
-                    <col style={{ width: "250px" }} />
-                    <col style={{ width: "300px" }} />
-                    <col style={{ width: "300px" }} />
-                    <col style={{ width: "150px" }} />
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>S/N</th>
-                      <th>DATE</th>
-                      <th className="w-15s">CASE</th>
-                      <th>COURT</th>
-                      <th>COUNSEL</th>
-                      <th>EXTERNAL SOLICITOR</th>
-                      <th>NEXT ADJOURNED DATE</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        <td>{rowIndex + 1}</td>
-                        <td>{row.hearing_date ? row.hearing_date : ""}</td>
-                        <td>
-                          {row.suite_no}
-                          <br /> {row.parties}
-                        </td>
-                        <td>{row.Court ? row.Court.name : ""}</td>
-                        <td>
-                          {row.LegalOfficer ? row.LegalOfficer.surname : ""}
-                        </td>
-                        <td>
-                          {row.externalSolicitor
-                            ? row.externalSolicitor
-                            : "Not Assigned"}
-                        </td>
-                        <td>{row.nextAdjournedDate}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
+        </Card>
+      </div>
     </>
   );
 };
