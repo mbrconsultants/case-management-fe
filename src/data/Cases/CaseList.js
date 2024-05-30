@@ -33,6 +33,7 @@ import {
 import Loader from "../Loader/loader";
 import { useForm } from "react-hook-form";
 import { color } from "echarts";
+import "./styles.css";
 
 const CaseList = () => {
   const {
@@ -45,7 +46,6 @@ const CaseList = () => {
   const [value, setValue] = useState({});
   const [isLoading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
 
   // Fetch chambers list
   const getCaseList = async () => {
@@ -60,19 +60,14 @@ const CaseList = () => {
     }
   };
 
-
-
   // Show delete modal
   const handleShowDeleteModal = (row) => {
     setValue(row);
     setShowDeleteModal(true);
   };
 
-
-
   useEffect(() => {
     getCaseList();
-
   }, []);
 
   // Columns for DataTable
@@ -83,7 +78,7 @@ const CaseList = () => {
       selector: (row) => row.suite_no,
       style: { textAlign: "right" },
       sortable: true,
-      width: "200px",
+      width: "120px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.suite_no.toUpperCase()}</div>
       ),
@@ -93,14 +88,14 @@ const CaseList = () => {
       selector: (row) => row.CaseType,
       style: { textAlign: "center" },
       sortable: true,
-      width: "300px",
+      width: "200px",
       cell: (row) => (
         <div
           className="fs-12 fw-bold"
           style={{
             backgroundColor: `${row.CaseType ? row.CaseType.case_color : ""}`,
             color: "white",
-            width: "200px",
+            width: "150px",
             height: "50px",
             display: "flex", // Added to enable flexbox
             justifyContent: "center", // Centers content horizontally
@@ -122,20 +117,20 @@ const CaseList = () => {
         <div className="fs-12 fw-bold">{row.Court ? row.Court.name : ""}</div>
       ),
     },
-    {
-      name: "Parties",
-      selector: (row) => row.parties,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "300px",
-      cell: (row) => <div className="fs-12 fw-bold">{row.parties || ""}</div>,
-    },
+    // {
+    //   name: "Parties",
+    //   selector: (row) => row.parties,
+    //   style: { textAlign: "right" },
+    //   sortable: true,
+    //   width: "200px",
+    //   cell: (row) => <div className="fs-12 fw-bold">{row.parties || ""}</div>,
+    // },
     {
       name: "Appellant",
       selector: (row) => row.appellants,
       style: { textAlign: "right" },
       sortable: true,
-      width: "300px",
+      width: "150px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.appellants || ""}</div>
       ),
@@ -145,7 +140,7 @@ const CaseList = () => {
       selector: (row) => row.respondent,
       style: { textAlign: "right" },
       sortable: true,
-      width: "300px",
+      width: "150px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.respondent || ""}</div>
       ),
@@ -190,16 +185,16 @@ const CaseList = () => {
         <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
           <Link
             to={`/case/${row.id}`}
-            className="btn btn-primary btn-sm my-1 mx-1">
+            className="btn btn-primary btn-sm my-1 mx-1 bright-btn btn-primary-bright">
             <span className="fe fe-eye"> </span>
           </Link>
           <Link
             to={`/edit/case/${row.id}`}
-            className="btn btn-warning btn-sm my-1 mx-1">
+            className="btn btn-secondary btn-sm my-1 mx-1 bright-btn btn-secondary-bright">
             <span className="fe fe-edit"> </span>
           </Link>
           <button
-            className="btn btn-danger btn-sm"
+            className="btn btn-dark btn-sm bright-btn btn-dark-bright"
             onClick={() => handleShowDeleteModal(row)}>
             <span className="fe fe-trash"> </span>
           </button>
@@ -260,9 +255,8 @@ const CaseList = () => {
               <Col
                 lg={12}
                 md={12}>
-                Please confirm you are about to delete the case with suite number of {" "}
-                {value.suite_no }
-                ?
+                Please confirm you are about to delete the case with suite
+                number of {value.suite_no}?
               </Col>
             </Card.Body>
           </Card>

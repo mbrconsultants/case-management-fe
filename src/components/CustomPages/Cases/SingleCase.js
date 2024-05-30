@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import endpoint from "../../../context/endpoint";
-import Select from 'react-select'
+import Select from "react-select";
 import {
   Tabs,
   Tab,
@@ -13,6 +13,7 @@ import {
   Modal,
   Button,
 } from "react-bootstrap";
+import "./styles.css";
 
 import Loader from "../../../data/Loader/loader";
 
@@ -36,7 +37,6 @@ export default function SingleCase() {
   const [fileType, setFileType] = useState();
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [selectedChamber, setSelectedChamber] = useState(null);
-
 
   const navigate = useNavigate();
 
@@ -129,8 +129,8 @@ export default function SingleCase() {
       .catch((err) => console.log(err));
   };
 
-   const judgeIDs =
-     selectedCouncil && selectedCouncil.map((option) => option.value);
+  const judgeIDs =
+    selectedCouncil && selectedCouncil.map((option) => option.value);
 
   const handleAddLegalOfficer = async () => {
     try {
@@ -155,14 +155,10 @@ export default function SingleCase() {
     }
   };
 
-   const chambersIDs =
-     selectedChamber && selectedChamber.map((option) => option.value);
-
+  const chambersIDs =
+    selectedChamber && selectedChamber.map((option) => option.value);
 
   const handleAddChamberOfficer = async () => {
-    console.log('====================================');
-    console.log(chambersIDs);
-    console.log('====================================');
     try {
       const data = new FormData();
       data.append("case_id", id);
@@ -220,9 +216,11 @@ export default function SingleCase() {
               <Card.Body>
                 <div className="text-center"></div>
                 <div className="mt-5">
-                  <h4 className="text-center text-uppercase">
-                    Case Information
-                  </h4>
+                  <div className="container bg-primary text-white custom-height" style={{height:"50px", borderRadius:"5px"}}>
+                    <h4 className="text-center text-uppercase pt-3">
+                      Case Information
+                    </h4>
+                  </div>
                   <hr className="my-4" />
                   <div className="row m-5">
                     {data && (
@@ -314,7 +312,7 @@ export default function SingleCase() {
                               </>
                             ) : (
                               <button
-                                className="btn btn-info"
+                                className="btn btn-primary bright-btn btn-secondary-bright"
                                 onClick={openChamberModal}>
                                 <span className="fe fe-plus"></span>
                                 Attach Chamber/Solicitor
@@ -333,7 +331,7 @@ export default function SingleCase() {
                                   attach.doc_url
                                 }`}
                                 target="_blank"
-                                className="btn btn-sm btn-success m-1">
+                                className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
                                 <span className="fa fa-eye"></span>{" "}
                                 View/Download
                               </a>
@@ -345,7 +343,7 @@ export default function SingleCase() {
                           <div className="col-md-6">
                             <a
                               href={`#`}
-                              className="btn  btn-warning m-1">
+                              className="btn bright-btn btn-secondary-bright m-1">
                               <i
                                 className="fa fa-file"
                                 aria-hidden="true"></i>
@@ -362,7 +360,7 @@ export default function SingleCase() {
 
             <div className="col-md-12 flex justify-content-end">
               <button
-                className="btn btn-primary mx-5"
+                className="btn btn-primary bright-btn btn-primary-bright mx-5"
                 onClick={openMotionModal}>
                 Attach Motion
               </button>
@@ -465,7 +463,6 @@ export default function SingleCase() {
           <Modal.Footer>
             <Button
               variant="dark"
-
               className="me-1"
               onClick={closeChamberModal}>
               Close
