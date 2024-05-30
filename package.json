@@ -45,6 +45,8 @@
     "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^3.0.0",
     "hh-mm-ss": "^1.2.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
     "leaflet": "^1.8.0",
     "lightgallery": "^2.4.0",
     "moment": "^2.29.3",

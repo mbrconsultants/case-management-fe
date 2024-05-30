@@ -12,6 +12,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Loader from "../Loader/loader";
 import { log } from "nvd3";
+import "./CourtRosterList.css";
 
 export const CourtRosterList = () => {
   const { user } = useContext(Context);
@@ -22,15 +23,15 @@ export const CourtRosterList = () => {
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const [casex, setCasex] = useState({
-    case_type: "",
-    case_color: "",
+  const [hearingdate, setHearingdate] = useState({
+    hearing_date: "",
+    //case_color: "",
   });
 
-  const [newCasex, setNewCasex] = useState({
+  const [newHearingdate, setNewHearingdate] = useState({
     id: "",
-    case_type: "",
-    case_color: "",
+    hearing_date: "",
+    //case_color: "",
   });
 
   const [page, setPage] = useState(1);
@@ -43,9 +44,9 @@ export const CourtRosterList = () => {
 
   const getAllData = async () => {
     await endpoint
-      .get(`/case/list-by-hearing-date`)
+      .post(`/case/list-by-hearing-date`)
       .then((res) => {
-        // console.log("all case list by hearing date", res.data.data);
+        console.log("all case list by hearing date", res.data.data);
         setData(res.data.data);
       })
       .catch((err) => {
@@ -62,13 +63,13 @@ export const CourtRosterList = () => {
   };
 
   const handleSubmit = async (e) => {
-    console.log("casex", casex);
+    console.log("hearingdate", hearingdate);
     e.preventDefault();
     await endpoint
-      .post(`/case-type/create`, casex)
+      .post(`/case/list-by-hearing-date`, hearingdate)
       .then((res) => {
         console.log(res);
-        setCasex({ ...casex, case_type: " ", case_color: " " });
+        setHearingdate({ ...hearingdate, hearing_date: " " });
         getAllData();
         SuccessAlert(res.data.message);
         setLoading(false);
@@ -80,65 +81,65 @@ export const CourtRosterList = () => {
       });
   };
 
-  const onEdit = (row) => {
-    // console.log("casex to edit", casex.id)
-    setNewCasex({
-      ...newCasex,
-      id: row.id,
-      case_type: row.case_type,
-      case_color: row.case_color,
-    });
-    setOpen(true);
-    // console.log("casex to update", newCasex)
-  };
+  // const onEdit = (row) => {
+  //   // console.log("hearingdate to edit", hearingdate.id)
+  //   setNewHearingdate({
+  //     ...newHearingdate,
+  //     id: row.id,
+  //     hearing_date: row.hearing_date,
+  //     //case_color: row.case_color,
+  //   });
+  //   setOpen(true);
+  //   // console.log("hearingdate to update", newHearingdate)
+  // };
 
-  const handleEdit = async () => {
-    // console.log("casex id to update", newCasex.casex_id)
-    setLoading(true);
-    // console.log("my updating data", newCasex)
-    await endpoint
-      .put(`/case-type/edit/${newCasex.casex_id}`, newCasex)
-      .then((res) => {
-        // console.log(res.data);
-        getAllData();
-        setLoading(false);
-        setOpen(false);
-        SuccessAlert(res.data.message);
-      })
-      .catch((err) => {
-        setLoading(false);
-        ErrorAlert(err.response.data.message);
-        // console.log(err)
-      });
-  };
+  // const handleEdit = async () => {
+  //   // console.log("hearingdate id to update", newHearingdate.Hearingdate_id)
+  //   setLoading(true);
+  //   // console.log("my updating data", newHearingdate)
+  //   await endpoint
+  //     .put(`/case/edit/${newHearingdate.hearingdate_id}`, newHearingdate)
+  //     .then((res) => {
+  //       // console.log(res.data);
+  //       getAllData();
+  //       setLoading(false);
+  //       setOpen(false);
+  //       SuccessAlert(res.data.message);
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //       ErrorAlert(err.response.data.message);
+  //       // console.log(err)
+  //     });
+  // };
 
-  const onDelete = (row) => {
-    // console.log("casex to delete", casex.id)
-    setOpen(false);
-    setIdToDelete(row.id);
-    setDeleteOpen(true);
-  };
+  // const onDelete = (row) => {
+  //   // console.log("hearingdate to delete", hearingdate.id)
+  //   setOpen(false);
+  //   setIdToDelete(row.id);
+  //   setDeleteOpen(true);
+  // };
 
-  const handleDelete = async (e) => {
-    // console.log("casex2 to delete", idToDelete)
-    e.preventDefault();
-    await endpoint
-      .delete(`/case-type/delete/${idToDelete}`)
-      .then((res) => {
-        // console.log(res.data)
-        SuccessAlert(res.data.message);
-        getAllData();
-        setLoading(false);
-        setDeleteOpen(false);
-      })
-      .catch((err) => {
-        ErrorAlert(err.response.data.message);
-        // console.log(err)
-      });
-  };
+  // const handleDelete = async (e) => {
+  //   // console.log("hearingdate2 to delete", idToDelete)
+  //   e.preventDefault();
+  //   await endpoint
+  //     .delete(`/case-type/delete/${idToDelete}`)
+  //     .then((res) => {
+  //       // console.log(res.data)
+  //       SuccessAlert(res.data.message);
+  //       getAllData();
+  //       setLoading(false);
+  //       setDeleteOpen(false);
+  //     })
+  //     .catch((err) => {
+  //       ErrorAlert(err.response.data.message);
+  //       // console.log(err)
+  //     });
+  // };
 
   const reset = () => {
-    // setCasex("");
+    // setHearingdate("");
     setId("");
   };
 
@@ -153,84 +154,123 @@ export const CourtRosterList = () => {
       name: "#",
 
       cell: (row, index) => index + 1 + (page - 1) * perPage,
-      width: "10%",
-    },
-
-    {
-      name: "Court ID",
-      selector: (row) => [row.court_id],
-      sortable: true,
-      width: "30%",
-      cell: (row) => <h6 className="fs-12 fw-semibold">{row.court_id}</h6>,
-    },
-    {
-      name: "Legal Officer ID",
-      selector: (row) => [row.legal_officer_id],
-      sortable: true,
-      width: "45%",
-      cell: (row) => (
-        <h6 className="fs-12 fw-semibold">{row.legal_officer_id}</h6>
-      ),
-    },
-    {
-      name: "Chamber Solicitor ID",
-      selector: (row) => [row.chamber_solicitor_id],
-      sortable: true,
-      width: "45%",
-      cell: (row) => (
-        <h6 className="fs-12 fw-semibold">{row.chamber_solicitor_id}</h6>
-      ),
-    },
-    {
-      name: "Case Type ID",
-      selector: (row) => [row.case_type_id],
-      sortable: true,
-      width: "45%",
-      cell: (row) => <h6 className="fs-12 fw-semibold">{row.case_type_id}</h6>,
+      width: "4%",
     },
     {
       name: "Suite No",
       selector: (row) => [row.suite_no],
       sortable: true,
-      width: "45%",
+      width: "12%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.suite_no}</h6>,
+    },
+    {
+      name: "Court",
+      selector: (row) => [row.court_id],
+      sortable: true,
+      width: "9%",
+      cell: (row) => (
+        <h6 className="fs-12 fw-semibold">{row.Court ? row.Court.name : ""}</h6>
+      ),
+    },
+    {
+      name: "Legal Officer",
+      selector: (row) => [row.LegalOfficer],
+      sortable: true,
+      width: "13%",
+      cell: (row) => (
+        <h6 className="fs-12 fw-semibold">
+          {row.LegalOfficer
+            ? row.LegalOfficer.surname + " " + row.LegalOfficer.first_name
+            : ""}
+        </h6>
+      ),
+    },
+    {
+      name: "Chamber Solicitor",
+      selector: (row) => [row.chamber_solicitor_id],
+      sortable: true,
+      width: "15%",
+      cell: (row) => (
+        <h6 className="fs-12 fw-semibold">
+          {row.ChamberOrSolicitor ? row.ChamberOrSolicitor.chamber_name : ""}
+        </h6>
+      ),
+    },
+    {
+      name: "Case Type",
+      selector: (row) => [row.case_type_id],
+      sortable: true,
+      width: "10%",
+      cell: (row) => (
+        <h6 className="fs-12 fw-semibold">
+          {row.CaseType ? row.CaseType.case_type : ""}
+        </h6>
+      ),
     },
     {
       name: "Parties",
       selector: (row) => [row.parties],
       sortable: true,
-      width: "45%",
+      width: "13%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.parties}</h6>,
     },
     {
       name: "Appellants",
       selector: (row) => [row.appellants],
       sortable: true,
-      width: "45%",
+      width: "12%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.appellants}</h6>,
     },
     {
       name: "Respondent",
       selector: (row) => [row.respondent],
       sortable: true,
-      width: "45%",
+      width: "10%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.respondent}</h6>,
     },
     {
-      name: "Case_Description",
+      name: "Case Description",
       selector: (row) => [row.case_description],
       sortable: true,
-      width: "45%",
+      width: "15%",
       cell: (row) => (
         <h6 className="fs-12 fw-semibold">{row.case_description}</h6>
       ),
     },
     {
-      name: "Doc_URL",
-      selector: (row) => [row.doc_url],
+      name: "Case Attachment",
+      selector: (row) => row.CaseAttachments,
       sortable: true,
-      width: "45%",
-      cell: (row) => <h6 className="fs-12 fw-semibold">{row.doc_url}</h6>,
+      width: "13%",
+      cell: (row) => (
+        <div className="fs-12 fw-semibold">
+          {Array.isArray(row.CaseAttachments) && row.CaseAttachments.length > 0
+            ? row.CaseAttachments.map((attachment, index) => (
+                <a
+                  key={index}
+                  href={process.env.REACT_APP_UPLOAD_URL + attachment.doc_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="attachment-badge"
+                >
+                  {row.CaseAttachments.length === 1
+                    ? "Attachment"
+                    : `Attachment ${index + 1}`}
+                </a>
+              ))
+            : row.CaseAttachments &&
+              row.CaseAttachments.doc_url && (
+                <a
+                  href={row.CaseAttachments.doc_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="attachment-badge"
+                >
+                  Attachment
+                </a>
+              )}
+        </div>
+      ),
     },
     // {
     //   name: "Status",
@@ -296,17 +336,17 @@ export const CourtRosterList = () => {
                       <div className="form-horizontal">
                         <div className="form-group">
                           <label className="col-md-6  cecontrol-label">
-                            Case Type
+                            Hearing Date
                           </label>
                           <div className="col-md-12">
                             <input
                               type="text"
                               className="form-control"
-                              value={casex.case_type}
+                              value={hearingdate.hearing_date}
                               onChange={(e) => {
-                                setCasex({
-                                  ...casex,
-                                  case_type: e.target.value,
+                                setHearingdate({
+                                  ...hearingdate,
+                                  hearing_date: e.target.value,
                                 });
                               }}
                               required
@@ -314,7 +354,7 @@ export const CourtRosterList = () => {
                           </div>
                         </div>
 
-                        <div className="form-group">
+                        {/* <div className="form-group">
                           <label className="col-md-6  cecontrol-label">
                             Case Colour
                           </label>
@@ -332,7 +372,7 @@ export const CourtRosterList = () => {
                               required
                             />
                           </div>
-                        </div>
+                        </div> */}
 
                         <div className="form-group">
                           <div className="col-sm-offset-2 text-center col-sm-9">
@@ -345,7 +385,7 @@ export const CourtRosterList = () => {
                               disabled={isLoading}
                               onClick={handleSubmit}
                             >
-                              Add Case Type
+                              Get All Cases
                             </button>
                           </div>
                         </div>
@@ -380,8 +420,7 @@ export const CourtRosterList = () => {
                     paginationPerPage={perPage}
                     highlightOnHover
                   />
-
-                  <Modal show={open}>
+                  {/* <Modal show={open}>
                     <Modal.Body className="text-center p-4">
                       <DialogTitle>
                         Edit Module
@@ -487,11 +526,10 @@ export const CourtRosterList = () => {
                         </Row>
                       </DialogContent>
                       <DialogActions></DialogActions>
-                      {/* </Dialog> */}
+                      {/* </Dialog> 
                     </Modal.Body>
-                  </Modal>
-
-                  <Modal show={deleteOpen}>
+                  </Modal>*/}
+                  {/* <Modal show={deleteOpen}>
                     <Modal.Body className="text-center p-4">
                       <DialogTitle>
                         Delete Case Type
@@ -536,7 +574,7 @@ export const CourtRosterList = () => {
                         </div>
                       </DialogContent>
                     </Modal.Body>
-                  </Modal>
+                  </Modal>*/}
                 </Col>
               </Row>
               {/* <!-- /.col -->  */}

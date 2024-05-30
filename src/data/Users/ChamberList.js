@@ -1,67 +1,44 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Link, Navigate } from "react-router-dom";
-import "react-data-table-component-extensions/dist/index.css";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
-import { OverlayTrigger, Tooltip, Badge, FormSelect } from "react-bootstrap";
+import { Modal, Card, Button, Row, Col } from "react-bootstrap";
 import endpoint from "../../context/endpoint";
-import { Context } from "../../context/Context";
 import {
   CForm,
   CCol,
   CFormLabel,
-  CFormFeedback,
   CFormInput,
-  CInputGroup,
-  CInputGroupText,
   CButton,
-  CFormCheck,
+  CFormTextarea,
 } from "@coreui/react";
-import moment from "moment";
-import { Modal, FormGroup, Form } from "react-bootstrap";
 import { ErrorAlert, SuccessAlert } from "../../data/Toast/toast";
-import {
-  DropdownButton,
-  ButtonGroup,
-  Card,
-  Button,
-  Row,
-  Col,
-  InputGroup,
-  Dropdown,
-} from "react-bootstrap";
 import Loader from "../Loader/loader";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 
 const ChamberList = () => {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-    reset,
-  } = useForm();
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [value, setValue] = useState({});
   const [isLoading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [roles, setRoles] = useState([]);
-  const [courtList, setCourtList] = useState([]);
-  const [statesList, setStatesList] = useState([]);
-  const [lgasList, setLgasList] = useState([]);
-  const [titleList, setTitleList] = useState([]);
-  const [sign, setSign] = useState();
-  const [url, setUrl] = useState();
+  const [currentChamber, setCurrentChamber] = useState(null);
+  const { register, handleSubmit, setValue, reset, control } = useForm({
+    defaultValues: {
+      lawyers: [{ name: "" }],
+    },
+  });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "lawyers",
+  });
 
   // Fetch chambers list
-  const getStaffList = async () => {
+  const getChamberList = async () => {
     setLoading(true);
     try {
       const res = await endpoint.get("/solicitor/list");
       setData(res.data.data);
-      console.log("====================================");
-      console.log(res.data.data);
-      console.log("====================================");
     } catch (err) {
       console.error(err);
     } finally {
@@ -69,67 +46,100 @@ const ChamberList = () => {
     }
   };
 
-  const [details, setDetails] = useState({
-    surname: "",
-    first_name: "",
-    middle_name: "",
-    title_id: "",
-    court_id: "",
-    state_id: "",
-    lga_id: "",
-    signature: null,
-    phone: "",
-    email: "",
-  });
+  useEffect(() => {
+    getChamberList();
+  }, []);
 
-  // Show delete modal
-  const handleShowDeleteModal = (row) => {
-    setValue(row);
+  const handleShowDeleteModal = (chamber) => {
+    setCurrentChamber(chamber);
     setShowDeleteModal(true);
   };
 
-  //get title list
-  const getTitletList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/title/list")
-      .then((res) => {
-        //  console.log("roles", res.data.data)
-        setTitleList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        // console.log(err)
-      });
+  const handleShowEditModal = (chamber) => {
+    setCurrentChamber(chamber);
+
+    console.log(currentChamber);
+    setValue("chamber_name", chamber.chamber_name);
+    setValue("chamber_head", chamber.chamber_head);
+    setValue("address", chamber.address);
+    setValue("email", chamber.email);
+    setValue("phone", chamber.phone);
+
+    // Extract lawyers from ChamberLawyers array
+    const lawyers = chamber.ChamberLawyers[0]?.lawyer_name
+      ? JSON.parse(chamber.ChamberLawyers[0].lawyer_name)
+      : [];
+    reset({ lawyers: lawyers.map((lawyer) => ({ name: lawyer })) });
+    setShowEditModal(true);
   };
 
-  useEffect(() => {
-    getStaffList();
-    getTitletList();
-    getStatestList();
-  }, []);
+  const deleteChamber = async (id) => {
+    setLoading(true);
+    try {
+      await endpoint.delete(`/solicitor/delete/${id}`);
+      getChamberList();
+      SuccessAlert("Chamber deleted successfully.");
+    } catch (err) {
+      console.error(err);
+      ErrorAlert("Failed to delete chamber.");
+    } finally {
+      setLoading(false);
+      setShowDeleteModal(false);
+    }
+  };
 
-  // Columns for DataTable
+  const updateChamber = async (formData) => {
+    setLoading(true);
+    try {
+      const data = new FormData();
+      data.append("chamber_name", formData.chamber_name);
+      data.append("chamber_head", formData.chamber_head);
+      data.append("address", formData.address);
+      data.append("email", formData.email);
+      data.append("phone", formData.phone);
+      data.append(
+        "lawyer_name",
+        JSON.stringify(formData.lawyers.map((lawyer) => lawyer.name))
+      );
+
+      await endpoint.put(`/solicitor/edit/${currentChamber.id}`, data);
+      getChamberList();
+      SuccessAlert("Chamber updated successfully.");
+      setShowEditModal(false);
+    } catch (err) {
+      console.error(err);
+      ErrorAlert("Failed to update chamber.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddLawyer = () => {
+    append({ name: "" });
+  };
+
+  const handleRemoveLawyer = (index) => {
+    remove(index);
+  };
+
   const columns = [
     { name: "#", cell: (row, index) => index + 1, width: "65px" },
     {
       name: "Chamber name",
-      selector: (row) => row.surname,
+      selector: (row) => row.chamber_name,
       style: { textAlign: "right" },
       sortable: true,
-      width: "300px",
+      width: "150px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.chamber_name.toUpperCase()}</div>
       ),
     },
-
     {
-      name: "Email",
+      name: "Chamber Head",
       selector: (row) => row.chamber_head,
       style: { textAlign: "left" },
       sortable: true,
-      width: "250px",
+      width: "150px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.chamber_head || ""}</div>
       ),
@@ -139,7 +149,7 @@ const ChamberList = () => {
       selector: (row) => row.email,
       style: { textAlign: "left" },
       sortable: true,
-      width: "250px",
+      width: "150px",
       cell: (row) => <div className="fs-12 fw-bold">{row.email || ""}</div>,
     },
     {
@@ -147,7 +157,7 @@ const ChamberList = () => {
       selector: (row) => row.phone,
       style: { textAlign: "right" },
       sortable: true,
-      width: "180px",
+      width: "110px",
       cell: (row) => <div className="fs-12 fw-bold">{row.phone || ""}</div>,
     },
     {
@@ -155,60 +165,32 @@ const ChamberList = () => {
       selector: (row) => row.address,
       style: { textAlign: "left" },
       sortable: true,
-      width: "200px",
+      width: "150px",
       cell: (row) => <div className="fs-12 fw-bold">{row.address || ""}</div>,
     },
-
     {
       name: "Action",
       selector: (row) => row.id,
       style: { textAlign: "right" },
       cell: (row) => (
         <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
-          <Link
-            to={`/new-chamber/${row.id}`}
-            className="btn btn-warning btn-sm me-2 my-1">
+          <button
+            className="btn btn-warning btn-sm me-2 my-1"
+            onClick={() => handleShowEditModal(row)}
+          >
             <span className="fe fe-edit"> </span>
-          </Link>
+          </button>
           <button
             className="btn btn-danger btn-sm my-1"
-            onClick={() => handleShowDeleteModal(row)}>
+            onClick={() => handleShowDeleteModal(row)}
+          >
             <span className="fe fe-trash"> </span>
           </button>
         </div>
       ),
     },
   ];
-  //get states list
-  const getStatestList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/state/list")
-      .then((res) => {
-        setStatesList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err);
-      });
-  };
-  const deletechamber = async (id) => {
-    setLoading(true);
-    await endpoint
-      .delete(`/legal-officer/delete/${id}`)
-      .then((res) => {
-        getStaffList();
-        setLoading(false);
-        SuccessAlert(res.data.message);
-        setShowDeleteModal(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        setShowDeleteModal(false);
-        console.log(err);
-      });
-  };
+
   const tableDatas = { columns, data };
 
   return (
@@ -233,40 +215,140 @@ const ChamberList = () => {
         )}
       </DataTableExtensions>
 
-      <Modal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}>
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Remove Unit</Modal.Title>
+          <Modal.Title>Delete Chamber</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Card>
             <Card.Body>
-              <Col
-                lg={12}
-                md={12}>
-                Please confirm you are about to delete the staff{" "}
-                {value.surname +
-                  " " +
-                  value.first_name +
-                  " " +
-                  value.middle_name}
-                ?
+              <Col lg={12} md={12}>
+                Please confirm you are about to delete the chamber{" "}
+                {currentChamber?.chamber_name}?
               </Col>
             </Card.Body>
           </Card>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="warning"
-            onClick={() => setShowDeleteModal(false)}>
+          <Button variant="warning" onClick={() => setShowDeleteModal(false)}>
             Close
           </Button>
-          {/* Implement the delete logic here */}
           <Button
             variant="danger"
-            onClick={() => deletechamber(value.id)}>
+            onClick={() => deleteChamber(currentChamber.id)}
+          >
             Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Chamber</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <CForm
+            onSubmit={handleSubmit(updateChamber)}
+            className="row g-3 needs-validation"
+          >
+            <CCol md={6}>
+              <CFormLabel htmlFor="chamberName">Chamber's Name</CFormLabel>
+              <CFormInput
+                defaultValue={currentChamber ? currentChamber.chamber_name : ""}
+                id="chamberName"
+                {...register("chamber_name", { required: true })}
+                type="text"
+                name="chamberName"
+              />
+            </CCol>
+            <CCol md={6}>
+              <CFormLabel htmlFor="chamberHead">Chamber's Head</CFormLabel>
+              <CFormInput
+                defaultValue={currentChamber ? currentChamber.chamber_head : ""}
+                id="chamberHead"
+                {...register("chamber_head", { required: true })}
+                type="text"
+                name="chamberHead"
+              />
+            </CCol>
+            <CCol md={6}>
+              <CFormLabel htmlFor="email">Email</CFormLabel>
+              <CFormInput
+                defaultValue={currentChamber ? currentChamber.email : ""}
+                id="email"
+                {...register("email", { required: true })}
+                type="email"
+                name="email"
+              />
+            </CCol>
+            <CCol md={6}>
+              <CFormLabel htmlFor="phone">Phone</CFormLabel>
+              <CFormInput
+                defaultValue={currentChamber ? currentChamber.phone : ""}
+                id="phone"
+                {...register("phone", { required: true })}
+                type="text"
+                name="phone"
+              />
+            </CCol>
+            <CCol md={12}>
+              <CFormLabel htmlFor="address">Address</CFormLabel>
+              <CFormTextarea
+                defaultValue={currentChamber ? currentChamber.address : ""}
+                id="address"
+                {...register("address", { required: true })}
+                rows="3"
+                name="address"
+              ></CFormTextarea>
+            </CCol>
+            <CCol md={12}>
+              <CFormLabel htmlFor="lawyers">Lawyers</CFormLabel>
+              {fields.map((lawyer, index) => (
+                <div key={lawyer.id} className="d-flex mb-2">
+                  <CFormInput
+                    {...register(`lawyers.${index}.name`, { required: true })}
+                    type="text"
+                    className="me-2"
+                  />
+                  <CButton
+                    color="danger"
+                    style={{
+                      fontSize: 10,
+                      padding: "2px 6px",
+                      maxWidth: 52,
+                      minWidth: 52,
+                    }}
+                    onClick={() => handleRemoveLawyer(index)}
+                  >
+                    Remove
+                  </CButton>
+                </div>
+              ))}
+              <CButton
+                color="primary"
+                style={{
+                  fontSize: 10,
+                  padding: "2px 6px",
+                  maxWidth: 52,
+                  minWidth: 52,
+                }}
+                onClick={handleAddLawyer}
+              >
+                ADD
+              </CButton>
+            </CCol>
+          </CForm>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowEditModal(false)}
+            className="me-auto"
+          >
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSubmit(updateChamber)}>
+            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>

@@ -46,11 +46,11 @@ const StaffList = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [roles, setRoles] = useState([]);
-  const [courtList, setCourtList] = useState([]);
-  const [statesList, setStatesList] = useState([]);
-  const [lgasList, setLgasList] = useState([]);
+  // const [courtList, setCourtList] = useState([]);
+  // const [statesList, setStatesList] = useState([]);
+  // const [lgasList, setLgasList] = useState([]);
   const [titleList, setTitleList] = useState([]);
-  const [sign, setSign] = useState();
+  // const [sign, setSign] = useState();
   const [url, setUrl] = useState();
 
   // Fetch chambers list
@@ -74,10 +74,10 @@ const StaffList = () => {
     first_name: "",
     middle_name: "",
     title_id: "",
-    court_id: "",
-    state_id: "",
-    lga_id: "",
-    signature: null,
+    //   {/*court_id: "",
+    //   state_id: "",
+    //   lga_id: "",
+    // signature: null,*/}
     phone: "",
     email: "",
   });
@@ -107,7 +107,7 @@ const StaffList = () => {
   useEffect(() => {
     getStaffList();
     getTitletList();
-    getStatestList();
+    // getStatestList();
   }, []);
 
   // Columns for DataTable
@@ -147,26 +147,26 @@ const StaffList = () => {
       width: "180px",
       cell: (row) => <div className="fs-12 fw-bold">{row.phone || ""}</div>,
     },
-    {
-      name: "Court",
-      selector: (row) => row.Court?.name,
-      style: { textAlign: "left" },
-      sortable: true,
-      width: "200px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.Court?.name || ""}</div>
-      ),
-    },
-    {
-      name: "State",
-      selector: (row) => row.State?.name,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "200px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.State?.name || ""}</div>
-      ),
-    },
+    // {
+    //   name: "Court",
+    //   selector: (row) => row.Court?.name,
+    //   style: { textAlign: "left" },
+    //   sortable: true,
+    //   width: "200px",
+    //   cell: (row) => (
+    //     <div className="fs-12 fw-bold">{row.Court?.name || ""}</div>
+    //   ),
+    // },
+    // {
+    //   name: "State",
+    //   selector: (row) => row.State?.name,
+    //   style: { textAlign: "right" },
+    //   sortable: true,
+    //   width: "200px",
+    //   cell: (row) => (
+    //     <div className="fs-12 fw-bold">{row.State?.name || ""}</div>
+    //   ),
+    // },
     {
       name: "Action",
       selector: (row) => row.id,
@@ -175,12 +175,14 @@ const StaffList = () => {
         <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
           <Link
             to={`/new-staff/${row.id}`}
-            className="btn btn-warning btn-sm my-1 mx-3">
+            className="btn btn-warning btn-sm my-1 mx-3"
+          >
             <span className="fe fe-edit"> </span>
           </Link>
           <button
             className="btn btn-danger btn-sm"
-            onClick={() => handleShowDeleteModal(row)}>
+            onClick={() => handleShowDeleteModal(row)}
+          >
             <span className="fe fe-trash"> </span>
           </button>
         </div>
@@ -188,19 +190,19 @@ const StaffList = () => {
     },
   ];
   //get states list
-  const getStatestList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/state/list")
-      .then((res) => {
-        setStatesList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err);
-      });
-  };
+  // const getStatestList = async () => {
+  //   setLoading(true);
+  //   await endpoint
+  //     .get("/state/list")
+  //     .then((res) => {
+  //       setStatesList(res.data.data);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //       console.log(err);
+  //     });
+  // };
   const deletechamber = async (id) => {
     setLoading(true);
     await endpoint
@@ -241,18 +243,14 @@ const StaffList = () => {
         )}
       </DataTableExtensions>
 
-      <Modal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}>
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Remove Unit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Card>
             <Card.Body>
-              <Col
-                lg={12}
-                md={12}>
+              <Col lg={12} md={12}>
                 Please confirm you are about to delete the staff{" "}
                 {value.surname +
                   " " +
@@ -265,15 +263,11 @@ const StaffList = () => {
           </Card>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="warning"
-            onClick={() => setShowDeleteModal(false)}>
+          <Button variant="warning" onClick={() => setShowDeleteModal(false)}>
             Close
           </Button>
           {/* Implement the delete logic here */}
-          <Button
-            variant="danger"
-            onClick={() => deletechamber(value.id)}>
+          <Button variant="danger" onClick={() => deletechamber(value.id)}>
             Delete
           </Button>
         </Modal.Footer>
