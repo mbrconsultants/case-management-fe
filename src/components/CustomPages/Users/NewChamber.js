@@ -1,22 +1,14 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Breadcrumb, Col, Row, Card, FormGroup, Button } from "react-bootstrap";
-import MultiSelect from "react-multiple-select-dropdown-lite";
-import "react-multiple-select-dropdown-lite/dist/index.css";
+import React, { useState, useEffect } from "react";
+import { Breadcrumb, Col, Row, Card, Button } from "react-bootstrap";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import SignatureCanvas from "react-signature-canvas";
 import {
   CForm,
   CCol,
   CFormLabel,
-  CFormFeedback,
   CFormInput,
   CFormTextarea,
-  CInputGroup,
-  CInputGroupText,
   CButton,
-  CFormCheck,
 } from "@coreui/react";
-import * as formvalidation from "../../../data/Form/formvalidations/formvalidations";
 import endpoint from "../../../context/endpoint";
 import { useForm } from "react-hook-form";
 import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
@@ -24,12 +16,6 @@ import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 export default function CreateChamber() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
-  const [courtList, setCourtList] = useState([]);
-  const [statesList, setStatesList] = useState([]);
-  const [lgasList, setLgasList] = useState([]);
-  const [titleList, setTitleList] = useState([]);
-  const [sign, setSign] = useState();
-  const [url, setUrl] = useState();
   const [details, setDetails] = useState({
     chamber_head: "",
     chamber_name: "",
@@ -37,6 +23,7 @@ export default function CreateChamber() {
     signature: null,
     phone: "",
     email: "",
+    lawyer_name: [""],
   });
   const {
     register,
@@ -46,11 +33,8 @@ export default function CreateChamber() {
   } = useForm();
   const params = useParams();
 
-
-
   const id = params?.id;
 
-  //get single staff
   const getSingleStaff = async () => {
     setLoading(true);
     await endpoint
@@ -62,13 +46,9 @@ export default function CreateChamber() {
       })
       .catch((err) => {
         setLoading(false);
-        console.log(err)
+        console.log(err);
       });
   };
-
-
-
-
 
   useEffect(() => {
     if (id) {
@@ -77,10 +57,6 @@ export default function CreateChamber() {
   }, []);
 
   const handleCreateUser = async () => {
-    // e.preventDefault();
-    console.log("====================================");
-    console.log("here");
-    console.log("====================================");
     setLoading(true);
 
     const data = new FormData();
@@ -89,7 +65,9 @@ export default function CreateChamber() {
     data.append("address", details.address);
     data.append("email", details.email);
     data.append("phone", details.phone);
-    data.append("signature", url);
+    data.append("signature", details.signature);
+    data.append("lawyer_name", JSON.stringify(details.lawyer_name));
+
     if (id) {
       await endpoint
         .put(`/solicitor/edit/${id}`, data)
@@ -111,7 +89,25 @@ export default function CreateChamber() {
     }
   };
 
+  const handleAddLawyer = () => {
+    setDetails((prevState) => ({
+      ...prevState,
+      lawyer_name: [...prevState.lawyer_name, ""],
+    }));
+  };
 
+  const handleRemoveLawyer = (index) => {
+    setDetails((prevState) => ({
+      ...prevState,
+      lawyer_name: prevState.lawyer_name.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleLawyerChange = (index, value) => {
+    const newLawyerNames = [...details.lawyer_name];
+    newLawyerNames[index] = value;
+    setDetails((prevState) => ({ ...prevState, lawyer_name: newLawyerNames }));
+  };
 
   return (
     <div>
@@ -119,14 +115,13 @@ export default function CreateChamber() {
         <div>
           <h1 className="page-title">New Chamber List</h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Registry
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+              aria-current="page"
+            >
               New Chamber List
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -134,7 +129,8 @@ export default function CreateChamber() {
         <div className="ms-auto pageheader-btn">
           <Link
             to={`${process.env.PUBLIC_URL}/chamber-list/`}
-            className="btn btn-primary btn-icon text-white me-3">
+            className="btn btn-primary btn-icon text-white me-3"
+          >
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
@@ -144,9 +140,7 @@ export default function CreateChamber() {
       </div>
 
       <Row>
-        <Col
-          md={12}
-          lg={12}>
+        <Col md={12} lg={12}>
           <Card>
             <Card.Header>
               <Col className="card-title text-center">
@@ -156,131 +150,124 @@ export default function CreateChamber() {
             </Card.Header>
 
             <Card.Body>
-              {/* <formvalidation.CustomValidation /> */}
               <CForm
                 onSubmit={handleSubmit(handleCreateUser)}
-                className="row g-3 needs-validation">
+                className="row g-3 needs-validation"
+              >
                 <CCol md={6}>
-                  <CFormLabel htmlFor="validationCustomUsername">
-                    Chamber's Name
-                  </CFormLabel>
-
+                  <CFormLabel htmlFor="chamberName">Chamber's Name</CFormLabel>
                   <CFormInput
+                    id="chamberName"
                     defaultValue={details.chamber_name}
                     onChange={(e) =>
-                      setDetails({
-                        ...details,
-                        chamber_name: e.target.value,
-                      })
+                      setDetails({ ...details, chamber_name: e.target.value })
                     }
                     type="text"
-                    name="chmabers Name"
+                    name="chamberName"
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="validationCustomUsername">
-                    Chamber's Head
-                  </CFormLabel>
-
+                  <CFormLabel htmlFor="chamberHead">Chamber's Head</CFormLabel>
                   <CFormInput
+                    id="chamberHead"
                     defaultValue={details.chamber_head}
                     onChange={(e) =>
-                      setDetails({
-                        ...details,
-                        chamber_head: e.target.value,
-                      })
+                      setDetails({ ...details, chamber_head: e.target.value })
                     }
                     type="text"
-                    name="Chamber's Head"
+                    name="chamberHead"
                   />
                 </CCol>
 
                 <CCol md={6}>
-                  <CFormLabel htmlFor="validationCustomUsername">
-                    Email
-                  </CFormLabel>
-                  <CInputGroup className="has-validation">
-                    {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
-                    <CFormInput
-                      defaultValue={details.email}
-                      onChange={(e) =>
-                        setDetails({
-                          ...details,
-                          email: e.target.value,
-                        })
-                      }
-                      type="email"
-                      aria-describedby="inputGroupPrepend"
-                      name="email"
-                    />
-                  </CInputGroup>
+                  <CFormLabel htmlFor="email">Email</CFormLabel>
+                  <CFormInput
+                    id="email"
+                    defaultValue={details.email}
+                    onChange={(e) =>
+                      setDetails({ ...details, email: e.target.value })
+                    }
+                    type="email"
+                    name="email"
+                  />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="validationCustom02">
-                    Phone No.
-                  </CFormLabel>
+                  <CFormLabel htmlFor="phone">Phone No.</CFormLabel>
                   <CFormInput
+                    id="phone"
                     defaultValue={details.phone}
                     onChange={(e) =>
-                      setDetails({
-                        ...details,
-                        phone: e.target.value,
-                      })
+                      setDetails({ ...details, phone: e.target.value })
                     }
                     type="text"
                     name="phone"
                   />
                 </CCol>
 
-                {/* <CCol
-                  xs={6}
-                  className="text-center">
-                  <SignatureCanvas
-                    ref={(data) => setSign(data)}
-                    onEnd={() =>
-                      setUrl(sign.getTrimmedCanvas().toDataURL("image/png"))
-                    }
-                    canvasProps={{
-                      width: 500,
-                      height: 120,
-                      className: "sigCanvas",
-                    }}
-                  />
-                </CCol>
-                {id && (
-                  <CCol
-                    xs={6}
-                    className="text-center">
-                    <label>Old Signature</label>
-                    <br></br>
-                    <img
-                      src={details.signature}
-                      crossOrigin="anonymous"
-                      alt="Old Signatory..."
-                    />
-                  </CCol>
-                )} */}
                 <CCol md={12}>
-                  <CFormLabel htmlFor="validationCustom02">Address</CFormLabel>
+                  <CFormLabel htmlFor="address">Address</CFormLabel>
                   <CFormTextarea
+                    id="address"
                     defaultValue={details.address}
                     onChange={(e) =>
-                      setDetails({
-                        ...details,
-                        address: e.target.value,
-                      })
+                      setDetails({ ...details, address: e.target.value })
                     }
-                    type="text"
-                    name="phone"
+                    name="address"
                   />
                 </CCol>
 
-                <CCol
-                  xs={12}
-                  className="text-center">
-                  <CButton
-                    color="primary"
-                    type="submit">
+                <CCol md={12}>
+                  <CFormLabel>Lawyers</CFormLabel>
+                  {details.lawyer_name.map((name, index) => (
+                    <div key={index} className="mb-3">
+                      <Row>
+                        <Col md={12}>
+                          <CFormInput
+                            placeholder="Lawyer's Name"
+                            value={name}
+                            onChange={(e) =>
+                              handleLawyerChange(index, e.target.value)
+                            }
+                          />
+                        </Col>
+                      </Row>
+                      <Row className="mt-2">
+                        <Col md={12} className="d-flex justify-content-center">
+                          <CButton
+                            color="danger"
+                            style={{
+                              fontSize: 10,
+                              padding: "2px 6px",
+                              maxWidth: 52,
+                              minWidth: 52,
+                            }}
+                            onClick={() => handleRemoveLawyer(index)}
+                            className="me-2"
+                          >
+                            Remove
+                          </CButton>
+                          {index === details.lawyer_name.length - 1 && (
+                            <CButton
+                              color="primary"
+                              style={{
+                                fontSize: 10,
+                                padding: "2px 6px",
+                                maxWidth: 52,
+                                minWidth: 52,
+                              }}
+                              onClick={handleAddLawyer}
+                            >
+                              ADD
+                            </CButton>
+                          )}
+                        </Col>
+                      </Row>
+                    </div>
+                  ))}
+                </CCol>
+
+                <CCol xs={12} className="text-center">
+                  <CButton color="primary" type="submit">
                     <span className="fe fe-plus"></span>
                     {isLoading ? "Saving data..." : "Save"}
                   </CButton>

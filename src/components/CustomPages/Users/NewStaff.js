@@ -23,21 +23,21 @@ import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 export default function CreateStaff() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
-  const [courtList, setCourtList] = useState([]);
-  const [statesList, setStatesList] = useState([]);
-  const [lgasList, setLgasList] = useState([]);
+  // const [courtList, setCourtList] = useState([]);
+  // const [statesList, setStatesList] = useState([]);
+  // const [lgasList, setLgasList] = useState([]);
   const [titleList, setTitleList] = useState([]);
-  const [sign, setSign] = useState();
+  // const [sign, setSign] = useState();
   const [url, setUrl] = useState();
   const [details, setDetails] = useState({
     surname: "",
     first_name: "",
     middle_name: "",
     title_id: "",
-    court_id: "",
-    state_id: "",
-    lga_id: "",
-    signature: null,
+    // court_id: "",
+    // state_id: "",
+    // lga_id: "",
+    // signature: null,
     phone: "",
     email: "",
   });
@@ -50,20 +50,20 @@ export default function CreateStaff() {
   const params = useParams();
 
   //get court list
-  const getCourtList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/court/list")
-      .then((res) => {
-        //  console.log("roles", res.data.data)
-        setCourtList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        // console.log(err)
-      });
-  };
+  // const getCourtList = async () => {
+  //   setLoading(true);
+  //   await endpoint
+  //     .get("/court/list")
+  //     .then((res) => {
+  //       //  console.log("roles", res.data.data)
+  //       setCourtList(res.data.data);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //       // console.log(err)
+  //     });
+  // };
 
   const id = params?.id;
 
@@ -83,31 +83,31 @@ export default function CreateStaff() {
       });
   };
   //get states list
-  const getStatestList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/state/list")
-      .then((res) => {
-        setStatesList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err);
-      });
-  };
+  // const getStatestList = async () => {
+  //   setLoading(true);
+  //   await endpoint
+  //     .get("/state/list")
+  //     .then((res) => {
+  //       setStatesList(res.data.data);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //       console.log(err);
+  //     });
+  // };
 
   //get states list
-  const getLGAstList = async (id) => {
-    await endpoint
-      .get(`/lga/state-show/${id}`)
-      .then((res) => {
-        setLgasList(res.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  // const getLGAstList = async (id) => {
+  //   await endpoint
+  //     .get(`/lga/state-show/${id}`)
+  //     .then((res) => {
+  //       setLgasList(res.data.data);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
 
   //get title list
   const getTitletList = async () => {
@@ -126,8 +126,10 @@ export default function CreateStaff() {
   };
 
   useEffect(() => {
-    getCourtList();
-    getStatestList();
+    {
+      /* getCourtList();
+    getStatestList(); */
+    }
     getTitletList();
     if (id) {
       getSingleStaff();
@@ -143,16 +145,16 @@ export default function CreateStaff() {
 
     const data = new FormData();
     data.append("title_id", details.title_id);
-    data.append("court_id", details.court_id);
+    // data.append("court_id", details.court_id);
     data.append("first_name", details.first_name);
     data.append("middle_name", details.middle_name);
     data.append("surname", details.surname);
     data.append("gender", details.gender);
-    data.append("state_id", details.state_id);
-    data.append("lga_id", details.lga_id);
+    // data.append("state_id", details.state_id);
+    // data.append("lga_id", details.lga_id);
     data.append("email", details.email);
     data.append("phone", details.phone);
-    data.append("signature", url);
+    // data.append("signature", url);
     if (id) {
       await endpoint
         .put(`/legal-officer/edit/${id}`, data)
@@ -175,10 +177,10 @@ export default function CreateStaff() {
   };
 
   //clear signature
-  const handleClear = (e) => {
-    e.preventDefault();
-    sign.clear();
-  };
+  // const handleClear = (e) => {
+  //   e.preventDefault();
+  //   sign.clear();
+  // };
 
   return (
     <div>
@@ -186,14 +188,13 @@ export default function CreateStaff() {
         <div>
           <h1 className="page-title">New Legal officer</h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Registry
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+              aria-current="page"
+            >
               New Legal officer
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -201,7 +202,8 @@ export default function CreateStaff() {
         <div className="ms-auto pageheader-btn">
           <Link
             to={`${process.env.PUBLIC_URL}/staff-list/`}
-            className="btn btn-primary btn-icon text-white me-3">
+            className="btn btn-primary btn-icon text-white me-3"
+          >
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
@@ -211,9 +213,7 @@ export default function CreateStaff() {
       </div>
 
       <Row>
-        <Col
-          md={12}
-          lg={12}>
+        <Col md={12} lg={12}>
           <Card>
             <Card.Header>
               <Col className="card-title text-center">
@@ -226,7 +226,8 @@ export default function CreateStaff() {
               {/* <formvalidation.CustomValidation /> */}
               <CForm
                 onSubmit={handleSubmit(handleCreateUser)}
-                className="row g-3 needs-validation">
+                className="row g-3 needs-validation"
+              >
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustomUsername">
                     Title
@@ -240,13 +241,15 @@ export default function CreateStaff() {
                         ...details,
                         title_id: e.target.value,
                       })
-                    }>
+                    }
+                  >
                     <option value=""> --Select title-- </option>
                     {titleList.map((title) => (
                       <option
                         key={title.id}
                         value={title.id}
-                        selected={title.id === details.title_id}>
+                        selected={title.id === details.title_id}
+                      >
                         {title.name}
                       </option>
                     ))}
@@ -348,7 +351,7 @@ export default function CreateStaff() {
                     </span>
                   )}
                 </CCol>
-                <CCol md={4}>
+                {/* <CCol md={4}>
                   <CFormLabel htmlFor="validationCustomUsername">
                     Court
                   </CFormLabel>
@@ -477,13 +480,9 @@ export default function CreateStaff() {
                     onClick={(e) => handleClear(e)}>
                     Clear Signature field
                   </button>
-                </CCol>
-                <CCol
-                  xs={12}
-                  className="text-center">
-                  <CButton
-                    color="primary"
-                    type="submit">
+                </CCol> */}
+                <CCol xs={12} className="text-center">
+                  <CButton color="primary" type="submit">
                     <span className="fe fe-plus"></span>
                     {isLoading ? "Saving data..." : "Save"}
                   </CButton>
