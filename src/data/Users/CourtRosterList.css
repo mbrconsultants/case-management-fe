@@ -20,22 +20,25 @@
 @media print {
   body * {
     visibility: hidden;
-    font-family: "Times New Roman", Times, serif;
   }
-  #divToPrint,
-  #divToPrint * {
-    display: block;
+  #table-to-print,
+  #table-to-print * {
+    visibility: visible;
   }
-  #divToPrint {
-    position: absolute;
+  #table-to-print {
+    position: relative;
     left: 0;
     right: 0;
     top: 0;
-    zoom: 100%;
-    font-size: 15px;
-    page-break-inside: avoid;
+     zoom: 100%;
+     margin-top: -200px;
+    page-break-before: avoid;
+    page-break-after: avoid;
+
   }
   #hideBtn {
     display: none;
   }
 }
+
+
