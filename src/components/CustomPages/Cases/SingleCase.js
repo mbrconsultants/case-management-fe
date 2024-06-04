@@ -30,6 +30,7 @@ export default function SingleCase() {
 
   const [LegalModal, setLegalModal] = useState(false);
   const [motionModal, setMotionModal] = useState(false);
+  const [caseModal, setCaseModal] = useState(false);
 
   const [ChamberModal, setChamberModal] = useState(false);
   const [attachment, setCaseAttachment] = useState([]);
@@ -62,6 +63,14 @@ export default function SingleCase() {
   };
   const closeMotionModal = () => {
     setMotionModal(false);
+  };
+
+  const openCaseModal = () => {
+    setMotionData(data);
+    setCaseModal(true);
+  };
+  const closeCaseModal = () => {
+    setCaseModal(false);
   };
 
   const params = useParams();
@@ -204,19 +213,57 @@ export default function SingleCase() {
     }
   };
 
+  const handleCloseCase = async () => {
+    await endpoint
+      .post(`/case/close/${id}`)
+      .then((res) => {
+        console.log("case gateway", res);
+        setData(data.data);
+        getUser(); // Refresh case data
+        SuccessAlert(res.data.message);
+        setLoading(false);
+        closeCaseModal();
+      })
+      .catch((err) => {
+        setLoading(false);
+        closeCaseModal();
+        ErrorAlert(err.response.data.message);
+        // console.log(err);
+      });
+  };
+
+  const handleReopenCase = async () => {
+    await endpoint
+      .post(`/case/reopen`)
+      .then((res) => {
+        console.log("case gateway", res);
+        setData(data.data);
+        getUser(); // Refresh case data
+        SuccessAlert(res.data.message);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        closeCaseModal();
+        ErrorAlert(err.response.data.message);
+        // console.log(err);
+      });
+  };
+
   return (
     <>
       <div>
-        <Col
-          xl={12}
-          md={12}>
+        <Col xl={12} md={12}>
           <Card className="card border">
             {loading && <Loader />}
-            {!loading && (
+            {!loading && data && (
               <Card.Body>
                 <div className="text-center"></div>
                 <div className="mt-5">
-                  <div className="container bg-primary text-white custom-height" style={{height:"50px", borderRadius:"5px"}}>
+                  <div
+                    className="container bg-primary text-white custom-height"
+                    style={{ height: "50px", borderRadius: "5px" }}
+                  >
                     <h4 className="text-center text-uppercase pt-3">
                       Case Information
                     </h4>
@@ -281,14 +328,16 @@ export default function SingleCase() {
                                 }
                                 <button
                                   className="btn btn-primary mx-5"
-                                  onClick={openLegalModal}>
+                                  onClick={openLegalModal}
+                                >
                                   change
                                 </button>
                               </>
                             ) : (
                               <button
-                                className="btn btn-info"
-                                onClick={openLegalModal}>
+                                className="btn btn-info bright-btn btn-info-bright"
+                                onClick={openLegalModal}
+                              >
                                 <span className="fe fe-plus"></span>
                                 Attach Legal Officer
                               </button>
@@ -306,14 +355,16 @@ export default function SingleCase() {
                                 {data.ChamberOrSolicitor.chamber_name}
                                 <button
                                   className="btn btn-primary mx-5"
-                                  onClick={openChamberModal}>
+                                  onClick={openChamberModal}
+                                >
                                   change
                                 </button>
                               </>
                             ) : (
                               <button
                                 className="btn btn-primary bright-btn btn-secondary-bright"
-                                onClick={openChamberModal}>
+                                onClick={openChamberModal}
+                              >
                                 <span className="fe fe-plus"></span>
                                 Attach Chamber/Solicitor
                               </button>
@@ -331,7 +382,8 @@ export default function SingleCase() {
                                   attach.doc_url
                                 }`}
                                 target="_blank"
-                                className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                              >
                                 <span className="fa fa-eye"></span>{" "}
                                 View/Download
                               </a>
@@ -343,10 +395,9 @@ export default function SingleCase() {
                           <div className="col-md-6">
                             <a
                               href={`#`}
-                              className="btn bright-btn btn-secondary-bright m-1">
-                              <i
-                                className="fa fa-file"
-                                aria-hidden="true"></i>
+                              className="btn bright-btn btn-secondary-bright m-1"
+                            >
+                              <i className="fa fa-file" aria-hidden="true"></i>
                               {data.status == 1 ? "Pending" : " Resolved"}
                             </a>
                           </div>
@@ -358,21 +409,31 @@ export default function SingleCase() {
               </Card.Body>
             )}
 
-            <div className="col-md-12 flex justify-content-end">
+            <div className="d-flex justify-content-between">
               <button
                 className="btn btn-primary bright-btn btn-primary-bright mx-5"
-                onClick={openMotionModal}>
+                onClick={openMotionModal}
+              >
                 Attach Motion
               </button>
+              {data && (
+                <button
+                  className={`btn ${
+                    data.status === 2
+                      ? "btn-danger bright-btn btn-danger-bright"
+                      : "btn-danger bright-btn btn-danger-bright"
+                  } mx-5`}
+                  onClick={openCaseModal}
+                >
+                  {data.status === 2 ? "Reopen Case" : "Close Case"}
+                </button>
+              )}
             </div>
           </Card>
         </Col>
         <Modal show={LegalModal}>
           <Modal.Header>
-            <Button
-              onClick={closeLegalModal}
-              className="btn-close"
-              variant="">
+            <Button onClick={closeLegalModal} className="btn-close" variant="">
               x
             </Button>
           </Modal.Header>
@@ -384,9 +445,7 @@ export default function SingleCase() {
                   <Card.Title as="h3">Attach legal Officer </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Col
-                    lg={12}
-                    md={12}>
+                  <Col lg={12} md={12}>
                     <p>Please select legal Officers</p>
                     <Select
                       isMulti
@@ -410,16 +469,14 @@ export default function SingleCase() {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="dark"
-              className="me-1"
-              onClick={closeLegalModal}>
+            <Button variant="dark" className="me-1" onClick={closeLegalModal}>
               Close
             </Button>
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAddLegalOfficer(e, params.id)}>
+              onClick={(e) => handleAddLegalOfficer(e, params.id)}
+            >
               Assign
             </Button>
           </Modal.Footer>
@@ -429,7 +486,8 @@ export default function SingleCase() {
             <Button
               onClick={closeChamberModal}
               className="btn-close"
-              variant="">
+              variant=""
+            >
               x
             </Button>
           </Modal.Header>
@@ -441,9 +499,7 @@ export default function SingleCase() {
                   <Card.Title as="h3">Attach Chamber </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Col
-                    lg={12}
-                    md={12}>
+                  <Col lg={12} md={12}>
                     <p>Please select Chamber</p>
                     <Select
                       isMulti
@@ -461,28 +517,21 @@ export default function SingleCase() {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="dark"
-              className="me-1"
-              onClick={closeChamberModal}>
+            <Button variant="dark" className="me-1" onClick={closeChamberModal}>
               Close
             </Button>
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAddChamberOfficer(e)}>
+              onClick={(e) => handleAddChamberOfficer(e)}
+            >
               Assign
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal
-          show={motionModal}
-          size="lg">
+        <Modal show={motionModal} size="lg">
           <Modal.Header>
-            <Button
-              onClick={closeMotionModal}
-              className="btn-close"
-              variant="">
+            <Button onClick={closeMotionModal} className="btn-close" variant="">
               x
             </Button>
           </Modal.Header>
@@ -494,9 +543,7 @@ export default function SingleCase() {
                   <Card.Title as="h3">Attach Motion </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Col
-                    lg={12}
-                    md={12}>
+                  <Col lg={12} md={12}>
                     <p>
                       Please complete the details to assign motion to{" "}
                       {motionData && motionData.suite_no}
@@ -514,13 +561,12 @@ export default function SingleCase() {
                             ...motionDetails,
                             doc_type_id: e.target.value,
                           })
-                        }>
+                        }
+                      >
                         <option value="">--select--</option>
                         {fileType &&
                           fileType.map((file) => (
-                            <option
-                              value={file.id}
-                              key={file.id}>
+                            <option value={file.id} key={file.id}>
                               {file.name}
                             </option>
                           ))}
@@ -552,7 +598,8 @@ export default function SingleCase() {
                             ...motionDetails,
                             motion_description: e.target.value,
                           })
-                        }></textarea>
+                        }
+                      ></textarea>
                     </Col>
                   </Row>
                 </Card.Body>
@@ -563,17 +610,68 @@ export default function SingleCase() {
             <Button
               variant="warning"
               className="me-1"
-              onClick={closeMotionModal}>
+              onClick={closeMotionModal}
+            >
               Close
             </Button>
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAddMotion(e)}>
+              onClick={(e) => handleAddMotion(e)}
+            >
               Assign
             </Button>
           </Modal.Footer>
         </Modal>
+        {data && (
+          <Modal show={caseModal} size="lg">
+            <Modal.Header>
+              {/* <Button onClick={closeCaseModal} className="btn-close" variant="">
+                x
+              </Button> */}
+            </Modal.Header>
+
+            <Modal.Body>
+              <div>
+                <Card>
+                  <Card.Header>
+                    <Card.Title as="h3">
+                      {data.status === 2 ? "Reopen Case" : "Close Case"}{" "}
+                    </Card.Title>
+                  </Card.Header>
+                  <Card.Body>
+                    <Col lg={12} md={12}>
+                      <p>
+                        Are you sure you want to{" "}
+                        {data.status === 2 ? "Reopen Case" : "Close Case"}?
+                      </p>
+                    </Col>
+                  </Card.Body>
+                </Card>
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="warning"
+                className="me-1"
+                onClick={closeCaseModal}
+              >
+                Close
+              </Button>
+
+              <button
+                className={`btn ${
+                  data.status === 2
+                    ? "btn-danger bright-btn btn-danger-bright"
+                    : "btn-danger bright-btn btn-danger-bright"
+                } mx-5`}
+                onClick={data.status === 2 ? handleReopenCase : handleCloseCase}
+              >
+                {data.status === 2 ? "Reopen Case" : "Close Case"}
+              </button>
+            </Modal.Footer>
+          </Modal>
+        )}
       </div>
     </>
   );
