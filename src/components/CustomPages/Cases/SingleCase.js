@@ -319,6 +319,12 @@ export default function SingleCase() {
                           </div>
                         </div>
                         <div className="row border">
+                          <div className="fw-bold col-md-6">Hearing Date:</div>
+                          <div className="col-md-6">
+                            {data.hearing_date ? data.hearing_date : ""}
+                          </div>
+                        </div>
+                        <div className="row border">
                           <div className="fw-bold col-md-6">Legal Officer:</div>
                           <div className="col-md-6">
                             {data.LegalOfficer ? (
