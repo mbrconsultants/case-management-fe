@@ -46,6 +46,7 @@ export default function CreateCase() {
     respondent: "",
     court_id: "",
     case_description: "",
+    hearing_date: "",
     doc_url: null,
   });
   const {
@@ -138,8 +139,8 @@ export default function CreateCase() {
     data.append("appellants", details.appellants);
     data.append("respondent", details.respondent);
     data.append("court_id", details.court_id);
-
     data.append("case_description", details.case_description);
+    data.append("hearing_date", details.hearing_date);
     data.append("doc_url", details.doc_url);
     if (id) {
       await endpoint
@@ -177,14 +178,13 @@ export default function CreateCase() {
         <div>
           <h1 className="page-title">New Case</h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Registry
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+              aria-current="page"
+            >
               New Case
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -192,7 +192,8 @@ export default function CreateCase() {
         <div className="ms-auto pageheader-btn">
           <Link
             to={`${process.env.PUBLIC_URL}/cases/`}
-            className="btn btn-primary btn-icon text-white me-3">
+            className="btn btn-primary btn-icon text-white me-3"
+          >
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
@@ -202,9 +203,7 @@ export default function CreateCase() {
       </div>
 
       <Row>
-        <Col
-          md={12}
-          lg={12}>
+        <Col md={12} lg={12}>
           <Card>
             <Card.Header>
               <Col className="card-title text-center">
@@ -217,7 +216,8 @@ export default function CreateCase() {
               {/* <formvalidation.CustomValidation /> */}
               <CForm
                 onSubmit={handleSubmit(handleCreateUser)}
-                className="row g-3 needs-validation">
+                className="row g-3 needs-validation"
+              >
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom02">
                     Suit Number
@@ -267,14 +267,16 @@ export default function CreateCase() {
                         ...details,
                         case_type_id: e.target.value,
                       })
-                    }>
+                    }
+                  >
                     <option value="">--select-</option>
                     {caseTypelist.map((caseType, index) => (
                       <option
                         key={index + 1}
                         value={caseType.id}
                         selected={details.case_type_id === caseType.id}
-                        className="text-dark">
+                        className="text-dark"
+                      >
                         {caseType.case_type}
                       </option>
                     ))}
@@ -348,10 +350,28 @@ export default function CreateCase() {
                     }
                     type="text"
                     aria-describedby="inputGroupPrepend"
-                    name="case_description">
+                    name="case_description"
+                  >
                     {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
                   </CFormTextarea>
                 </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">
+                    Hearing Date
+                  </CFormLabel>
+                  <CFormInput
+                    defaultValue={details.hearing_date}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        hearing_date: e.target.value,
+                      })
+                    }
+                    type="date"
+                    name="hearing_date"
+                  />
+                </CCol>
+                <CCol md={4}></CCol>
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustomUsername">
                     Attachment
@@ -371,13 +391,8 @@ export default function CreateCase() {
                     />
                   </CInputGroup>
                 </CCol>
-
-                <CCol
-                  xs={12}
-                  className="text-center">
-                  <CButton
-                    color="primary"
-                    type="submit">
+                <CCol xs={12} className="text-center">
+                  <CButton color="primary" type="submit">
                     <span className="fe fe-plus"></span>
                     {isLoading ? "Saving data..." : "Save"}
                   </CButton>

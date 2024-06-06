@@ -22,6 +22,7 @@ import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 export default function SingleCase() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState();
+  const [openCaseModalData, setOpenCaseModalData] = useState();
   const [legalOfficers, setLegalOfficers] = useState([]);
   const [chambers, setChambers] = useState([]);
 
@@ -65,8 +66,8 @@ export default function SingleCase() {
     setMotionModal(false);
   };
 
-  const openCaseModal = () => {
-    setMotionData(data);
+  const openCaseModal = (data) => {
+    setOpenCaseModalData(data);
     setCaseModal(true);
   };
   const closeCaseModal = () => {
@@ -232,23 +233,29 @@ export default function SingleCase() {
       });
   };
 
-  const handleReopenCase = async () => {
-    await endpoint
-      .post(`/case/reopen`)
-      .then((res) => {
-        console.log("case gateway", res);
-        setData(data.data);
-        getUser(); // Refresh case data
-        SuccessAlert(res.data.message);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        closeCaseModal();
-        ErrorAlert(err.response.data.message);
-        // console.log(err);
-      });
+  const handleReopenCaseClick = (id) => {
+    // console.log("reopen id", id);
+    // window.location.href = `/reopen-case/${id}`;
+    navigate(`/reopen-case/${id}`);
   };
+
+  // const handleReopenCase = async () => {
+  //   await endpoint
+  //     .post(`/case/reopen`)
+  //     .then((res) => {
+  //       console.log("case gateway", res);
+  //       setData(data.data);
+  //       getUser(); // Refresh case data
+  //       SuccessAlert(res.data.message);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //       closeCaseModal();
+  //       ErrorAlert(err.response.data.message);
+  //       // console.log(err);
+  //     });
+  // };
 
   return (
     <>
@@ -423,7 +430,7 @@ export default function SingleCase() {
                       ? "btn-danger bright-btn btn-danger-bright"
                       : "btn-danger bright-btn btn-danger-bright"
                   } mx-5`}
-                  onClick={openCaseModal}
+                  onClick={() => openCaseModal(data)}
                 >
                   {data.status === 2 ? "Reopen Case" : "Close Case"}
                 </button>
@@ -623,7 +630,7 @@ export default function SingleCase() {
             </Button>
           </Modal.Footer>
         </Modal>
-        {data && (
+        {openCaseModalData && (
           <Modal show={caseModal} size="lg">
             <Modal.Header>
               {/* <Button onClick={closeCaseModal} className="btn-close" variant="">
@@ -636,14 +643,19 @@ export default function SingleCase() {
                 <Card>
                   <Card.Header>
                     <Card.Title as="h3">
-                      {data.status === 2 ? "Reopen Case" : "Close Case"}{" "}
+                      {openCaseModalData.status === 2
+                        ? "Reopen Case"
+                        : "Close Case"}{" "}
                     </Card.Title>
                   </Card.Header>
                   <Card.Body>
                     <Col lg={12} md={12}>
                       <p>
                         Are you sure you want to{" "}
-                        {data.status === 2 ? "Reopen Case" : "Close Case"}?
+                        {openCaseModalData.status === 2
+                          ? "Reopen Case"
+                          : "Close Case"}
+                        ?
                       </p>
                     </Col>
                   </Card.Body>
@@ -656,18 +668,22 @@ export default function SingleCase() {
                 className="me-1"
                 onClick={closeCaseModal}
               >
-                Close
+                Cancel
               </Button>
 
               <button
                 className={`btn ${
-                  data.status === 2
+                  openCaseModalData.status === 2
                     ? "btn-danger bright-btn btn-danger-bright"
                     : "btn-danger bright-btn btn-danger-bright"
                 } mx-5`}
-                onClick={data.status === 2 ? handleReopenCase : handleCloseCase}
+                onClick={
+                  openCaseModalData.status === 2
+                    ? () => handleReopenCaseClick(openCaseModalData.id)
+                    : handleCloseCase
+                }
               >
-                {data.status === 2 ? "Reopen Case" : "Close Case"}
+                {openCaseModalData.status === 2 ? `Reopen Case` : "Close Case"}
               </button>
             </Modal.Footer>
           </Modal>

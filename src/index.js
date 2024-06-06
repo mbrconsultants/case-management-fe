@@ -363,6 +363,9 @@ const CaseList = React.lazy(() =>
 const SingleCase = React.lazy(() =>
   import("./components/CustomPages/Cases/SingleCase")
 );
+const ReopenCase = React.lazy(() =>
+  import("./components/CustomPages/Cases/ReopenCase")
+);
 const StaffList = React.lazy(() =>
   import("./components/CustomPages/Users/Stafflist")
 );
@@ -451,10 +454,7 @@ const Root = () => {
             />
 
             <Routes>
-              <Route
-                path="/login"
-                element={<Login />}
-              />
+              <Route path="/login" element={<Login />} />
 
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
@@ -464,11 +464,9 @@ const Root = () => {
                   ) : (
                     <Navigate to={`${process.env.PUBLIC_URL}/login`} />
                   )
-                }>
-                <Route
-                  index
-                  element={<Dashboard />}
-                />
+                }
+              >
+                <Route index element={<Dashboard />} />
                 <Route
                   path={`${process.env.PUBLIC_URL}/dashboard`}
                   element={
@@ -508,6 +506,10 @@ const Root = () => {
                   <Route
                     path={`${process.env.PUBLIC_URL}/new-case`}
                     element={<NewCase />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/reopen-case/:id`}
+                    element={<ReopenCase />}
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/file-type`}
@@ -1193,7 +1195,8 @@ const Root = () => {
               />
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
-                element={<Custompages />}>
+                element={<Custompages />}
+              >
                 <Route
                   path={`${process.env.PUBLIC_URL}/pages/underConstruction`}
                   element={
@@ -1250,10 +1253,7 @@ const Root = () => {
                   path={`${process.env.PUBLIC_URL}/custompages/errorpages/errorpage503`}
                   element={<Errorpage503 />}
                 />
-                <Route
-                  path="*"
-                  element={<Errorpage400 />}
-                />
+                <Route path="*" element={<Errorpage400 />} />
               </Route>
             </Routes>
 
