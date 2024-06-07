@@ -89,34 +89,34 @@ export default function CreateUser() {
                                 className="row g-3 needs-validation"
                             >
                                 <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustom01">Firstname</CFormLabel>
+                                    <CFormLabel htmlFor="validationCustom01">Surname</CFormLabel>
                                     <CFormInput
                                         type="text"
                                         id="validationCustom01"
                                         defaultValue=""
                                         required
-                                        name="first_name"
-                                        {...register("first_name")}
+                                        name="surname"
+                                        {...register("surname")}
 
                                     />
                                     {/* <CFormFeedback valid>Looks good!</CFormFeedback> */}
                                 </CCol>
                                 <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustom02">Lastname</CFormLabel>
+                                    <CFormLabel htmlFor="validationCustom02">Firstname</CFormLabel>
                                     <CFormInput
                                         type="text"
                                         required
-                                        name="last_name"
-                                        {...register("last_name")}
+                                        name="first_name"
+                                        {...register("first_name")}
 
                                     />
                                 </CCol>
                                 <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustom02">OtherName</CFormLabel>
+                                    <CFormLabel htmlFor="validationCustom02">Middlename</CFormLabel>
                                     <CFormInput
                                         type="text"
-                                        name="other_name"
-                                        {...register("other_name")}
+                                        name="middle_name"
+                                        {...register("middle_name")}
 
                                     />
                                 </CCol>
@@ -134,7 +134,7 @@ export default function CreateUser() {
                                         />
                                     </CInputGroup>
                                 </CCol>
-                                <CCol md={2}>
+                                {/* <CCol md={2}>
                                     <CFormLabel htmlFor="validationCustomUsername">Gender</CFormLabel>
 
                                     <select className="form-control" {...register("gender", { required: "Please select gender" })}>
@@ -145,7 +145,7 @@ export default function CreateUser() {
                                     </select>
 
                                     {errors.r?.type === "required" && ( <span className='text-danger'> Gender is required </span> )}
-                                </CCol>
+                                </CCol> */}
                                 <CCol md={2}>
                                     <CFormLabel htmlFor="validationCustomUsername">Roles</CFormLabel>
 
@@ -158,16 +158,16 @@ export default function CreateUser() {
                                 </CCol>
                                 
                                 <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustom02">Phone No.</CFormLabel>
+                                    <CFormLabel htmlFor="validationCustom02">Password</CFormLabel>
                                     <CFormInput
-                                        type="text"
-                                        name="phone"
-                                        {...register("phone")}
+                                        type="password"
+                                        name="password"
+                                        {...register("password")}
 
                                     />
-                                        <input type="hidden" name="user_type" {...register("user_type")} value="1" />
+                                        {/* <input type="hidden" name="user_type" {...register("user_type")} value="1" />
                                     {errors.phoneNo?.type === "checkLength" && (<span className='text-danger'> <em>Phone No. is invalid</em> </span>)}
-                                    {errors.phoneNo?.type === "matchPattern" && (<span className='text-danger'> <em>Phone No. is Incorrect</em> </span>)}
+                                    {errors.phoneNo?.type === "matchPattern" && (<span className='text-danger'> <em>Phone No. is Incorrect</em> </span>)} */}
 
                                 </CCol>
                               

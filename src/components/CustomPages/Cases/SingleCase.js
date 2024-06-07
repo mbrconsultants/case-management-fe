@@ -30,10 +30,13 @@ export default function SingleCase() {
 
   const [LegalModal, setLegalModal] = useState(false);
   const [motionModal, setMotionModal] = useState(false);
+  const [adjournCaseModal, setAdjournCaseModal] = useState(false);
+  
 
   const [ChamberModal, setChamberModal] = useState(false);
   const [attachment, setCaseAttachment] = useState([]);
   const [motionData, setMotionData] = useState();
+  const [adjournCaseData, setAdjournCaseData] = useState();
   const [fileType, setFileType] = useState();
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [selectedChamber, setSelectedChamber] = useState(null);
@@ -60,6 +63,16 @@ export default function SingleCase() {
     setMotionData(data);
     setMotionModal(true);
   };
+
+  const openAdjournCaseModal = () => {
+    setAdjournCaseData(data);
+    setAdjournCaseModal(true);
+  };
+
+  const closeAdjournCaseModal = () => {
+    setAdjournCaseModal(false);
+  }
+
   const closeMotionModal = () => {
     setMotionModal(false);
   };
@@ -196,6 +209,26 @@ export default function SingleCase() {
       console.log(err);
       setLoading(false);
       closeMotionModal();
+      if (err.response && err.response.data && err.response.data.description) {
+        ErrorAlert(err.response.data.description);
+      } else {
+        ErrorAlert("An error occurred. Please try again.");
+      }
+    }
+  };
+
+  const handleAdjournCase = async () => {
+    try {
+      const data = new FormData();
+      data.append("case_id", motionDetails.case_id);
+
+      const response = await endpoint.post(`/motion/create`, data);
+      navigate(`${process.env.PUBLIC_URL}/cases`);
+      SuccessAlert(response.data.message);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      closeAdjournCaseModal();
       if (err.response && err.response.data && err.response.data.description) {
         ErrorAlert(err.response.data.description);
       } else {
@@ -351,6 +384,7 @@ export default function SingleCase() {
                             </a>
                           </div>
                         </div>
+                        <p style={{color: 'green'}}> <a href="/comments">View Comments </a></p>
                       </div>
                     )}
                   </div>
@@ -363,6 +397,12 @@ export default function SingleCase() {
                 className="btn btn-primary bright-btn btn-primary-bright mx-5"
                 onClick={openMotionModal}>
                 Attach Motion
+              </button>
+
+              <button
+                className="btn btn-warning bright-btn btn-primary-bright mx-5"
+              onClick={openAdjournCaseModal}>
+                Adjourn Case
               </button>
             </div>
           </Card>
@@ -475,6 +515,7 @@ export default function SingleCase() {
             </Button>
           </Modal.Footer>
         </Modal>
+
         <Modal
           show={motionModal}
           size="lg">
@@ -571,6 +612,179 @@ export default function SingleCase() {
               className="me-1"
               onClick={(e) => handleAddMotion(e)}>
               Assign
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          show={motionModal}
+          size="lg">
+          <Modal.Header>
+            <Button
+              onClick={closeMotionModal}
+              className="btn-close"
+              variant="">
+              x
+            </Button>
+          </Modal.Header>
+
+          <Modal.Body>
+            <div>
+              <Card>
+                <Card.Header>
+                  <Card.Title as="h3">Attach Motion </Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <Col
+                    lg={12}
+                    md={12}>
+                    <p>
+                      Please complete the details to assign motion to{" "}
+                      {motionData && motionData.suite_no}
+                    </p>
+                  </Col>
+                  <Row className="my-5">
+                    <Col md={6}>
+                      <label htmlFor="document type">Document Type</label>
+                      <select
+                        className="form-select"
+                        name=""
+                        id=""
+                        onChange={(e) =>
+                          setMotionDetails({
+                            ...motionDetails,
+                            doc_type_id: e.target.value,
+                          })
+                        }>
+                        <option value="">--select--</option>
+                        {fileType &&
+                          fileType.map((file) => (
+                            <option
+                              value={file.id}
+                              key={file.id}>
+                              {file.name}
+                            </option>
+                          ))}
+                      </select>
+                    </Col>
+                    <Col md={6}>
+                      <label htmlFor="document type">Document </label>
+                      <input
+                        onChange={(e) =>
+                          setMotionDetails({
+                            ...motionDetails,
+                            doc_url: e.target.files[0],
+                          })
+                        }
+                        className="form-control"
+                        type="file"
+                        name=""
+                        id=""
+                      />
+                    </Col>
+                  </Row>
+                  <Row className="my-5">
+                    <Col md={12}>
+                      <label htmlFor="document type">Motion Description</label>
+                      <textarea
+                        className="form-control"
+                        onChange={(e) =>
+                          setMotionDetails({
+                            ...motionDetails,
+                            motion_description: e.target.value,
+                          })
+                        }></textarea>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="warning"
+              className="me-1"
+              onClick={closeMotionModal}>
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              className="me-1"
+              onClick={(e) => handleAddMotion(e)}>
+              Assign
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          show={adjournCaseModal}
+          size="md">
+          <Modal.Header>
+            <Button
+              onClick={closeAdjournCaseModal}
+              className="btn-close"
+              variant="">
+              x
+            </Button>
+          </Modal.Header>
+
+          <Modal.Body>
+            <div>
+              <Card>
+                <Card.Header>
+                  <Card.Title as="h3">Adjourn Case </Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <Row className="my-5">
+                    <Col md={12}>
+                      <label htmlFor="For date">Date </label>
+                      <input
+                        // onChange={(e) =>
+                        //   setMotionDetails({
+                        //     ...motionDetails,
+                        //     doc_url: e.target.files[0],
+                        //   })
+                        // }
+                        className="form-control"
+                        type="date"
+                        
+                      />
+                    </Col>
+                  </Row>
+                  <Row className="my-5">
+                    <Col md={12}>
+                      <label htmlFor="For comment">Comment</label>
+                      <textarea
+                        className="form-control"
+                        placeholder="Add a reason for the adjournment"
+                        // onChange={(e) =>
+                        //   setMotionDetails({
+                        //     ...motionDetails,
+                        //     motion_description: e.target.value,
+                        //   })
+                        // }
+                        >
+
+                        </textarea>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="warning"
+              className="me-1"
+              onClick={closeAdjournCaseModal}>
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              className="me-1"
+              onClick={(e) => handleAdjournCase(e)}
+              >
+              Adjourn
             </Button>
           </Modal.Footer>
         </Modal>

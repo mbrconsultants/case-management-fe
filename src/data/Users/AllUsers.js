@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link,useParams, useNavigate, Navigate } from "react-router-dom";
 import "react-data-table-component-extensions/dist/index.css";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
@@ -20,16 +20,18 @@ export const AllUsers = () => {
   const [value, setValue] = useState({});
   const [isLoading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-    const [showEditModal, setShowEditModal] = useState(false)
-    const [roles, setRoles]=useState([]);
-
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [roles, setRoles]=useState([]);
+  const params = useParams();
+  const id = params.id;
  
 
   //get list
   const getUsersList = async () => {
     setLoading(true);
-    await endpoint.get('/user/list/1')
+    await endpoint.get('/user/list')
       .then((res) => {
+        console.log("Users list", res.data.data)
         setUsersList(res.data.data)
         setLoading(false)
       })
@@ -38,19 +40,19 @@ export const AllUsers = () => {
       })
   }
      //get roles
-     const getRoles = async () => {
-      setLoading(true);
-      await endpoint.get('/role/getRoles')
-        .then((res) => {
-          setRoles(res.data.data)
-          setLoading(false)
-        })
-        .catch((err) => {
-          setLoading(false)
-          // console.log(err)
-        })
-    }
- 
+  const getRoles = async () => {
+  setLoading(true);
+  await endpoint.get('/role/getRoles')
+    .then((res) => {
+      setRoles(res.data.data)
+      setLoading(false)
+    })
+    .catch((err) => {
+      setLoading(false)
+      // console.log(err)
+    })
+}
+    
 
   const handleShowEditModal = (row) => {
     setValue(row);
@@ -96,15 +98,18 @@ if (error.response) {
     {
       name: "First Name",
       selector: (row) => [row.fullname],
-
+    
       style: { textAlign: 'right' },
       sortable: true,
-
+    
       width: "300px",
-      cell: (row) =>
-        <div className="fs-12 fw-bold ">{row.fullname.toUpperCase()}</div>
-      ,
+      cell: (row) => (
+        <div className="fs-12 fw-bold ">
+          {row.fullname ? row.fullname.toUpperCase() : ""}
+        </div>
+      ),
     },
+    
   
  
     {
@@ -139,6 +144,11 @@ if (error.response) {
       style: { textAlign: 'right' },
       cell: (row) => (
         <div className="fs-12 fw-bold">
+          <Link
+            to={`/user/${row.id}`}
+            className="btn btn-primary btn-sm my-1 bright-btn btn-primary-bright">
+            <span className="fe fe-eye"> </span>
+          </Link>
           <button
             className="btn btn-warning btn-sm my-1"
             variant="warning"
@@ -146,13 +156,13 @@ if (error.response) {
           >
             <span className="fe fe-edit"> </span>
           </button>
-          <button
+          {/* <button
             className="btn btn-danger btn-sm"
             variant="danger"
             onClick={() => handleShowDeleteModal(row)}
           >
             <span className="fe fe-trash"> </span>
-          </button>
+          </button> */}
         </div>
       )
     }
@@ -216,33 +226,33 @@ if (error.response) {
           <Card.Body>
             <Col lg={12} md={12}>
               <FormGroup>
-                <label htmlFor="exampleInputname">First Name</label>
+                <label htmlFor="exampleInputname">Surname</label>
                 <Form.Control
                   type="text"
                   name="name"
                   {...register("first_name")}
                   readOnly
-                  defaultValue={value && value.Profile ? value.Profile.first_name : ''}
+                  defaultValue={value && value.surname ? value.surname : ''}
                   className="form-control"
                 />
               </FormGroup>
               <FormGroup>
-                <label htmlFor="exampleInputname">Last Name</label>
+                <label htmlFor="exampleInputname">First Name</label>
                 <Form.Control
                   type="text"
                   readOnly
                   {...register("last_name")}
-                  defaultValue={value && value.Profile ? value.Profile.last_name : ''}
+                  defaultValue={value && value.first_name ? value.first_name : ''}
                   className="form-control"
                 />
               </FormGroup>
               <FormGroup>
-                <label htmlFor="exampleInputname">Other Names</label>
+                <label htmlFor="exampleInputname">Middle Name</label>
                 <Form.Control
                   type="text"
                   readOnly
                   {...register("other_name")}
-                  defaultValue={value && value.Profile ? value.Profile.other_name : ''}
+                  defaultValue={value && value.middle_name ? value.middle_name : ''}
                   className="form-control"
                 />
               </FormGroup>
@@ -251,7 +261,7 @@ if (error.response) {
                 <Form.Control
                   type="text"
                   {...register("email")}
-                  defaultValue={value && value.Profile ? value.email : ''}
+                  defaultValue={value && value.email ? value.email : ''}
                   className="form-control"
                 />
               </FormGroup>
@@ -276,11 +286,11 @@ if (error.response) {
               <FormGroup>
                 <label htmlFor="exampleInputname">Roles</label>
                 <select className="form-control" {...register("role_id", { required: "Please select roles" })}>
-                                        <option  defaultValue={value.Role && value.Role.id ? value.Role.id:""}>{value.Role && value.Role.role_name ? value.Role.role_name : '--Select Roles-- '}</option>
-                                        {roles.map(role => (<option key={role.id} value={role.id}>{role.role_name}</option>))}
-                                    </select>
+                    <option  defaultValue={value.Role && value.Role.id ? value.Role.id:""}>{value.Role && value.Role.role_name ? value.Role.role_name : '--Select Roles-- '}</option>
+                    {roles.map(role => (<option key={role.id} value={role.id}>{role.role_name}</option>))}
+                </select>
 
-                                    {errors.r?.type === "required" && ( <span className='text-danger'> Role required </span> )}
+                {errors.r?.type === "required" && ( <span className='text-danger'> Role required </span> )}
               </FormGroup>
               
             </Col>
@@ -298,6 +308,7 @@ if (error.response) {
     </Modal.Footer>
   </CForm>
 </Modal>
+
 
 
         <Modal show={showDeleteModal} >
