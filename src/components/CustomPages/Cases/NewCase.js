@@ -145,7 +145,10 @@ export default function CreateCase() {
     if (id) {
       await endpoint
         .put(`/case/edit/${id}`, data)
-        .then((res) => navigate(`${process.env.PUBLIC_URL}/cases`))
+        .then((res) => {
+          SuccessAlert(res.data.message);
+          navigate(`${process.env.PUBLIC_URL}/cases`);
+        })
         .catch((err) => {
           console.log(err);
           setLoading(false);

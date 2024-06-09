@@ -35,6 +35,8 @@ export default function SingleCase() {
 
   const [ChamberModal, setChamberModal] = useState(false);
   const [attachment, setCaseAttachment] = useState([]);
+  const [assigncouncils, setAssignCouncils] = useState([]);
+  const [assignsolicitors, setAssignSolicitors] = useState([]);
   const [motionData, setMotionData] = useState();
   const [fileType, setFileType] = useState();
   const [selectedCouncil, setSelectedCouncil] = useState(null);
@@ -98,6 +100,8 @@ export default function SingleCase() {
       .then(({ data }) => {
         console.log("case", data.data);
         setData(data.data);
+        setAssignCouncils(data.data.AssignCouncils);
+        setAssignSolicitors(data.data.AssignSolicitors);
         setCaseAttachment(data.data.CaseAttachments);
         setLoading(false);
       })
@@ -109,11 +113,11 @@ export default function SingleCase() {
     await endpoint
       .get(`/legal-officer/list`)
       .then(({ data }) => {
-        console.log("legal officer", data.data);
+        // console.log("legal officer", data.data, data);
         setLegalOfficers(data.data);
         setLoading(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log("Legal Officer Error", err));
   };
   const getChambers = async () => {
     setLoading(true);
@@ -124,7 +128,7 @@ export default function SingleCase() {
         setChambers(data.data);
         setLoading(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log("Chamber Error", err));
   };
 
   const getFileType = async () => {
@@ -311,6 +315,12 @@ export default function SingleCase() {
                           </div>
                         </div>
                         <div className="row border">
+                          <div className="fw-bold col-md-6">Comment:</div>
+                          <div className="col-md-6">
+                            {data.comment ? data.comment.comment : ""}
+                          </div>
+                        </div>
+                        <div className="row border">
                           <div className="fw-bold col-md-6">
                             Case Description:
                           </div>
@@ -327,24 +337,24 @@ export default function SingleCase() {
                         <div className="row border">
                           <div className="fw-bold col-md-6">Legal Officer:</div>
                           <div className="col-md-6">
-                            {data.LegalOfficer ? (
+                            {assigncouncils && assigncouncils.length > 0 ? (
                               <>
-                                {
-                                  // data.LegalOfficer.Title
-                                  // ? data.LegalOfficer.Title.name
-                                  // : "" +
-                                  data.LegalOfficer.surname +
-                                    " " +
-                                    data.LegalOfficer.first_name +
-                                    " " +
-                                    data.LegalOfficer.middle_name
-                                }
-                                <button
-                                  className="btn btn-primary mx-5"
-                                  onClick={openLegalModal}
-                                >
-                                  change
-                                </button>
+                                {assigncouncils.map((council, index) => (
+                                  <span key={index}>
+                                    <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                      {council.LegalOfficer.surname}{" "}
+                                      {council.LegalOfficer.first_name}
+                                    </h3>
+                                  </span>
+                                ))}
+                                <ul>
+                                  <button
+                                    className="btn btn-primary mt-2"
+                                    onClick={openLegalModal}
+                                  >
+                                    Change
+                                  </button>
+                                </ul>
                               </>
                             ) : (
                               <button
@@ -363,15 +373,26 @@ export default function SingleCase() {
                             Chamber/Solicitor:
                           </div>
                           <div className="col-md-6">
-                            {data.ChamberOrSolicitor ? (
+                            {assignsolicitors && assignsolicitors.length > 0 ? (
                               <>
-                                {data.ChamberOrSolicitor.chamber_name}
-                                <button
-                                  className="btn btn-primary mx-5"
-                                  onClick={openChamberModal}
-                                >
-                                  change
-                                </button>
+                                {assignsolicitors.map((solicitor, index) => (
+                                  <span key={index}>
+                                    <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                      {
+                                        solicitor.ChamberOrSolicitor
+                                          .chamber_name
+                                      }
+                                    </h3>
+                                  </span>
+                                ))}
+                                <ul>
+                                  <button
+                                    className="btn btn-primary mt-2"
+                                    onClick={openChamberModal}
+                                  >
+                                    change
+                                  </button>
+                                </ul>
                               </>
                             ) : (
                               <button

@@ -60,6 +60,7 @@ export default function ReopenCase() {
     appellants: "",
     respondent: "",
     court_id: "",
+    comment: "",
     case_description: "",
     hearing_date: "",
     doc_url: null,
@@ -234,6 +235,7 @@ export default function ReopenCase() {
     data.append("appellants", details.appellants);
     data.append("respondent", details.respondent);
     data.append("court_id", details.court_id);
+    data.append("comment", details.comment);
     data.append("case_description", details.case_description);
     data.append("hearing_date", details.hearing_date);
     data.append("doc_url", details.doc_url);
@@ -335,6 +337,10 @@ export default function ReopenCase() {
                         <div className="row border">
                           <div className="fw-bold col-md-6">Respondent:</div>
                           <div className="col-md-6">{data.respondent}</div>
+                        </div>
+                        <div className="row border">
+                          <div className="fw-bold col-md-6">Comment:</div>
+                          <div className="col-md-6">{data.comment}</div>
                         </div>
                       </div>
                     )}
@@ -480,6 +486,26 @@ export default function ReopenCase() {
                         name="respondent"
                       />
                     </CInputGroup>
+                  </CCol>
+                  <CCol md={12}>
+                    <CFormLabel htmlFor="validationCustomUsername">
+                      Comment
+                    </CFormLabel>
+                    <CFormTextarea
+                      className="has-validation"
+                      defaultValue={details.comment}
+                      onChange={(e) =>
+                        setDetails({
+                          ...details,
+                          comment: e.target.value,
+                        })
+                      }
+                      type="text"
+                      aria-describedby="inputGroupPrepend"
+                      name="comment"
+                    >
+                      {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
+                    </CFormTextarea>
                   </CCol>
                   <CCol md={12}>
                     <CFormLabel htmlFor="validationCustomUsername">
