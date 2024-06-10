@@ -76,7 +76,7 @@ const errorAlert = (message) => {
             </div>
                     <div className="text-center">
                       <span className="login100-form-title">
-                        Forgot Password
+                        Forgot Password Update
                       </span>
                       <p className="text-muted">
                         Enter the email address registered on your account

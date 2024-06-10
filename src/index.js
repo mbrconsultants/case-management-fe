@@ -366,6 +366,12 @@ const SingleCase = React.lazy(() =>
 const ReopenCase = React.lazy(() =>
   import("./components/CustomPages/Cases/ReopenCase")
 );
+const CaseComment = React.lazy(() =>
+  import("./components/CustomPages/Cases/CaseComment")
+);
+const SingleUser = React.lazy(() =>
+  import("./components/CustomPages/Users/SingleUser")
+);
 const StaffList = React.lazy(() =>
   import("./components/CustomPages/Users/Stafflist")
 );
@@ -554,6 +560,14 @@ const Root = () => {
                   <Route
                     path={`${process.env.PUBLIC_URL}/case/:id`}
                     element={<SingleCase />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/comments`}
+                    element={<CaseComment />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/user/:id`}
+                    element={<SingleUser />}
                   />
 
                   <Route
