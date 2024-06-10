@@ -4,6 +4,7 @@ import {
   Col,
   Row,
   Card,
+  Modal,
   FormGroup,
   Button,
   Form,
@@ -49,6 +50,9 @@ export default function ReopenCase() {
 
   const [legalOfficerId, setLegalOfficerId] = useState();
   const [chamberId, setChamberId] = useState();
+  const [remarksModal, setRemarksModal] = useState(false);
+  const [remarksList, setremarksList] = useState([]);
+
   const [hearingdate, setHearingdate] = useState({ hearing_date: "" });
 
   //##
@@ -82,6 +86,7 @@ export default function ReopenCase() {
       .then(({ data }) => {
         console.log("case", data.data);
         setData(data.data);
+
         setCaseAttachment(data.data.CaseAttachments);
         setLoading(false);
       })
@@ -156,6 +161,7 @@ export default function ReopenCase() {
       .get(`/case/show/${id}`)
       .then((res) => {
         setDetails(res.data.data);
+        setremarksList(data.data.Remarks);
         console.log("Console Start");
         console.log(res.data.data);
         console.log("Console End");
@@ -273,6 +279,16 @@ export default function ReopenCase() {
   const selectedOption =
     options.find((option) => option.value === details.court_id) || null;
 
+  //show remark modal
+  const showRemarks = () => {
+    setRemarksModal(true);
+    console.log("here");
+  };
+  const hideRemarks = () => {
+    setRemarksModal(false);
+    console.log("here");
+  };
+
   return (
     <>
       <div>
@@ -340,7 +356,15 @@ export default function ReopenCase() {
                         </div>
                         <div className="row border">
                           <div className="fw-bold col-md-6">Comment:</div>
-                          <div className="col-md-6">{data.comment}</div>
+                          <div className="col-md-6">
+                            <button
+                              onClick={showRemarks}
+                              className="btn btn-primary"
+                            >
+                              {" "}
+                              <span className="fa fa-eye"></span> View
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -576,6 +600,44 @@ export default function ReopenCase() {
           </Col>
         </Row>
       </div>
+      <Modal show={remarksModal} size="lg">
+        <Modal.Header>
+          <Button onClick={hideRemarks} className="btn-close" variant="">
+            x
+          </Button>
+        </Modal.Header>
+
+        <Modal.Body>
+          <div>
+            <Card>
+              <Card.Header>
+                <Card.Title as="h3">{"Remarks"}</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Col lg={12} md={12}>
+                  <div className="container">
+                    {remarksList.length > 0 ? (
+                      remarksList.map((remark, index) => (
+                        <tr key={index + 1}>
+                          <td>{index + 1}</td>
+                          <td>{remark.comment}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <p>{"No Remark"}</p>
+                    )}
+                  </div>
+                </Col>
+              </Card.Body>
+            </Card>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="warning" className="me-1" onClick={hideRemarks}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
