@@ -497,11 +497,11 @@ export default function SingleCase() {
                 </button>
               )}
 
-              <button
+              {/* <button
                 className="btn btn-warning bright-btn btn-primary-bright mx-5"
                 onClick={openAdjournCaseModal}>
                 Adjourn Case
-              </button>
+              </button> */}
             </div>
           </Card>
         </Col>
