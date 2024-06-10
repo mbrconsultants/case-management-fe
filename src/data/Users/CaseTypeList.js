@@ -13,7 +13,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Loader from "../Loader/loader";
 import { log } from "nvd3";
 
-export const CaseList = () => {
+export const CaseTypeList = () => {
   const { user } = useContext(Context);
   const [data, setData] = useState([]);
   const [load, setLoad] = useState(false);

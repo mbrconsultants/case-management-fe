@@ -4,7 +4,7 @@ import ReactApexChart from "react-apexcharts";
 import { Breadcrumb, Col, Row, Card } from "react-bootstrap";
 
 //import * as role from "../../../data/module/createRole";
-import * as casex from "../../../data/Users/CaseList";
+import * as casex from "../../../data/Users/CaseTypeList";
 //import * as file from "../../../../src/data/Users/FileList";
 import { Link, useNavigate } from "react-router-dom";
 // import { useAuthDispatch, logout, useAuthState } from '../../context'
@@ -38,7 +38,7 @@ export default function CaseType() {
             <Card.Body>
               <div className="">
                 <div className="">
-                  <casex.CaseList />
+                  <casex.CaseTypeList />
                 </div>
               </div>
             </Card.Body>
