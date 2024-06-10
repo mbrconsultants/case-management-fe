@@ -473,11 +473,17 @@ export default function SingleCase() {
               </Card.Body>
             )}
 
-            <div className="d-flex justify-content-between">
+            <div className="">
               <button
                 className="btn btn-primary bright-btn btn-primary-bright mx-5"
                 onClick={openMotionModal}>
                 Attach Motion
+              </button>
+              <button
+                className="btn btn-warning bright-btn btn-primary-bright mx-5"
+                onClick={openAdjournCaseModal}
+              >
+                Adjourn Case
               </button>
               {data && (
                 <button
