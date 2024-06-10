@@ -57,8 +57,8 @@ export default function CreateChamber() {
   }, []);
 
   const handleCreateUser = async () => {
-    setLoading(true);
-
+    // setLoading(true);
+   
     const data = new FormData();
     data.append("chamber_name", details.chamber_name);
     data.append("chamber_head", details.chamber_head);

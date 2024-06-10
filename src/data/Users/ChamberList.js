@@ -38,6 +38,9 @@ const ChamberList = () => {
     setLoading(true);
     try {
       const res = await endpoint.get("/solicitor/list");
+      console.log('====================================');
+      console.log(res.data.data);
+      console.log('====================================');
       setData(res.data.data);
     } catch (err) {
       console.error(err);
