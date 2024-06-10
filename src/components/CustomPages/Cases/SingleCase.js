@@ -43,6 +43,7 @@ export default function SingleCase() {
   const [fileType, setFileType] = useState();
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [selectedChamber, setSelectedChamber] = useState(null);
+  const [comment, setComment] = useState(""); // State for the comment
 
   const navigate = useNavigate();
 
@@ -232,7 +233,7 @@ export default function SingleCase() {
 
   const handleCloseCase = async () => {
     await endpoint
-      .post(`/case/close/${id}`)
+      .post(`/case/close/${id}`, { comment })
       .then((res) => {
         console.log("case gateway", res);
         setData(data.data);
@@ -344,12 +345,6 @@ export default function SingleCase() {
                           <div className="fw-bold col-md-6">Case Type:</div>
                           <div className="col-md-6">
                             {data.CaseType ? data.CaseType.case_type : ""}
-                          </div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Comment:</div>
-                          <div className="col-md-6">
-                            {data.comment ? data.comment.comment : ""}
                           </div>
                         </div>
                         <div className="row border">
@@ -823,6 +818,25 @@ export default function SingleCase() {
                           : "Close Case"}
                         ?
                       </p>
+                      {openCaseModalData.status !== 2 && (
+                        <form className="row g-3 needs-validation">
+                          <Col md={12}>
+                            <label
+                              htmlFor="validationCustomUsername"
+                              className="form-label"
+                            >
+                              Comment
+                            </label>
+                            <textarea
+                              className="form-control has-validation"
+                              defaultValue=""
+                              onChange={(e) => setComment(e.target.value)}
+                              aria-describedby="inputGroupPrepend"
+                              name="comment"
+                            ></textarea>
+                          </Col>
+                        </form>
+                      )}
                     </Col>
                   </Card.Body>
                 </Card>
