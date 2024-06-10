@@ -93,7 +93,7 @@ export default function SingleCase() {
   const id = params.id;
 
   useEffect(() => {
-    getUser();
+    getCase();
     getLegalOfficer();
     getChambers();
     getFileType();
@@ -106,7 +106,7 @@ export default function SingleCase() {
   });
 
   //get all users
-  const getUser = async () => {
+  const getCase = async () => {
     setLoading(true);
     await endpoint
       .get(`/case/show/${id}`)
@@ -161,13 +161,14 @@ export default function SingleCase() {
 
   const handleAddLegalOfficer = async () => {
     try {
-      const data = new FormData();
-      data.append("case_id", id);
-      data.append("legal_officer_id", judgeIDs);
 
+      const data = {
+        legal_officer_id: judgeIDs,
+        case_id: id
+      };
       const response = await endpoint.post(`/case/assign-council`, data);
       closeLegalModal();
-      // navigate(`${process.env.PUBLIC_URL}/cases`);
+        getCase();
       SuccessAlert(response.data.message);
     } catch (err) {
       console.log(err);
@@ -187,12 +188,13 @@ export default function SingleCase() {
 
   const handleAddChamberOfficer = async () => {
     try {
-      const data = new FormData();
-      data.append("case_id", id);
-      data.append("chamber_solicitor_id", chambersIDs);
-
+       const data = {
+         chamber_solicitor_id: chambersIDs,
+         case_id: id,
+       };
       const response = await endpoint.post(`/case/assign-solicitor`, data);
       closeChamberModal();
+       getCase();
       // navigate(`${process.env.PUBLIC_URL}/cases`);
       SuccessAlert(response.data.message);
     } catch (err) {
@@ -237,7 +239,7 @@ export default function SingleCase() {
       .then((res) => {
         console.log("case gateway", res);
         setData(data.data);
-        getUser(); // Refresh case data
+        getCase(); // Refresh case data
         SuccessAlert(res.data.message);
         setLoading(false);
         closeCaseModal();
@@ -297,7 +299,9 @@ export default function SingleCase() {
   return (
     <>
       <div>
-        <Col xl={12} md={12}>
+        <Col
+          xl={12}
+          md={12}>
           <Card className="card border">
             {loading && <Loader />}
             {!loading && data && (
@@ -306,8 +310,7 @@ export default function SingleCase() {
                 <div className="mt-5">
                   <div
                     className="container bg-primary text-white custom-height"
-                    style={{ height: "50px", borderRadius: "5px" }}
-                  >
+                    style={{ height: "50px", borderRadius: "5px" }}>
                     <h4 className="text-center text-uppercase pt-3">
                       Case Information
                     </h4>
@@ -377,8 +380,7 @@ export default function SingleCase() {
                                 <ul>
                                   <button
                                     className="btn btn-primary mt-2"
-                                    onClick={openLegalModal}
-                                  >
+                                    onClick={openLegalModal}>
                                     Change
                                   </button>
                                 </ul>
@@ -386,8 +388,7 @@ export default function SingleCase() {
                             ) : (
                               <button
                                 className="btn btn-info bright-btn btn-info-bright"
-                                onClick={openLegalModal}
-                              >
+                                onClick={openLegalModal}>
                                 <span className="fe fe-plus"></span>
                                 Attach Legal Officer
                               </button>
@@ -415,8 +416,7 @@ export default function SingleCase() {
                                 <ul>
                                   <button
                                     className="btn btn-primary mt-2"
-                                    onClick={openChamberModal}
-                                  >
+                                    onClick={openChamberModal}>
                                     change
                                   </button>
                                 </ul>
@@ -424,8 +424,7 @@ export default function SingleCase() {
                             ) : (
                               <button
                                 className="btn btn-primary bright-btn btn-secondary-bright"
-                                onClick={openChamberModal}
-                              >
+                                onClick={openChamberModal}>
                                 <span className="fe fe-plus"></span>
                                 Attach Chamber/Solicitor
                               </button>
@@ -443,8 +442,7 @@ export default function SingleCase() {
                                   attach.doc_url
                                 }`}
                                 target="_blank"
-                                className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
-                              >
+                                className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
                                 <span className="fa fa-eye"></span>{" "}
                                 View/Download
                               </a>
@@ -456,9 +454,10 @@ export default function SingleCase() {
                           <div className="col-md-6">
                             <a
                               href={`#`}
-                              className="btn bright-btn btn-secondary-bright m-1"
-                            >
-                              <i className="fa fa-file" aria-hidden="true"></i>
+                              className="btn bright-btn btn-secondary-bright m-1">
+                              <i
+                                className="fa fa-file"
+                                aria-hidden="true"></i>
                               {data.status == 1 ? "Pending" : " Resolved"}
                             </a>
                           </div>
@@ -477,8 +476,7 @@ export default function SingleCase() {
             <div className="">
               <button
                 className="btn btn-primary bright-btn btn-primary-bright mx-5"
-                onClick={openMotionModal}
-              >
+                onClick={openMotionModal}>
                 Attach Motion
               </button>
               <button
@@ -494,17 +492,25 @@ export default function SingleCase() {
                       ? "btn-danger bright-btn btn-danger-bright"
                       : "btn-danger bright-btn btn-danger-bright"
                   } mx-5`}
-                  onClick={() => openCaseModal(data)}
-                >
+                  onClick={() => openCaseModal(data)}>
                   {data.status === 2 ? "Reopen Case" : "Close Case"}
                 </button>
               )}
+
+              {/* <button
+                className="btn btn-warning bright-btn btn-primary-bright mx-5"
+                onClick={openAdjournCaseModal}>
+                Adjourn Case
+              </button> */}
             </div>
           </Card>
         </Col>
         <Modal show={LegalModal}>
           <Modal.Header>
-            <Button onClick={closeLegalModal} className="btn-close" variant="">
+            <Button
+              onClick={closeLegalModal}
+              className="btn-close"
+              variant="">
               x
             </Button>
           </Modal.Header>
@@ -516,7 +522,9 @@ export default function SingleCase() {
                   <Card.Title as="h3">Attach legal Officer </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Col lg={12} md={12}>
+                  <Col
+                    lg={12}
+                    md={12}>
                     <p>Please select legal Officers</p>
                     <Select
                       isMulti
@@ -540,14 +548,16 @@ export default function SingleCase() {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="dark" className="me-1" onClick={closeLegalModal}>
+            <Button
+              variant="dark"
+              className="me-1"
+              onClick={closeLegalModal}>
               Close
             </Button>
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAddLegalOfficer(e, params.id)}
-            >
+              onClick={(e) => handleAddLegalOfficer(e, params.id)}>
               Assign
             </Button>
           </Modal.Footer>
@@ -557,8 +567,7 @@ export default function SingleCase() {
             <Button
               onClick={closeChamberModal}
               className="btn-close"
-              variant=""
-            >
+              variant="">
               x
             </Button>
           </Modal.Header>
@@ -570,7 +579,9 @@ export default function SingleCase() {
                   <Card.Title as="h3">Attach Chamber </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Col lg={12} md={12}>
+                  <Col
+                    lg={12}
+                    md={12}>
                     <p>Please select Chamber</p>
                     <Select
                       isMulti
@@ -588,22 +599,29 @@ export default function SingleCase() {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="dark" className="me-1" onClick={closeChamberModal}>
+            <Button
+              variant="dark"
+              className="me-1"
+              onClick={closeChamberModal}>
               Close
             </Button>
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAddChamberOfficer(e)}
-            >
+              onClick={(e) => handleAddChamberOfficer(e)}>
               Assign
             </Button>
           </Modal.Footer>
         </Modal>
 
-        <Modal show={motionModal} size="lg">
+        <Modal
+          show={motionModal}
+          size="lg">
           <Modal.Header>
-            <Button onClick={closeMotionModal} className="btn-close" variant="">
+            <Button
+              onClick={closeMotionModal}
+              className="btn-close"
+              variant="">
               x
             </Button>
           </Modal.Header>
@@ -615,7 +633,9 @@ export default function SingleCase() {
                   <Card.Title as="h3">Attach Motion </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Col lg={12} md={12}>
+                  <Col
+                    lg={12}
+                    md={12}>
                     <p>
                       Please complete the details to assign motion to{" "}
                       {motionData && motionData.suite_no}
@@ -633,12 +653,13 @@ export default function SingleCase() {
                             ...motionDetails,
                             doc_type_id: e.target.value,
                           })
-                        }
-                      >
+                        }>
                         <option value="">--select--</option>
                         {fileType &&
                           fileType.map((file) => (
-                            <option value={file.id} key={file.id}>
+                            <option
+                              value={file.id}
+                              key={file.id}>
                               {file.name}
                             </option>
                           ))}
@@ -670,8 +691,7 @@ export default function SingleCase() {
                             ...motionDetails,
                             motion_description: e.target.value,
                           })
-                        }
-                      ></textarea>
+                        }></textarea>
                     </Col>
                   </Row>
                 </Card.Body>
@@ -682,23 +702,26 @@ export default function SingleCase() {
             <Button
               variant="warning"
               className="me-1"
-              onClick={closeMotionModal}
-            >
+              onClick={closeMotionModal}>
               Close
             </Button>
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAddMotion(e)}
-            >
+              onClick={(e) => handleAddMotion(e)}>
               Assign
             </Button>
           </Modal.Footer>
         </Modal>
 
-        <Modal show={motionModal} size="lg">
+        <Modal
+          show={motionModal}
+          size="lg">
           <Modal.Header>
-            <Button onClick={closeMotionModal} className="btn-close" variant="">
+            <Button
+              onClick={closeMotionModal}
+              className="btn-close"
+              variant="">
               x
             </Button>
           </Modal.Header>
@@ -710,7 +733,9 @@ export default function SingleCase() {
                   <Card.Title as="h3">Attach Motion </Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Col lg={12} md={12}>
+                  <Col
+                    lg={12}
+                    md={12}>
                     <p>
                       Please complete the details to assign motion to{" "}
                       {motionData && motionData.suite_no}
@@ -728,12 +753,13 @@ export default function SingleCase() {
                             ...motionDetails,
                             doc_type_id: e.target.value,
                           })
-                        }
-                      >
+                        }>
                         <option value="">--select--</option>
                         {fileType &&
                           fileType.map((file) => (
-                            <option value={file.id} key={file.id}>
+                            <option
+                              value={file.id}
+                              key={file.id}>
                               {file.name}
                             </option>
                           ))}
@@ -765,8 +791,7 @@ export default function SingleCase() {
                             ...motionDetails,
                             motion_description: e.target.value,
                           })
-                        }
-                      ></textarea>
+                        }></textarea>
                     </Col>
                   </Row>
                 </Card.Body>
@@ -777,21 +802,21 @@ export default function SingleCase() {
             <Button
               variant="warning"
               className="me-1"
-              onClick={closeMotionModal}
-            >
+              onClick={closeMotionModal}>
               Close
             </Button>
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAddMotion(e)}
-            >
+              onClick={(e) => handleAddMotion(e)}>
               Assign
             </Button>
           </Modal.Footer>
         </Modal>
         {openCaseModalData && (
-          <Modal show={caseModal} size="lg">
+          <Modal
+            show={caseModal}
+            size="lg">
             <Modal.Header>
               {/* <Button onClick={closeCaseModal} className="btn-close" variant="">
                 x
@@ -809,7 +834,9 @@ export default function SingleCase() {
                     </Card.Title>
                   </Card.Header>
                   <Card.Body>
-                    <Col lg={12} md={12}>
+                    <Col
+                      lg={12}
+                      md={12}>
                       <p>
                         Are you sure you want to{" "}
                         {openCaseModalData.status === 2
@@ -822,8 +849,7 @@ export default function SingleCase() {
                           <Col md={12}>
                             <label
                               htmlFor="validationCustomUsername"
-                              className="form-label"
-                            >
+                              className="form-label">
                               Comment
                             </label>
                             <textarea
@@ -831,8 +857,7 @@ export default function SingleCase() {
                               defaultValue=""
                               onChange={(e) => setComment(e.target.value)}
                               aria-describedby="inputGroupPrepend"
-                              name="comment"
-                            ></textarea>
+                              name="comment"></textarea>
                           </Col>
                         </form>
                       )}
@@ -845,8 +870,7 @@ export default function SingleCase() {
               <Button
                 variant="warning"
                 className="me-1"
-                onClick={closeCaseModal}
-              >
+                onClick={closeCaseModal}>
                 Cancel
               </Button>
 
@@ -860,21 +884,21 @@ export default function SingleCase() {
                   openCaseModalData.status === 2
                     ? () => handleReopenCaseClick(openCaseModalData.id)
                     : handleCloseCase
-                }
-              >
+                }>
                 {openCaseModalData.status === 2 ? `Reopen Case` : "Close Case"}
               </button>
             </Modal.Footer>
           </Modal>
         )}
 
-        <Modal show={adjournCaseModal} size="md">
+        <Modal
+          show={adjournCaseModal}
+          size="md">
           <Modal.Header>
             <Button
               onClick={closeAdjournCaseModal}
               className="btn-close"
-              variant=""
-            >
+              variant="">
               x
             </Button>
           </Modal.Header>
@@ -924,15 +948,13 @@ export default function SingleCase() {
             <Button
               variant="warning"
               className="me-1"
-              onClick={closeAdjournCaseModal}
-            >
+              onClick={closeAdjournCaseModal}>
               Close
             </Button>
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAdjournCase(e)}
-            >
+              onClick={(e) => handleAdjournCase(e)}>
               Adjourn
             </Button>
           </Modal.Footer>
