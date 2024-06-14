@@ -1,11 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import CountUp from "react-countup";
 import ReactApexChart from "react-apexcharts";
-import { Breadcrumb, Col, Row, Card } from "react-bootstrap";
+import { Breadcrumb, Col, Row, Card, Button } from "react-bootstrap";
 import * as dashboard from "../../data/dashboard/dashboard";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../../context/Context.js";
 import endpoint from "../../context/endpoint";
+import { Modal, FormGroup, Form } from "react-bootstrap";
 // import { useAuthDispatch, logout, useAuthState } from '../../context'
 
 export default function Dashboard() {
@@ -13,7 +14,7 @@ export default function Dashboard() {
   // console.log(user)
   const [totalCases, setTotalCases] = useState([]);
   const [closedCases, setClosedCases] = useState([]);
-  //const [openCases, setOpenCases] = useState([]);
+  const [notificationModal, setNotificationModal] = useState(false);
   //const [externalSolicitors, setExternalSolicitors] = useState([]);
   const [councilLegalOfficers, setCouncilLegalOfficers] = useState([]);
 
@@ -21,7 +22,7 @@ export default function Dashboard() {
     getTotalCases();
     //getTotalOpenCases();
     getTotalClosedCases();
-    //getExternalSolicitors();
+    // setNotificationModal(true);
     getCouncilLegalOfficers();
   }, []);
 
@@ -91,13 +92,14 @@ export default function Dashboard() {
         <div>
           <h1 className="page-title">Dashboard </h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item className="breadcrumb-item" href="#">
+            <Breadcrumb.Item
+              className="breadcrumb-item"
+              href="#">
               Home
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page"
-            >
+              aria-current="page">
               Dashboard
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -118,7 +120,11 @@ export default function Dashboard() {
         </div>
       </div>
       <Row>
-        <Col lg={12} md={12} sm={12} xl={12}>
+        <Col
+          lg={12}
+          md={12}
+          sm={12}
+          xl={12}>
           <h4
             className="text-center text-primary"
             style={{
@@ -126,14 +132,17 @@ export default function Dashboard() {
               fontFamily: "comic sans serif",
               fontSize: "25px",
               // color: "#05A850",
-            }}
-          >
+            }}>
             CASE MANAGEMENT SYSTEM
           </h4>
         </Col>
       </Row>
       <Row>
-        <Col lg={12} md={12} sm={12} xl={12}>
+        <Col
+          lg={12}
+          md={12}
+          sm={12}
+          xl={12}>
           <h5 className="">
             <strong>
               Welcome <em>{user.user ? user.user.fullname : ""}</em>
@@ -142,7 +151,11 @@ export default function Dashboard() {
         </Col>
       </Row>
       <Row>
-        <Col sm={12} md={6} lg={6} xl={3}>
+        <Col
+          sm={12}
+          md={6}
+          lg={6}
+          xl={4}>
           <Card className="card bg-primary img-card box-primary-shadow">
             <Card.Body className="">
               <div className="d-flex">
@@ -167,14 +180,44 @@ export default function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col sm={12} md={6} lg={6} xl={3}>
-          <Card className="card bg-secondary img-card box-secondary-shadow">
+        <Col
+          sm={12}
+          md={6}
+          lg={6}
+          xl={4}>
+          <Card className="card bg-warning img-card box-secondary-shadow">
             <Card.Body className="">
               <div className="d-flex">
                 {/* <div className="text-white">
                   <h2 className="mb-0 number-font">83</h2>
                   <p className="text-white mb-0">Closed Cases</p>
                 </div> */}
+                <div>
+                  {closedCases !== null ? (
+                    <div className="text-white">
+                      <h2 className="mb-0 number-font">{closedCases}</h2>
+                      <p className="text-white mb-0">Active Cases</p>
+                    </div>
+                  ) : (
+                    <p className="text-white">Loading...</p>
+                  )}
+                </div>
+                <div className="ms-auto">
+                  <i className="fa fa-bar-chart text-white fs-30 me-2 mt-2"></i>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col
+          sm={12}
+          md={6}
+          lg={6}
+          xl={4}>
+          <Card className="card bg-secondary img-card box-secondary-shadow">
+            <Card.Body className="">
+              <div className="d-flex">
                 <div>
                   {closedCases !== null ? (
                     <div className="text-white">
@@ -192,7 +235,11 @@ export default function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col sm={12} md={6} lg={6} xl={3}>
+        <Col
+          sm={12}
+          md={6}
+          lg={6}
+          xl={6}>
           <Card className="card  bg-success img-card box-success-shadow">
             <Card.Body className="">
               <div className="d-flex">
@@ -219,7 +266,11 @@ export default function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col sm={12} md={6} lg={6} xl={3}>
+        <Col
+          sm={12}
+          md={6}
+          lg={6}
+          xl={6}>
           <Card className="card bg-info img-card box-info-shadow">
             <Card.Body className="">
               <div className="d-flex">
@@ -246,7 +297,11 @@ export default function Dashboard() {
         </Col>
       </Row>
       <Row>
-        <Col lg={12} md={12} sm={12} xl={12}>
+        <Col
+          lg={12}
+          md={12}
+          sm={12}
+          xl={12}>
           <Row>
             {/* <Col
               lg={6}
@@ -405,287 +460,34 @@ export default function Dashboard() {
           </Card>
         </Col> */}
       </Row>
-      {/* <Row>
-        <Col xl={4} md={12}>
-          <Card className=" overflow-hidden">
-            <Card.Header className="card-header">
-              <div>
-                <h3 className="card-title">Timeline</h3>
-              </div>
-            </Card.Header>
-            <Card.Body className="card-body pb-0 pt-4">
-              <div className="activity1">
-                <div className="activity-blog">
-                  <div className="activity-img brround bg-primary-transparent text-primary">
-                    <i className="fa fa-user-plus fs-20"></i>
-                  </div>
-                  <div className="activity-details d-flex">
-                    <div>
-                      <b>
-                        <span className="text-dark"> Mr John </span>
-                      </b>
-                      Started following you
-                      <span className="d-flex text-muted fs-11">
-                        01 June 2020
-                      </span>
-                    </div>
-                    <div className="ms-auto fs-13 text-dark fw-semibold">
-                      <span className="badge bg-primary text-white">1m</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="activity-blog">
-                  <div className="activity-img brround bg-secondary-transparent text-secondary">
-                    <i className="fa fa-comment fs-20"></i>
-                  </div>
-                  <div className="activity-details d-flex">
-                    <div>
-                      <b>
-                        <span className="text-dark"> Lily </span>
-                      </b>
-                      1 Commented applied
-                      <span className="d-flex text-muted fs-11">
-                        01 July 2020
-                      </span>
-                    </div>
-                    <div className="ms-auto fs-13 text-dark fw-semibold">
-                      <span className="badge bg-danger text-white">3m</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="activity-blog">
-                  <div className="activity-img brround bg-success-transparent text-success">
-                    <i className="fa fa-thumbs-up fs-20"></i>
-                  </div>
-                  <div className="activity-details d-flex">
-                    <div>
-                      <b>
-                        <span className="text-dark"> Kevin </span>
-                      </b>
-                      liked your site
-                      <span className="d-flex text-muted fs-11">
-                        05 July 2020
-                      </span>
-                    </div>
-                    <div className="ms-auto fs-13 text-dark fw-semibold">
-                      <span className="badge bg-warning text-white">5m</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="activity-blog">
-                  <div className="activity-img brround bg-info-transparent text-info">
-                    <i className="fa fa-envelope fs-20"></i>
-                  </div>
-                  <div className="activity-details d-flex">
-                    <div>
-                      <b>
-                        <span className="text-dark"> Andrena </span>
-                      </b>
-                      posted a new article
-                      <span className="d-flex text-muted fs-11">
-                        09 October 2020
-                      </span>
-                    </div>
-                    <div className="ms-auto fs-13 text-dark fw-semibold">
-                      <span className="badge bg-info text-white">5m</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="activity-blog">
-                  <div className="activity-img brround bg-danger-transparent text-danger">
-                    <i className="fa fa-shopping-bag fs-20"></i>
-                  </div>
-                  <div className="activity-details d-flex">
-                    <div>
-                      <b>
-                        <span className="text-dark"> Sonia </span>
-                      </b>
-                      Delivery in progress
-                      <span className="d-flex text-muted fs-11">
-                        12 October 2020
-                      </span>
-                    </div>
-                    <div className="ms-auto fs-13 text-dark fw-semibold">
-                      <span className="badge bg-warning text-white">5m</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col xl={4} md={12} className="col-xl-4 col-md-12">
-          <Card className="card">
-            <Card.Header className="card-header">
-              <h4 className="card-title fw-semibold ">Browser Usage</h4>
-            </Card.Header>
-            <Card.Body className="card-body pt-2 pb-2">
-              <div className="d-md-flex align-items-center browser-stats">
-                <div className="d-flex">
-                  <i className="fa fa-chrome bg-secondary-gradient text-white me-2"></i>
-                  <p className="fs-16 my-auto mb-0">Chrome</p>
-                </div>
-                <div className="ms-auto my-auto">
-                  <div className="d-flex">
-                    <span className="my-auto fs-16">35,502</span>
-                    <span className="text-success fs-15">
-                      <i className="fe fe-arrow-up"></i>12.75%
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="d-md-flex align-items-center browser-stats">
-                <div className="d-flex">
-                  <i className="fa fa-opera text-white bg-danger-gradient me-2"></i>
-                  <p className="fs-16 my-auto mb-0">Opera</p>
-                </div>
-                <div className="ms-auto my-auto">
-                  <div className="d-flex">
-                    <span className="my-auto fs-16">12,563</span>
-                    <span className="text-danger fs-15">
-                      <i className="fe fe-arrow-down"></i>15.12%
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="d-md-flex align-items-center browser-stats">
-                <div className="d-flex">
-                  <i className="fa fa-firefox text-white bg-purple-gradient me-2"></i>
-                  <p className="fs-16 my-auto mb-0">IE</p>
-                </div>
-                <div className="ms-auto my-auto">
-                  <div className="d-flex">
-                    <span className=" my-auto fs-16">25,364</span>
-                    <span className="text-success fs-15">
-                      <i className="fe fe-arrow-up"></i>24.37%
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="d-md-flex align-items-center browser-stats">
-                <div className="d-flex">
-                  <i className="fa fa-edge text-white bg-info-gradient me-2"></i>
-                  <p className="fs-16 my-auto mb-0">Firefox</p>
-                </div>
-                <div className="ms-auto my-auto">
-                  <div className="d-flex">
-                    <span className=" my-auto fs-16">14,635</span>
-                    <span className="text-success fs-15">
-                      <i className="fe fe-arrow-up"></i>15,63%
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="d-md-flex align-items-center browser-stats">
-                <div className="d-flex">
-                  <i className="fa fa-android text-white bg-success-gradient me-2"></i>
-                  <p className="fs-16 my-auto mb-0">Android</p>
-                </div>
-                <div className="ms-auto my-auto">
-                  <div className="d-flex">
-                    <span className=" my-auto fs-16">15,453</span>
-                    <span className="text-danger fs-15">
-                      <i className="fe fe-arrow-down"></i>23.70%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col xl={4} md={12}>
+      <Modal
+        show={notificationModal}
+        onHide={() => setNotificationModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Remove Unit</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <Card>
-            <Card.Header className="card-header">
-              <h4 className="card-title fw-semibold ">Daily Activity</h4>
-            </Card.Header>
-            <Card.Body className="card-body pb-0">
-              <ul className="task-list">
-                <li>
-                  <i className="task-icon bg-primary"></i>
-                  <h6>
-                    Task Finished &nbsp;
-                    <span className="text-muted fs-11 ms-2">29 Oct 2020</span>
-                  </h6>
-                  <p className="text-muted fs-12">
-                    Adam Berry finished task on &nbsp;
-                    <Link to="#" className="fw-semibold">
-                      Project Management
-                    </Link>
-                  </p>
-                </li>
-                <li>
-                  <i className="task-icon bg-secondary"></i>
-                  <h6>
-                    New Comment &nbsp;
-                    <span className="text-muted fs-11 ms-2">25 Oct 2020</span>
-                  </h6>
-                  <p className="text-muted fs-12">
-                    Victoria commented on Project &nbsp;
-                    <Link to="#" className="fw-semibold">
-                      AngularJS Template
-                    </Link>
-                  </p>
-                </li>
-                <li>
-                  <i className="task-icon bg-primary"></i>
-                  <h6>
-                    New Comment &nbsp;
-                    <span className="text-muted fs-11 ms-2">25 Oct 2020</span>
-                  </h6>
-                  <p className="text-muted fs-12">
-                    Victoria commented on Project &nbsp;
-                    <Link to="#" className="fw-semibold">
-                      AngularJS Template
-                    </Link>
-                  </p>
-                </li>
-                <li>
-                  <i className="task-icon bg-secondary"></i>
-                  <h6>
-                    Task Overdue &nbsp;
-                    <span className="text-muted fs-11 ms-2">14 Oct 2020</span>
-                  </h6>
-                  <p className="text-muted mb-0 fs-12">
-                    Petey Cruiser finished task &nbsp;
-                    <Link to="#" className="fw-semibold">
-                      Integrated management
-                    </Link>
-                  </p>
-                </li>
-                <li>
-                  <i className="task-icon bg-primary"></i>
-                  <h6>
-                    Task Overdue &nbsp;
-                    <span className="text-muted fs-11 ms-2">29 Oct 2020</span>
-                  </h6>
-                  <p className="text-muted mb-0 fs-12">
-                    Petey Cruiser finished task &nbsp;
-                    <Link to="#" className="fw-semibold">
-                      Integrated management
-                    </Link>
-                  </p>
-                </li>
-              </ul>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row> */}
-      {/* <Row>
-        <Col sm={12} className="col-12">
-          <Card>
-            <Card.Header>
-              <h3 className="card-title mb-0">Product Sales</h3>
-            </Card.Header>
             <Card.Body>
-              <div className="salesdatatable">
-                <div className="table-responsive">
-                  <dashboard.Productsales />
-                </div>
-              </div>
+              <Col
+                lg={12}
+                md={12}>
+                Please confirm you are about to delete the case with suite
+                {/* number of {value.suite_no}? */}
+              </Col>
             </Card.Body>
           </Card>
-        </Col>
-      </Row> */}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="warning"
+            onClick={() => setNotificationModal(false)}>
+            Close
+          </Button>
+  
+         
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
