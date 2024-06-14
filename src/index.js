@@ -364,8 +364,14 @@ const NewCase = React.lazy(() =>
 const CaseList = React.lazy(() =>
   import("./components/CustomPages/Cases/CaseList")
 );
+const ClosedCaseList = React.lazy(() =>
+  import("./components/CustomPages/Cases/ClosedCaseList")
+);
 const SingleCase = React.lazy(() =>
   import("./components/CustomPages/Cases/SingleCase")
+);
+const SingleClosedCase = React.lazy(() =>
+  import("./components/CustomPages/Cases/SingleClosedCase")
 );
 const ReopenCase = React.lazy(() =>
   import("./components/CustomPages/Cases/ReopenCase")
@@ -464,7 +470,10 @@ const Root = () => {
             />
 
             <Routes>
-              <Route path="/login" element={<Login />} />
+              <Route
+                path="/login"
+                element={<Login />}
+              />
 
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
@@ -474,9 +483,11 @@ const Root = () => {
                   ) : (
                     <Navigate to={`${process.env.PUBLIC_URL}/login`} />
                   )
-                }
-              >
-                <Route index element={<Dashboard />} />
+                }>
+                <Route
+                  index
+                  element={<Dashboard />}
+                />
                 <Route
                   path={`${process.env.PUBLIC_URL}/dashboard`}
                   element={
@@ -575,8 +586,17 @@ const Root = () => {
                     element={<CaseList />}
                   />
                   <Route
+                    path={`${process.env.PUBLIC_URL}/closed-cases`}
+                    element={<ClosedCaseList />}
+                  />
+
+                  <Route
                     path={`${process.env.PUBLIC_URL}/case/:id`}
                     element={<SingleCase />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/closed-case/:id`}
+                    element={<SingleClosedCase />}
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/comments`}
@@ -586,7 +606,6 @@ const Root = () => {
                     path={`${process.env.PUBLIC_URL}/user/:id`}
                     element={<SingleUser />}
                   />
-
                   <Route
                     path={`${process.env.PUBLIC_URL}/edit/case/:id`}
                     element={<NewCase />}
@@ -1226,8 +1245,7 @@ const Root = () => {
               />
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
-                element={<Custompages />}
-              >
+                element={<Custompages />}>
                 <Route
                   path={`${process.env.PUBLIC_URL}/pages/underConstruction`}
                   element={
@@ -1284,7 +1302,10 @@ const Root = () => {
                   path={`${process.env.PUBLIC_URL}/custompages/errorpages/errorpage503`}
                   element={<Errorpage503 />}
                 />
-                <Route path="*" element={<Errorpage400 />} />
+                <Route
+                  path="*"
+                  element={<Errorpage400 />}
+                />
               </Route>
             </Routes>
 

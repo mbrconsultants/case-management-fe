@@ -34,9 +34,17 @@ export default function CreateCase() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [courtList, setCourtList] = useState([]);
+  const [courtDivisionList, setCourtDivisionList] = useState([]);
+  const [chamberList, setChamberList] = useState([]);
+  const [selectedLawyers, setSelectedLawyers] = useState([]);
+
   const [statesList, setStatesList] = useState([]);
   const [caseTypelist, setCaseTypeList] = useState([]);
-  const [titleList, setTitleList] = useState([]);
+  const [appellantList, setAppellantList] = useState([]);
+  const [respondentList, setRespondentList] = useState([]);
+  const [chamberLawyers, setChamberLawyers] = useState([]);
+
+  const [documentTypeList, setDocumentTypeList] = useState([]);
 
   const [details, setDetails] = useState({
     case_type_id: "",
@@ -75,7 +83,7 @@ export default function CreateCase() {
 
   const id = params?.id;
 
-  //get single staff
+  //get single case
   const getSingleCase = async () => {
     setLoading(true);
     await endpoint
@@ -119,9 +127,105 @@ export default function CreateCase() {
         // console.log(err)
       });
   };
+
+  //get appellant titles
+  const getAppellantTitles = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/case-type/list")
+      .then((res) => {
+        console.log("appellants", res.data.data);
+        setAppellantList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
+  //get respondent titles
+  const getRespondentsTitles = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/case-type/list")
+      .then((res) => {
+        console.log("respndents", res.data.data);
+        setRespondentList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+  //get respondent titles
+  const getDocumentTypeList = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/file-type/list")
+      .then((res) => {
+        console.log("document type", res.data.data);
+        setDocumentTypeList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
+  //get respondent titles
+  const getCourtDivision = async (courtID) => {
+    setLoading(true);
+    await endpoint
+      .get(`/division/search/${courtID}`)
+      .then((res) => {
+        setCourtDivisionList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+  //get respondent titles
+  const getChamberList = async () => {
+    setLoading(true);
+    await endpoint
+      .get(`/solicitor/list`)
+      .then((res) => {
+        console.log("solicitor", res.data.data);
+        setChamberList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
+  // Find the chamber Lawyers with the specified ID
+  const getChamberLawyers = (id) => {
+    const chamber = chamberList.find((chamber) => chamber.id == id);
+
+    if (!chamber) {
+      console.error(`Chamber with ID ${id} not found.`);
+      return;
+    }
+    const { ChamberLawyers: lawyers } = chamber;
+    setChamberLawyers(
+      lawyers.map((lawyer) => ({ value: lawyer.id, label: lawyer.lawyer_name }))
+    );
+  };
+
   useEffect(() => {
     getCourtList();
+    getChamberList();
+    getAppellantTitles();
+    getRespondentsTitles();
     getStatestList();
+    getDocumentTypeList();
     getCaseType();
     if (id) {
       getSingleCase();
@@ -166,14 +270,23 @@ export default function CreateCase() {
     }
   };
 
-  const options = courtList.map((court) => ({
-    value: court.id,
-    label: court.name,
-  }));
 
-  // Find the selected option based on details.court_id
-  const selectedOption =
-    options.find((option) => option.value === details.court_id) || null;
+
+   const [rows, setRows] = useState([{ doc_url: "" }]);
+  const handleAddRow = () => {
+    setRows([...rows, { doc_url: "" }]);
+  };
+
+  const handleRemoveRow = (index) => {
+    const updatedRows = rows.filter((_, i) => i !== index);
+    setRows(updatedRows);
+  };
+
+  const handleFileChange = (index, file) => {
+    const updatedRows = [...rows];
+    updatedRows[index].doc_url = file;
+    setRows(updatedRows);
+  };
 
   return (
     <div>
@@ -181,13 +294,14 @@ export default function CreateCase() {
         <div>
           <h1 className="page-title">New Case</h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item className="breadcrumb-item" href="#">
+            <Breadcrumb.Item
+              className="breadcrumb-item"
+              href="#">
               Registry
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page"
-            >
+              aria-current="page">
               New Case
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -195,8 +309,7 @@ export default function CreateCase() {
         <div className="ms-auto pageheader-btn">
           <Link
             to={`${process.env.PUBLIC_URL}/cases/`}
-            className="btn btn-primary btn-icon text-white me-3"
-          >
+            className="btn btn-primary btn-icon text-white me-3">
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
@@ -206,7 +319,9 @@ export default function CreateCase() {
       </div>
 
       <Row>
-        <Col md={12} lg={12}>
+        <Col
+          md={12}
+          lg={12}>
           <Card>
             <Card.Header>
               <Col className="card-title text-center">
@@ -219,11 +334,10 @@ export default function CreateCase() {
               {/* <formvalidation.CustomValidation /> */}
               <CForm
                 onSubmit={handleSubmit(handleCreateUser)}
-                className="row g-3 needs-validation"
-              >
+                className="row g-3 needs-validation">
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom02">
-                    Suit Number
+                    Suite Number
                   </CFormLabel>
                   <CFormInput
                     defaultValue={details.suite_no}
@@ -242,20 +356,58 @@ export default function CreateCase() {
                     Court
                   </CFormLabel>
                   <Form.Group>
-                    <Select
-                      options={options}
-                      value={selectedOption}
-                      onChange={(selectedOption) =>
+                    <select
+                      className="form-select"
+                      placeholder="Select a court..."
+                      name=""
+                      id=""
+                      defaultValue={details.court_id}
+                      onChange={(e) => {
                         setDetails({
                           ...details,
-                          court_id: selectedOption
-                            ? selectedOption.value
-                            : null,
-                        })
-                      }
+                          court_id: e.target.value,
+                        });
+                        getCourtDivision(e.target.value);
+                      }}>
+                      <option value="">--select--</option>
+                      {courtList &&
+                        courtList.map((court, index) => (
+                          <option
+                            value={court.id}
+                            key={index}>
+                            {court.name}
+                          </option>
+                        ))}
+                    </select>
+                  </Form.Group>
+                </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustomUsername">
+                    Court Divisions
+                  </CFormLabel>
+                  <Form.Group>
+                    <select
+                      className="form-select"
                       placeholder="Select a court..."
-                      isClearable
-                    />
+                      name=""
+                      id=""
+                      defaultValue={details.court_id}
+                      onChange={(e) =>
+                        setDetails({
+                          ...details,
+                          court_id: e.target.value,
+                        })
+                      }>
+                      <option value="">--select--</option>
+                      {courtDivisionList &&
+                        courtDivisionList.map((court, index) => (
+                          <option
+                            value={court.id}
+                            key={index}>
+                            {court.division}
+                          </option>
+                        ))}
+                    </select>
                   </Form.Group>
                 </CCol>
                 <CCol md={4}>
@@ -270,20 +422,90 @@ export default function CreateCase() {
                         ...details,
                         case_type_id: e.target.value,
                       })
-                    }
-                  >
+                    }>
                     <option value="">--select-</option>
                     {caseTypelist.map((caseType, index) => (
                       <option
                         key={index + 1}
                         value={caseType.id}
                         selected={details.case_type_id === caseType.id}
-                        className="text-dark"
-                      >
+                        className="text-dark">
                         {caseType.case_type}
                       </option>
                     ))}
                   </select>
+                </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">
+                    Appellant Title
+                  </CFormLabel>
+                  <select
+                    className="form-select"
+                    defaultValue={details.appellants}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        appellants: e.target.value,
+                      })
+                    }
+                    name=""
+                    id="">
+                    <option value="">--select--</option>
+                    <option value="">--select--</option>
+                  </select>
+                </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">
+                    Appellant Name
+                  </CFormLabel>
+                  <CFormInput
+                    defaultValue={details.appellants}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        appellants: e.target.value,
+                      })
+                    }
+                    type="text"
+                    name="appellants name"
+                  />
+                </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustomUsername">
+                    Respondent Title
+                  </CFormLabel>
+                  <CInputGroup className="has-validation">
+                    <select
+                      className="form-select"
+                      defaultValue={details.respondent}
+                      onChange={(e) =>
+                        setDetails({
+                          ...details,
+                          respondent: e.target.value,
+                        })
+                      }
+                      name=""
+                      id="">
+                      <option value="">--select--</option>
+                      <option value="">--select--</option>
+                    </select>
+                  </CInputGroup>
+                </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">
+                    Respondent Name
+                  </CFormLabel>
+                  <CFormInput
+                    defaultValue={details.respondent}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        respondent: e.target.value,
+                      })
+                    }
+                    type="text"
+                    name="respondent name"
+                  />
                 </CCol>
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom01">Parties</CFormLabel>
@@ -301,44 +523,51 @@ export default function CreateCase() {
                   />
                   {/* <CFormFeedback valid>Looks good!</CFormFeedback> */}
                 </CCol>
-
-                <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">
-                    Appellant
-                  </CFormLabel>
-                  <CFormInput
-                    defaultValue={details.appellants}
-                    onChange={(e) =>
-                      setDetails({
-                        ...details,
-                        appellants: e.target.value,
-                      })
-                    }
-                    type="text"
-                    name="appellant"
-                  />
-                </CCol>
-                <CCol md={4}>
+                <CCol md={6}>
                   <CFormLabel htmlFor="validationCustomUsername">
-                    Respondent
+                    Chamber Name
                   </CFormLabel>
-                  <CInputGroup className="has-validation">
-                    {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
-                    <CFormInput
-                      defaultValue={details.respondent}
-                      onChange={(e) =>
+                  <Form.Group>
+                    <select
+                      className="form-select"
+                      placeholder="Select a chamber..."
+                      name=""
+                      id=""
+                      defaultValue={details.chamber_id}
+                      onChange={(e) => {
                         setDetails({
                           ...details,
-                          respondent: e.target.value,
-                        })
-                      }
-                      type="text"
-                      aria-describedby="inputGroupPrepend"
-                      name="respondent"
-                    />
-                  </CInputGroup>
+                          chamber_id: e.target.value,
+                        });
+                        getChamberLawyers(e.target.value);
+                      }}>
+                      <option value="">--select--</option>
+                      {chamberList &&
+                        chamberList.map((chamber, index) => (
+                          <option
+                            value={chamber.id}
+                            key={index}>
+                            {chamber.chamber_name}
+                          </option>
+                        ))}
+                    </select>
+                  </Form.Group>
                 </CCol>
-                <CCol md={12}>
+                <CCol md={6}>
+                  <CFormLabel htmlFor="validationCustomUsername">
+                    Legal Council
+                  </CFormLabel>
+                  <Form.Group>
+                    <Select
+                      isMulti
+                      options={chamberLawyers}
+                      value={selectedLawyers}
+                      onChange={setSelectedLawyers}
+                      placeholder="Select Chamber Lawyers"
+                    />
+                  </Form.Group>
+                </CCol>
+                <CCol md={8}>
                   <CFormLabel htmlFor="validationCustomUsername">
                     Case Description
                   </CFormLabel>
@@ -353,8 +582,7 @@ export default function CreateCase() {
                     }
                     type="text"
                     aria-describedby="inputGroupPrepend"
-                    name="case_description"
-                  >
+                    name="case_description">
                     {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
                   </CFormTextarea>
                 </CCol>
@@ -374,28 +602,77 @@ export default function CreateCase() {
                     name="hearing_date"
                   />
                 </CCol>
-                <CCol md={4}></CCol>
-                <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustomUsername">
-                    Attachment
-                  </CFormLabel>
-                  <CInputGroup className="has-validation">
-                    <input
-                      defaultValue={details.doc_url}
-                      onChange={(e) =>
-                        setDetails({
-                          ...details,
-                          doc_url: e.target.files[0],
-                        })
-                      }
-                      type="file"
-                      aria-describedby="inputGroupPrepend"
-                      name="document"
-                    />
-                  </CInputGroup>
-                </CCol>
-                <CCol xs={12} className="text-center">
-                  <CButton color="primary" type="submit">
+                {rows.map((row, index) => (
+                  <div
+                    className="row"
+                    key={index}>
+                    <CCol md={4}>
+                      <CFormLabel htmlFor="validationCustomUsername">
+                        Attachment Type
+                      </CFormLabel>
+                      <select className="form-select">
+                        <option value="">--select--</option>
+                        {documentTypeList.map((fileType, idx) => (
+                          <option
+                            key={idx}
+                            value={fileType.id}>
+                            {fileType.name}
+                          </option>
+                        ))}
+                      </select>
+                    </CCol>
+                    <CCol md={4}>
+                      <CFormLabel htmlFor="validationCustomUsername">
+                        Attachment
+                      </CFormLabel>
+                      <CInputGroup className="has-validation">
+                        <input
+                          defaultValue={row.doc_url}
+                          onChange={(e) =>
+                            handleFileChange(index, e.target.files[0])
+                          }
+                          type="file"
+                          aria-describedby="inputGroupPrepend"
+                          name="document"
+                        />
+                      </CInputGroup>
+                    </CCol>
+                    <CCol
+                      md={3}
+                      className="mt-3">
+                      <CFormLabel htmlFor="validationCustomUsername">
+                        {/* Attachment */}
+                      </CFormLabel>
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          onClick={() => handleRemoveRow(index)}>
+                          <span className="fa fa-trash"></span>
+                        </button>
+                      )}
+                    </CCol>
+                  </div>
+                ))}
+                <div className="row">
+                  <CCol
+                    md={12}
+                    className="mt-3 text-right">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleAddRow}>
+                      <span className="fa fa-plus"></span> More Attachment
+                    </button>
+                  </CCol>
+                </div>
+
+                <CCol
+                  xs={12}
+                  className="text-center">
+                  <CButton
+                    color="primary"
+                    type="submit">
                     <span className="fe fe-plus"></span>
                     {isLoading ? "Saving data..." : "Save"}
                   </CButton>
