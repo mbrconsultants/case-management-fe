@@ -11,6 +11,7 @@ import { NetworkCheck } from "@mui/icons-material";
 import Stafflist from "./components/CustomPages/Users/Stafflist";
 import FileType from "./components/CustomPages/Users/FileType";
 import CaseType from "./components/CustomPages/Users/CaseType";
+import Parties from "./components/CustomPages/Users/Parties";
 import CourtRoster from "./components/CustomPages/Users/CourtRoster";
 import TestRoster from "./components/CustomPages/Users/TestRoster";
 
@@ -353,6 +354,9 @@ const NewUser = React.lazy(() =>
 const NewStaff = React.lazy(() =>
   import("./components/CustomPages/Users/NewStaff")
 );
+const CreateRoaster = React.lazy(() =>
+  import("./components/CustomPages/Users/CreateRoaster")
+);
 
 const NewCase = React.lazy(() =>
   import("./components/CustomPages/Cases/NewCase")
@@ -547,6 +551,15 @@ const Root = () => {
                     }
                   />
                   <Route
+                    path={`${process.env.PUBLIC_URL}/create-roaster`}
+                    element={
+                      // user ?
+                      <CreateRoaster />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
                     path={`${process.env.PUBLIC_URL}/court-roster`}
                     element={
                       // user ?
@@ -563,6 +576,10 @@ const Root = () => {
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/parties`}
+                    element={<Parties />}
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/cases`}
