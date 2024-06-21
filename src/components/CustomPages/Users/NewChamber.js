@@ -22,8 +22,11 @@ export default function CreateChamber() {
     address: "",
     signature: null,
     phone: "",
+    phone2: "",
     email: "",
+    email2: "",
     lawyer_name: [""],
+    lawyer_phone: [""]
   });
   const {
     register,
@@ -57,16 +60,19 @@ export default function CreateChamber() {
   }, []);
 
   const handleCreateUser = async () => {
-    // setLoading(true);
-   
+    // setLoading(true;
+
     const data = new FormData();
     data.append("chamber_name", details.chamber_name);
     data.append("chamber_head", details.chamber_head);
     data.append("address", details.address);
     data.append("email", details.email);
+    data.append("email2", details.email2);
     data.append("phone", details.phone);
+    data.append("phone2", details.phone2);
     data.append("signature", details.signature);
     data.append("lawyer_name", JSON.stringify(details.lawyer_name));
+    data.append("lawyer_phone", JSON.stringify(details.lawyer_phone));
 
     if (id) {
       await endpoint
@@ -93,6 +99,7 @@ export default function CreateChamber() {
     setDetails((prevState) => ({
       ...prevState,
       lawyer_name: [...prevState.lawyer_name, ""],
+      lawyer_phone: [...prevState.lawyer_phone, ""],
     }));
   };
 
@@ -100,13 +107,14 @@ export default function CreateChamber() {
     setDetails((prevState) => ({
       ...prevState,
       lawyer_name: prevState.lawyer_name.filter((_, i) => i !== index),
+      lawyer_phone: prevState.lawyer_phone.filter((_, i) => i !== index),
     }));
   };
 
-  const handleLawyerChange = (index, value) => {
-    const newLawyerNames = [...details.lawyer_name];
-    newLawyerNames[index] = value;
-    setDetails((prevState) => ({ ...prevState, lawyer_name: newLawyerNames }));
+  const handleLawyerChange = (index, value, field) => {
+    const newLawyerDetails = [...details[field]];
+    newLawyerDetails[index] = value;
+    setDetails((prevState) => ({ ...prevState, [field]: newLawyerDetails }));
   };
 
   return (
@@ -158,7 +166,7 @@ export default function CreateChamber() {
                   <CFormLabel htmlFor="chamberName">Chamber's Name</CFormLabel>
                   <CFormInput
                     id="chamberName"
-                    defaultValue={details.chamber_name}
+                    value={details.chamber_name}
                     onChange={(e) =>
                       setDetails({ ...details, chamber_name: e.target.value })
                     }
@@ -167,10 +175,10 @@ export default function CreateChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="chamberHead">Chamber's Head</CFormLabel>
+                  <CFormLabel htmlFor="chamberHead">Head of Chamber</CFormLabel>
                   <CFormInput
                     id="chamberHead"
-                    defaultValue={details.chamber_head}
+                    value={details.chamber_head}
                     onChange={(e) =>
                       setDetails({ ...details, chamber_head: e.target.value })
                     }
@@ -183,7 +191,7 @@ export default function CreateChamber() {
                   <CFormLabel htmlFor="email">Email</CFormLabel>
                   <CFormInput
                     id="email"
-                    defaultValue={details.email}
+                    value={details.email}
                     onChange={(e) =>
                       setDetails({ ...details, email: e.target.value })
                     }
@@ -192,10 +200,22 @@ export default function CreateChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="phone">Phone No.</CFormLabel>
+                  <CFormLabel htmlFor="email">Alternative Email</CFormLabel>
+                  <CFormInput
+                    id="email2"
+                    value={details.email2}
+                    onChange={(e) =>
+                      setDetails({ ...details, email2: e.target.value })
+                    }
+                    type="email"
+                    name="email2"
+                  />
+                </CCol>
+                <CCol md={6}>
+                  <CFormLabel htmlFor="phone">Phone Number</CFormLabel>
                   <CFormInput
                     id="phone"
-                    defaultValue={details.phone}
+                    value={details.phone}
                     onChange={(e) =>
                       setDetails({ ...details, phone: e.target.value })
                     }
@@ -203,12 +223,24 @@ export default function CreateChamber() {
                     name="phone"
                   />
                 </CCol>
+                <CCol md={6}>
+                  <CFormLabel htmlFor="phone">Alternative Phone Number</CFormLabel>
+                  <CFormInput
+                    id="phone2"
+                    value={details.phone2}
+                    onChange={(e) =>
+                      setDetails({ ...details, phone2: e.target.value })
+                    }
+                    type="text"
+                    name="phone2"
+                  />
+                </CCol>
 
                 <CCol md={12}>
                   <CFormLabel htmlFor="address">Address</CFormLabel>
                   <CFormTextarea
                     id="address"
-                    defaultValue={details.address}
+                    value={details.address}
                     onChange={(e) =>
                       setDetails({ ...details, address: e.target.value })
                     }
@@ -217,52 +249,56 @@ export default function CreateChamber() {
                 </CCol>
 
                 <CCol md={12}>
-                  <CFormLabel>Lawyers</CFormLabel>
                   {details.lawyer_name.map((name, index) => (
-                    <div key={index} className="mb-3">
-                      <Row>
-                        <Col md={12}>
-                          <CFormInput
-                            placeholder="Lawyer's Name"
-                            value={name}
-                            onChange={(e) =>
-                              handleLawyerChange(index, e.target.value)
-                            }
-                          />
-                        </Col>
-                      </Row>
-                      <Row className="mt-2">
-                        <Col md={12} className="d-flex justify-content-center">
+                    <Row key={index} className="mb-3 align-items-center">
+                      <Col md={4}>
+                        <CFormLabel>Counsel in Chamber</CFormLabel>
+                        <CFormInput
+                          value={name}
+                          onChange={(e) =>
+                            handleLawyerChange(index, e.target.value, "lawyer_name")
+                          }
+                        />
+                      </Col>
+                      <Col md={4}>
+                        <CFormLabel>Counsel's Phone Number</CFormLabel>
+                        <CFormInput
+                          value={details.lawyer_phone[index]}
+                          onChange={(e) =>
+                            handleLawyerChange(index, e.target.value, "lawyer_phone")
+                          }
+                        />
+                      </Col>
+                      <Col md={4} className="d-flex justify-content-center mt-4 mt-md-0">
+                        <CButton
+                          color="danger"
+                          style={{
+                            fontSize: 14,
+                            padding: "4px 12px",
+                            maxWidth: 70,
+                            minWidth: 70,
+                          }}
+                          onClick={() => handleRemoveLawyer(index)}
+                          className="me-2"
+                        >
+                          Remove
+                        </CButton>
+                        {index === details.lawyer_name.length - 1 && (
                           <CButton
-                            color="danger"
+                            color="primary"
                             style={{
-                              fontSize: 10,
-                              padding: "2px 6px",
-                              maxWidth: 52,
-                              minWidth: 52,
+                              fontSize: 14,
+                              padding: "4px 12px",
+                              maxWidth: 70,
+                              minWidth: 70,
                             }}
-                            onClick={() => handleRemoveLawyer(index)}
-                            className="me-2"
+                            onClick={handleAddLawyer}
                           >
-                            Remove
+                            Add
                           </CButton>
-                          {index === details.lawyer_name.length - 1 && (
-                            <CButton
-                              color="primary"
-                              style={{
-                                fontSize: 10,
-                                padding: "2px 6px",
-                                maxWidth: 52,
-                                minWidth: 52,
-                              }}
-                              onClick={handleAddLawyer}
-                            >
-                              ADD
-                            </CButton>
-                          )}
-                        </Col>
-                      </Row>
-                    </div>
+                        )}
+                      </Col>
+                    </Row>
                   ))}
                 </CCol>
 
