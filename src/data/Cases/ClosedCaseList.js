@@ -51,11 +51,8 @@ const CaseList = () => {
   const getCaseList = async () => {
     setLoading(true);
     try {
-      const res = await endpoint.get("/case/list");
+      const res = await endpoint.get("/case/close-case");
       setData(res.data.data);
-      console.log("Console Start");
-      console.log("Case List", res.data.data);
-      console.log("Console End");
     } catch (err) {
       console.error(err);
     } finally {
@@ -103,8 +100,7 @@ const CaseList = () => {
             display: "flex", // Added to enable flexbox
             justifyContent: "center", // Centers content horizontally
             alignItems: "center", // Centers content vertically
-          }}
-        >
+          }}>
           <span className="text-xl m-3 p-3">
             {row.CaseType ? row.CaseType.case_type : ""}
           </span>
@@ -157,23 +153,13 @@ const CaseList = () => {
       width: "180px",
       cell: (row) => (
         <div className="fs-12 fw-bold">
-          {Array.isArray(row.AssignCouncils) && row.AssignCouncils.length > 0
-            ? row.AssignCouncils.map((council, index) => (
-                <span key={index}>
-                  <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
-                    {council.LegalOfficer.surname}{" "}
-                    {council.LegalOfficer.first_name}
-                  </h3>
-                </span>
-              ))
-            : "Not yet assigned"}
-          {/* {row.LegalOfficer
+          {row.LegalOfficer
             ? row.LegalOfficer.surname +
               " " +
               row.LegalOfficer.first_name +
               " " +
               row.LegalOfficer.middle_name
-            : "Not yet assigned"} */}
+            : "Not yet assigned"}
         </div>
       ),
     },
@@ -185,15 +171,8 @@ const CaseList = () => {
       width: "180px",
       cell: (row) => (
         <div className="fs-12 fw-bold">
-          {Array.isArray(row.AssignSolicitors) &&
-          row.AssignSolicitors.length > 0
-            ? row.AssignSolicitors.map((solicitor, index) => (
-                <span key={index}>
-                  <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
-                    {solicitor.ChamberOrSolicitor.chamber_name}
-                  </h3>
-                </span>
-              ))
+          {row.ChamberOrSolicitor
+            ? row.ChamberOrSolicitor.name
             : "Not yet assigned"}
         </div>
       ),
@@ -205,23 +184,20 @@ const CaseList = () => {
       cell: (row) => (
         <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
           <Link
-            to={`/case/${row.id}`}
-            className="btn btn-primary btn-sm my-1 mx-1 bright-btn btn-primary-bright"
-          >
+            to={`/closed-case/${row.id}`}
+            className="btn btn-primary btn-sm my-1 mx-1 bright-btn btn-primary-bright">
             <span className="fe fe-eye"> </span>
           </Link>
-          <Link
+          {/* <Link
             to={`/edit/case/${row.id}`}
-            className="btn btn-secondary btn-sm my-1 mx-1 bright-btn btn-secondary-bright"
-          >
+            className="btn btn-secondary btn-sm my-1 mx-1 bright-btn btn-secondary-bright">
             <span className="fe fe-edit"> </span>
           </Link>
           <button
             className="btn btn-dark btn-sm bright-btn btn-dark-bright"
-            onClick={() => handleShowDeleteModal(row)}
-          >
+            onClick={() => handleShowDeleteModal(row)}>
             <span className="fe fe-trash"> </span>
-          </button>
+          </button> */}
         </div>
       ),
     },
@@ -267,14 +243,18 @@ const CaseList = () => {
         )}
       </DataTableExtensions>
 
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+      <Modal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Remove Unit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Card>
             <Card.Body>
-              <Col lg={12} md={12}>
+              <Col
+                lg={12}
+                md={12}>
                 Please confirm you are about to delete the case with suite
                 number of {value.suite_no}?
               </Col>
@@ -282,11 +262,15 @@ const CaseList = () => {
           </Card>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="warning" onClick={() => setShowDeleteModal(false)}>
+          <Button
+            variant="warning"
+            onClick={() => setShowDeleteModal(false)}>
             Close
           </Button>
           {/* Implement the delete logic here */}
-          <Button variant="danger" onClick={() => deletechamber(value.id)}>
+          <Button
+            variant="danger"
+            onClick={() => deletechamber(value.id)}>
             Delete
           </Button>
         </Modal.Footer>
