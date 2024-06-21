@@ -16,6 +16,7 @@ import {
 import "./styles.css";
 
 import Loader from "../../../data/Loader/loader";
+import { trim } from "lodash";
 
 import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 
@@ -39,11 +40,23 @@ export default function SingleCase() {
   const [assigncouncils, setAssignCouncils] = useState([]);
   const [assignsolicitors, setAssignSolicitors] = useState([]);
   const [motionData, setMotionData] = useState();
-  const [adjournCaseData, setAdjournCaseData] = useState();
   const [fileType, setFileType] = useState();
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [selectedChamber, setSelectedChamber] = useState(null);
   const [comment, setComment] = useState(""); // State for the comment
+  
+  const [adjournCaseData, setAdjournCaseData] = useState({
+    adjournment_date: '',
+    comment: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setAdjournCaseData({
+      ...adjournCaseData,
+      [name]: value
+    });
+  };
 
   const navigate = useNavigate();
 
@@ -276,25 +289,72 @@ export default function SingleCase() {
   //     });
   // };
 
-  const handleAdjournCase = async () => {
-    try {
-      const data = new FormData();
-      data.append("case_id", motionDetails.case_id);
+ 
 
-      const response = await endpoint.post(`/motion/create`, data);
-      navigate(`${process.env.PUBLIC_URL}/cases`);
-      SuccessAlert(response.data.message);
-    } catch (err) {
-      console.log(err);
+  const handleAdjournCase = async (e) => {
+    e.preventDefault();
+    
+    const { adjournment_date, comment } = adjournCaseData;
+
+    // Validate the form fields
+    if (!adjournment_date || !comment) {
+      alert("Please provide both date and comment.");
+      return;
+    }
+
+    // Prepare the payload
+    const payload = {
+      adjournment_date,
+      comment,
+    };
+
+    try {
+      // Make the PATCH request to the endpoint
+      const response = await endpoint.patch(`/case/adjourn/${id}`, payload);
+
+      if (response.status === 200) {
+        // Handle successful response
+        console.log("Case adjourned successfully.");
+        getCase();  // Refresh case data
+        // Reset the form fields
+        setAdjournCaseData({
+          adjournment_date: '',
+          comment: ''
+        });
+        SuccessAlert(response.data.message);
+        setLoading(false);
+        closeAdjournCaseModal();
+
+      } else {
+        // Handle error response
+        console.log("Failed to adjourn the case.");
+        closeAdjournCaseModal();
+      }
+    } catch (error) {
       setLoading(false);
       closeAdjournCaseModal();
-      if (err.response && err.response.data && err.response.data.description) {
-        ErrorAlert(err.response.data.description);
-      } else {
-        ErrorAlert("An error occurred. Please try again.");
-      }
+      ErrorAlert(error.response.data.message);
+      console.log(error);
     }
   };
+  // const handleAdjournCase = async () => {
+  //   await endpoint
+  //     .patch(`/case/adjourn/${id}`, { adjournCaseData })
+  //     .then((res) => {
+  //       console.log("case adjournment", res);
+  //       setData(data.data);
+  //       getCase();  // Refresh case data
+  //       SuccessAlert(res.data.message);
+  //       setLoading(false);
+  //       closeAdjournCaseModal();
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //       closeAdjournCaseModal();
+  //       ErrorAlert(err.response.data.message);
+  //       // console.log(err);
+  //     });
+  // };
 
   return (
     <>
@@ -891,74 +951,68 @@ export default function SingleCase() {
           </Modal>
         )}
 
-        <Modal
-          show={adjournCaseModal}
-          size="md">
-          <Modal.Header>
-            <Button
-              onClick={closeAdjournCaseModal}
-              className="btn-close"
-              variant="">
-              x
-            </Button>
-          </Modal.Header>
+      <Modal
+      show={adjournCaseModal}
+      size="md">
+      <Modal.Header>
+        <Button
+          onClick={closeAdjournCaseModal}
+          className="btn-close"
+          variant="">
+          x
+        </Button>
+      </Modal.Header>
 
-          <Modal.Body>
-            <div>
-              <Card>
-                <Card.Header>
-                  <Card.Title as="h3">Adjourn Case </Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Row className="my-5">
-                    <Col md={12}>
-                      <label htmlFor="For date">Date </label>
-                      <input
-                        // onChange={(e) =>
-                        //   setMotionDetails({
-                        //     ...motionDetails,
-                        //     doc_url: e.target.files[0],
-                        //   })
-                        // }
-                        className="form-control"
-                        type="date"
-                      />
-                    </Col>
-                  </Row>
-                  <Row className="my-5">
-                    <Col md={12}>
-                      <label htmlFor="For comment">Comment</label>
-                      <textarea
-                        className="form-control"
-                        placeholder="Add a reason for the adjournment"
-                        // onChange={(e) =>
-                        //   setMotionDetails({
-                        //     ...motionDetails,
-                        //     motion_description: e.target.value,
-                        //   })
-                        // }
-                      ></textarea>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="warning"
-              className="me-1"
-              onClick={closeAdjournCaseModal}>
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              className="me-1"
-              onClick={(e) => handleAdjournCase(e)}>
-              Adjourn
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      <Modal.Body>
+        <div>
+          <Card>
+            <Card.Header>
+              <Card.Title as="h3">Adjourn Case</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Row className="my-5">
+                <Col md={12}>
+                  <label htmlFor="adjournment_date">Date</label>
+                  <input
+                    name="adjournment_date"
+                    className="form-control"
+                    type="date"
+                    value={adjournCaseData.adjournment_date}
+                    onChange={handleInputChange}
+                  />
+                </Col>
+              </Row>
+              <Row className="my-5">
+                <Col md={12}>
+                  <label htmlFor="comment">Comment</label>
+                  <textarea
+                    name="comment"
+                    className="form-control"
+                    placeholder="Add a reason for the adjournment"
+                    value={adjournCaseData.comment}
+                    onChange={handleInputChange}
+                  ></textarea>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          variant="warning"
+          className="me-1"
+          onClick={closeAdjournCaseModal}>
+          Close
+        </Button>
+        <Button
+          variant="primary"
+          className="me-1"
+          onClick={handleAdjournCase}>
+          Adjourn
+        </Button>
+      </Modal.Footer>
+      </Modal>
       </div>
     </>
   );
