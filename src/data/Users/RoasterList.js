@@ -128,28 +128,24 @@ export const RoasterList = () => {
       .catch((err) => console.log("Legal Officer Error", err));
   };
 
-  const handleReopenCase = async (data) => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("suite_no", selectedSuitNo?.value || "");
-    formData.append(
-      "legal_officer_id",
-      JSON.stringify(selectedCouncils.map((council) => council.value))
-    );
-    formData.append("case_id", id);
-
+  // Function to Create Roster
+  const handleCreateRoaster = async () => {
     try {
-      const response = await endpoint.post(`/case/reopen`, formData);
+      const formData = new FormData();
+      formData.append("suite_no", selectedSuitNo?.value || "");
+      formData.append(
+        "legal_officer_id",
+        JSON.stringify(selectedCouncils.map((council) => council.value))
+      );
+      // formData.append("case_id", id);
+      console.log("Payload:", formData);
+
+      const response = await endpoint.post(`/case/createroaster`, formData);
       SuccessAlert(response.data.message);
-      navigate(`${process.env.PUBLIC_URL}/cases`);
     } catch (err) {
       console.log(err);
-      setLoading(false);
-      if (err.response && err.response.data && err.response.data.description) {
-        ErrorAlert(err.response.data.description);
-      } else {
-        ErrorAlert("An error occurred. Please try again.");
-      }
+      // setLoading(false);
+      ErrorAlert("An error occurred. Please try again.");
     }
   };
 
@@ -292,7 +288,7 @@ export const RoasterList = () => {
               </Card.Header>
               <Card.Body>
                 <CForm
-                  onSubmit={handleSubmit(handleReopenCase)}
+                  onSubmit={handleSubmit(handleCreateRoaster)}
                   className="row g-3 needs-validation"
                 >
                   <CCol md={6}>
@@ -323,6 +319,12 @@ export const RoasterList = () => {
                       onChange={setSelectedCouncils}
                     />
                   </CCol>
+                  <CCol xs={12}>
+                    <CButton type="submit" color="primary">
+                      <span className="fe fe-plus"></span>
+                      Create Roaster
+                    </CButton>
+                  </CCol>
                 </CForm>
               </Card.Body>
             </Card>
@@ -332,10 +334,6 @@ export const RoasterList = () => {
           <Button variant="dark" className="me-1" onClick={closeRoasterModal}>
             Close
           </Button>
-          <CButton color="primary" type="submit">
-            <span className="fe fe-plus"></span>
-            Create Roaster
-          </CButton>
         </Modal.Footer>
       </Modal>
     </div>
