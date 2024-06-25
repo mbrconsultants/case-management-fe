@@ -3,7 +3,7 @@ import { Card, Row, Col, Button, Modal } from "react-bootstrap";
 import endpoint from "../../context/endpoint";
 import { Context } from "../../context/Context";
 import { ErrorAlert, SuccessAlert } from "../Toast/toast";
-import "./RosterList.css";
+import "./RoasterList.css";
 import Select from "react-select";
 import {
   CForm,
@@ -20,7 +20,7 @@ import {
 import { useForm } from "react-hook-form";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
-export const RosterList = () => {
+export const RoasterList = () => {
   const { user } = useContext(Context);
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(false);
@@ -62,7 +62,7 @@ export const RosterList = () => {
     try {
       const res = await endpoint.post(`/case/list-by-hearing-date`);
       setData(res.data.data);
-      setHeaderText(`COURT ROSTER FOR THE MONTH OF ${monthName} ${year}`);
+      setHeaderText(`COURT ROASTER FOR THE MONTH OF ${monthName} ${year}`);
     } catch (err) {
       console.error(err);
     }
@@ -128,28 +128,24 @@ export const RosterList = () => {
       .catch((err) => console.log("Legal Officer Error", err));
   };
 
-  const handleReopenCase = async (data) => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("suite_no", selectedSuitNo?.value || "");
-    formData.append(
-      "legal_officer_id",
-      JSON.stringify(selectedCouncils.map((council) => council.value))
-    );
-    formData.append("case_id", id);
-
+  // Function to Create Roster
+  const handleCreateRoaster = async () => {
     try {
-      const response = await endpoint.post(`/case/reopen`, formData);
+      const formData = new FormData();
+      formData.append("suite_no", selectedSuitNo?.value || "");
+      formData.append(
+        "legal_officer_id",
+        JSON.stringify(selectedCouncils.map((council) => council.value))
+      );
+      // formData.append("case_id", id);
+      console.log("Payload:", formData);
+
+      const response = await endpoint.post(`/case/createroaster`, formData);
       SuccessAlert(response.data.message);
-      navigate(`${process.env.PUBLIC_URL}/cases`);
     } catch (err) {
       console.log(err);
-      setLoading(false);
-      if (err.response && err.response.data && err.response.data.description) {
-        ErrorAlert(err.response.data.description);
-      } else {
-        ErrorAlert("An error occurred. Please try again.");
-      }
+      // setLoading(false);
+      ErrorAlert("An error occurred. Please try again.");
     }
   };
 
@@ -292,11 +288,11 @@ export const RosterList = () => {
               </Card.Header>
               <Card.Body>
                 <CForm
-                  onSubmit={handleSubmit(handleReopenCase)}
+                  onSubmit={handleSubmit(handleCreateRoaster)}
                   className="row g-3 needs-validation"
                 >
                   <CCol md={6}>
-                    <CFormLabel htmlFor="suite_no">Suit Number</CFormLabel>
+                    <CFormLabel htmlFor="suite_no">Suite Number</CFormLabel>
                     <Select
                       id="suite_no"
                       options={caseList.map((caseItem) => ({
@@ -323,6 +319,12 @@ export const RosterList = () => {
                       onChange={setSelectedCouncils}
                     />
                   </CCol>
+                  <CCol xs={12}>
+                    <CButton type="submit" color="primary">
+                      <span className="fe fe-plus"></span>
+                      Create Roaster
+                    </CButton>
+                  </CCol>
                 </CForm>
               </Card.Body>
             </Card>
@@ -332,10 +334,6 @@ export const RosterList = () => {
           <Button variant="dark" className="me-1" onClick={closeRoasterModal}>
             Close
           </Button>
-          <CButton color="primary" type="submit">
-            <span className="fe fe-plus"></span>
-            Create Roaster
-          </CButton>
         </Modal.Footer>
       </Modal>
     </div>
