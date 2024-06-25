@@ -238,51 +238,62 @@ export default function CreateCase() {
     }
   }, []);
 
-  const handleCreateUser = async () => {
-    setLoading(true);
-    const chamber_lawyer_ids = [
-      details.judge_id && details.judge_id.map((id) => id.value),
-    ];
-    const data = new FormData();
-    // console.log("==============doc_urls======================");
-    console.log(doc_urls);
-    // console.log('====================================');
-    data.append("case_type_id", details.case_type_id);
-    data.append("suite_no", details.suite_no);
-    data.append("parties", details.parties);
-    data.append("appellants", details.appellants);
-    data.append("appellant_id", details.appellant_id);
-    data.append("respondent", details.respondent);
-    data.append("respondent_id", details.respondent_id);
-    data.append("court_id", details.court_id);
-    data.append("case_description", details.case_description);
-    data.append("hearing_date", details.hearing_date);
-    data.append("chamber_lawyer_ids", [chamber_lawyer_ids]);
-    data.append("doc_urls", doc_urls);
+ const handleCreateUser = async () => {
+   setLoading(true);
+   const chamber_lawyer_ids = [
+     details.judge_id && details.judge_id.map((id) => id.value),
+   ];
+   const data = new FormData();
 
-    if (id) {
-      await endpoint
-        .put(`/case/edit/${id}`, data)
-        .then((res) => {
-          SuccessAlert(res.data.message);
-          navigate(`${process.env.PUBLIC_URL}/cases`);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          ErrorAlert(err.response.data.description);
-        });
-    } else {
-      await endpoint
-        .post("/case/create", data)
-        .then((res) => navigate(`${process.env.PUBLIC_URL}/cases`))
-        .catch((err) => {
-          setLoading(false);
-          console.log(err);
-          ErrorAlert(err.response.data.description);
-        });
-    }
-  };
+   console.log("==============doc_urls======================");
+   console.log(doc_urls);
+   console.log("====================================");
+
+   // Append other form data
+   data.append("case_type_id", details.case_type_id);
+   data.append("suite_no", details.suite_no);
+   data.append("parties", details.parties);
+   data.append("appellants", details.appellants);
+   data.append("appellant_id", details.appellant_id);
+   data.append("respondent", details.respondent);
+   data.append("respondent_id", details.respondent_id);
+   data.append("court_id", details.court_id);
+   data.append("case_description", details.case_description);
+   data.append("hearing_date", details.hearing_date);
+   data.append("chamber_lawyer_ids", JSON.stringify(chamber_lawyer_ids));
+
+   // Append doc_urls as a JSON string
+   data.append(
+     "doc_urls",
+     JSON.stringify(
+       doc_urls.map((doc) => ({
+         doc_url: doc.doc_url.name, // only the filename is appended, you will need to handle the actual file upload separately
+         doc_type_id: doc.doc_type_id,
+       }))
+     )
+   );
+
+   // Append files separately to maintain the file upload in FormData
+   doc_urls.forEach((doc, index) => {
+     data.append(`file${index}`, doc.doc_url);
+   });
+
+   try {
+     if (id) {
+       const res = await endpoint.put(`/case/edit/${id}`, data);
+       SuccessAlert(res.data.message);
+       navigate(`${process.env.PUBLIC_URL}/cases`);
+     } else {
+       const res = await endpoint.post("/case/create", data);
+       navigate(`${process.env.PUBLIC_URL}/cases`);
+     }
+   } catch (err) {
+     console.log(err);
+     setLoading(false);
+     ErrorAlert(err.response.data.description);
+   }
+ };
+
 
   const [rows, setRows] = useState([{ doc_url: "", doc_type_id: "" }]);
 
