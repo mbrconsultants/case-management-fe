@@ -46,7 +46,6 @@ export default function CreateCase() {
   const [chamberLawyers, setChamberLawyers] = useState([]);
 
   const [documentTypeList, setDocumentTypeList] = useState([]);
-  
 
   const [details, setDetails] = useState({
     case_type_id: "",
@@ -296,33 +295,33 @@ export default function CreateCase() {
  };
 
 
- const [rows, setRows] = useState([{ doc_url: "", doc_type_id: "" }]);
+  const [rows, setRows] = useState([{ doc_url: "", doc_type_id: "" }]);
 
- const handleAddRow = () => {
-   setRows([...rows, { doc_url: "", doc_type_id: "" }]);
- };
+  const handleAddRow = () => {
+    setRows([...rows, { doc_url: "", doc_type_id: "" }]);
+  };
 
- const handleRemoveRow = (index) => {
-   const updatedRows = rows.filter((_, i) => i !== index);
-   setRows(updatedRows);
- };
+  const handleRemoveRow = (index) => {
+    const updatedRows = rows.filter((_, i) => i !== index);
+    setRows(updatedRows);
+  };
 
- const handleFileChange = (index, file) => {
-   const updatedRows = [...rows];
-   updatedRows[index].doc_url = file;
-   setRows(updatedRows);
- };
+  const handleFileChange = (index, file) => {
+    const updatedRows = [...rows];
+    updatedRows[index].doc_url = file;
+    setRows(updatedRows);
+  };
 
- const handleTypeChange = (index, typeId) => {
-   const updatedRows = [...rows];
-   updatedRows[index].doc_type_id = typeId;
-   setRows(updatedRows);
- };
+  const handleTypeChange = (index, typeId) => {
+    const updatedRows = [...rows];
+    updatedRows[index].doc_type_id = typeId;
+    setRows(updatedRows);
+  };
 
- const doc_urls = rows.map((row) => ({
-   doc_url: row.doc_url,
-   doc_type_id: row.doc_type_id,
- }));
+  const doc_urls = rows.map((row) => ({
+    doc_url: row.doc_url,
+    doc_type_id: row.doc_type_id,
+  }));
 
   const setSelectedLawyers = (selectedOptions) => {
     setDetails({
@@ -331,21 +330,19 @@ export default function CreateCase() {
     });
   };
 
-
   return (
     <div>
       <div className="page-header">
         <div>
           <h1 className="page-title">New Case</h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Registry
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+              aria-current="page"
+            >
               New Case
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -353,7 +350,8 @@ export default function CreateCase() {
         <div className="ms-auto pageheader-btn">
           <Link
             to={`${process.env.PUBLIC_URL}/cases/`}
-            className="btn btn-primary btn-icon text-white me-3">
+            className="btn btn-primary btn-icon text-white me-3"
+          >
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
@@ -363,9 +361,7 @@ export default function CreateCase() {
       </div>
 
       <Row>
-        <Col
-          md={12}
-          lg={12}>
+        <Col md={12} lg={12}>
           <Card>
             <Card.Header>
               <Col className="card-title text-center">
@@ -378,13 +374,15 @@ export default function CreateCase() {
               {/* <formvalidation.CustomValidation /> */}
               <CForm
                 onSubmit={handleSubmit(handleCreateUser)}
-                className="row g-3 needs-validation">
+                className="row g-3 needs-validation"
+              >
                 <fieldset
                   style={{
                     border: "3px solid #ccc",
                     padding: "20px",
                     margin: "20px 0",
-                  }}>
+                  }}
+                >
                   <legend style={{ fontSize: "1.5em", padding: "0 10px" }}>
                     CASE DETAILS
                   </legend>
@@ -422,13 +420,12 @@ export default function CreateCase() {
                               court_id: e.target.value,
                             });
                             getCourtDivision(e.target.value);
-                          }}>
+                          }}
+                        >
                           <option value="">--select--</option>
                           {courtList &&
                             courtList.map((court, index) => (
-                              <option
-                                value={court.id}
-                                key={index}>
+                              <option value={court.id} key={index}>
                                 {court.name}
                               </option>
                             ))}
@@ -451,13 +448,12 @@ export default function CreateCase() {
                               ...details,
                               court_id: e.target.value,
                             })
-                          }>
+                          }
+                        >
                           <option value="">--select--</option>
                           {courtDivisionList &&
                             courtDivisionList.map((court, index) => (
-                              <option
-                                value={court.id}
-                                key={index}>
+                              <option value={court.id} key={index}>
                                 {court.division}
                               </option>
                             ))}
@@ -476,14 +472,16 @@ export default function CreateCase() {
                             ...details,
                             case_type_id: e.target.value,
                           })
-                        }>
+                        }
+                      >
                         <option value="">--select--</option>
                         {caseTypelist.map((caseType, index) => (
                           <option
                             key={index + 1}
                             value={caseType.id}
                             selected={details.case_type_id === caseType.id}
-                            className="text-dark">
+                            className="text-dark"
+                          >
                             {caseType.case_type}
                           </option>
                         ))}
@@ -503,12 +501,11 @@ export default function CreateCase() {
                           })
                         }
                         name=""
-                        id="">
+                        id=""
+                      >
                         <option value="">--select--</option>
                         {appellantList.map((appellant) => (
-                          <option
-                            value={appellant.id}
-                            key={appellant.id}>
+                          <option value={appellant.id} key={appellant.id}>
                             {appellant.appellant}
                           </option>
                         ))}
@@ -545,12 +542,11 @@ export default function CreateCase() {
                             })
                           }
                           name=""
-                          id="">
+                          id=""
+                        >
                           <option value="">--select--</option>
                           {respondentList.map((respondent) => (
-                            <option
-                              value={respondent.id}
-                              key={respondent.id}>
+                            <option value={respondent.id} key={respondent.id}>
                               {respondent.respondent}
                             </option>
                           ))}
@@ -604,7 +600,8 @@ export default function CreateCase() {
                         }
                         type="text"
                         aria-describedby="inputGroupPrepend"
-                        name="case parties"></CFormInput>
+                        name="case parties"
+                      ></CFormInput>
                     </CCol>
                     <CCol md={12}>
                       <CFormLabel htmlFor="validationCustomUsername">
@@ -621,7 +618,8 @@ export default function CreateCase() {
                         }
                         type="text"
                         aria-describedby="inputGroupPrepend"
-                        name="case_description"></CFormTextarea>
+                        name="case_description"
+                      ></CFormTextarea>
                     </CCol>
                   </CRow>
                 </fieldset>
@@ -631,7 +629,8 @@ export default function CreateCase() {
                     border: "3px solid #ccc",
                     padding: "20px",
                     margin: "20px 0",
-                  }}>
+                  }}
+                >
                   <legend style={{ fontSize: "1.5em", padding: "0 10px" }}>
                     CHAMBER DETAILS
                   </legend>
@@ -653,13 +652,12 @@ export default function CreateCase() {
                               chamber_solicitor_id: e.target.value,
                             });
                             getChamberLawyers(e.target.value);
-                          }}>
+                          }}
+                        >
                           <option value="">--select--</option>
                           {chamberList &&
                             chamberList.map((chamber, index) => (
-                              <option
-                                value={chamber.id}
-                                key={index}>
+                              <option value={chamber.id} key={index}>
                                 {chamber.chamber_name}
                               </option>
                             ))}
@@ -690,15 +688,14 @@ export default function CreateCase() {
                     border: "3px solid #ccc",
                     padding: "20px",
                     margin: "20px 0",
-                  }}>
+                  }}
+                >
                   <legend style={{ fontSize: "1.5em", padding: "0 10px" }}>
                     ATTACHMENTS
                   </legend>
                   <CRow>
                     {rows.map((row, index) => (
-                      <div
-                        className="row"
-                        key={index}>
+                      <div className="row" key={index}>
                         <CCol md={4}>
                           <CFormLabel htmlFor={`validationCustomType${index}`}>
                             Attachment Type
@@ -708,12 +705,11 @@ export default function CreateCase() {
                             value={row.doc_type_id}
                             onChange={(e) =>
                               handleTypeChange(index, e.target.value)
-                            }>
+                            }
+                          >
                             <option value="">--select--</option>
                             {documentTypeList.map((fileType, idx) => (
-                              <option
-                                key={idx}
-                                value={fileType.id}>
+                              <option key={idx} value={fileType.id}>
                                 {fileType.name}
                               </option>
                             ))}
@@ -734,16 +730,16 @@ export default function CreateCase() {
                             />
                           </CInputGroup>
                         </CCol>
-                        <CCol
-                          md={3}
-                          className="mt-3">
+                        <CCol md={3} className="mt-3">
                           <CFormLabel
-                            htmlFor={`removeRow${index}`}></CFormLabel>
+                            htmlFor={`removeRow${index}`}
+                          ></CFormLabel>
                           {index > 0 && (
                             <button
                               type="button"
                               className="btn btn-danger"
-                              onClick={() => handleRemoveRow(index)}>
+                              onClick={() => handleRemoveRow(index)}
+                            >
                               <span className="fa fa-trash"></span>
                             </button>
                           )}
@@ -751,25 +747,20 @@ export default function CreateCase() {
                       </div>
                     ))}
                     <div className="row">
-                      <CCol
-                        md={12}
-                        className="mt-3 text-right">
+                      <CCol md={12} className="mt-3 text-right">
                         <button
                           type="button"
                           className="btn btn-primary"
-                          onClick={handleAddRow}>
+                          onClick={handleAddRow}
+                        >
                           <span className="fa fa-plus"></span> More Attachment
                         </button>
                       </CCol>
                     </div>
                   </CRow>
                 </fieldset>
-                <CCol
-                  xs={12}
-                  className="text-center">
-                  <CButton
-                    color="primary"
-                    type="submit">
+                <CCol xs={12} className="text-center">
+                  <CButton color="primary" type="submit">
                     <span className="fe fe-plus"></span>
                     {isLoading ? "Saving data..." : "Save"}
                   </CButton>

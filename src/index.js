@@ -10,10 +10,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { NetworkCheck } from "@mui/icons-material";
 import Stafflist from "./components/CustomPages/Users/Stafflist";
 import FileType from "./components/CustomPages/Users/FileType";
+
 import CaseType from "./components/CustomPages/Users/CaseType";
 import Parties from "./components/CustomPages/Users/Parties";
-import CourtRoster from "./components/CustomPages/Users/CourtRoster";
-import TestRoster from "./components/CustomPages/Users/TestRoster";
+import CourtRoaster from "./components/CustomPages/Users/CourtRoaster";
+import TestRoaster from "./components/CustomPages/Users/TestRoaster";
 
 const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -361,6 +362,9 @@ const CreateRoaster = React.lazy(() =>
 const NewCase = React.lazy(() =>
   import("./components/CustomPages/Cases/NewCase")
 );
+const CaseReport = React.lazy(() =>
+  import("./components/CustomPages/Cases/CaseReport")
+);
 const CaseList = React.lazy(() =>
   import("./components/CustomPages/Cases/CaseList")
 );
@@ -470,10 +474,7 @@ const Root = () => {
             />
 
             <Routes>
-              <Route
-                path="/login"
-                element={<Login />}
-              />
+              <Route path="/login" element={<Login />} />
 
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
@@ -483,11 +484,9 @@ const Root = () => {
                   ) : (
                     <Navigate to={`${process.env.PUBLIC_URL}/login`} />
                   )
-                }>
-                <Route
-                  index
-                  element={<Dashboard />}
-                />
+                }
+              >
+                <Route index element={<Dashboard />} />
                 <Route
                   path={`${process.env.PUBLIC_URL}/dashboard`}
                   element={
@@ -542,6 +541,15 @@ const Root = () => {
                     }
                   />
                   <Route
+                    path={`${process.env.PUBLIC_URL}/case-report`}
+                    element={
+                      // user ?
+                      <CaseReport />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
                     path={`${process.env.PUBLIC_URL}/case-type`}
                     element={
                       // user ?
@@ -560,19 +568,19 @@ const Root = () => {
                     }
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/court-roster`}
+                    path={`${process.env.PUBLIC_URL}/court-roaster`}
                     element={
                       // user ?
-                      <CourtRoster />
+                      <CourtRoaster />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/test-roster`}
+                    path={`${process.env.PUBLIC_URL}/test-roaster`}
                     element={
                       // user ?
-                      <TestRoster />
+                      <TestRoaster />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
@@ -1245,7 +1253,8 @@ const Root = () => {
               />
               <Route
                 path={`${process.env.PUBLIC_URL}/`}
-                element={<Custompages />}>
+                element={<Custompages />}
+              >
                 <Route
                   path={`${process.env.PUBLIC_URL}/pages/underConstruction`}
                   element={
@@ -1302,10 +1311,7 @@ const Root = () => {
                   path={`${process.env.PUBLIC_URL}/custompages/errorpages/errorpage503`}
                   element={<Errorpage503 />}
                 />
-                <Route
-                  path="*"
-                  element={<Errorpage400 />}
-                />
+                <Route path="*" element={<Errorpage400 />} />
               </Route>
             </Routes>
 

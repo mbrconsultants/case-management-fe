@@ -14,7 +14,7 @@ export default function FileType() {
     <div>
       <div className="page-header ">
         <div>
-          <h1 className="page-title">Motion Document Type Setup</h1>
+          <h1 className="page-title">Process Document Type Setup</h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item className="breadcrumb-item" href="#">
               Home
@@ -23,7 +23,7 @@ export default function FileType() {
               className="breadcrumb-item active breadcrumds"
               aria-current="page"
             >
-              Add motion document type 
+              Add process document type
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
@@ -32,9 +32,6 @@ export default function FileType() {
       <Row>
         <Col sm={12} className="col-12">
           <Card>
-            <Card.Header>
-              <h3 className="card-title mb-0">Motion Document types</h3>
-            </Card.Header>
             <Card.Body>
               <div className="">
                 <div className="">
