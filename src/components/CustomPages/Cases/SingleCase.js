@@ -25,6 +25,7 @@ import {
 import "./styles.css";
 import { useForm } from "react-hook-form";
 import Loader from "../../../data/Loader/loader";
+import { trim } from "lodash";
 import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 
 export default function SingleCase() {
@@ -44,7 +45,6 @@ export default function SingleCase() {
   const [assigncouncils, setAssignCouncils] = useState([]);
   const [assignsolicitors, setAssignSolicitors] = useState([]);
   const [motionData, setMotionData] = useState();
-  const [adjournCaseData, setAdjournCaseData] = useState();
   const [fileType, setFileType] = useState();
   const [selectedCouncil, setSelectedCouncil] = useState(null);
   const [selectedChamber, setSelectedChamber] = useState(null);
@@ -70,6 +70,19 @@ export default function SingleCase() {
     formState: { errors },
     reset,
   } = useForm();
+
+  const [adjournCaseData, setAdjournCaseData] = useState({
+    adjournment_date: "",
+    comment: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setAdjournCaseData({
+      ...adjournCaseData,
+      [name]: value,
+    });
+  };
 
   const navigate = useNavigate();
 
@@ -274,87 +287,69 @@ export default function SingleCase() {
     navigate(`/reopen-case/${id}`);
   };
 
-  const handleAdjournCase = async () => {
-    try {
-      const data = new FormData();
-      data.append("case_id", adjournCaseData.case_id);
+  const handleAdjournCase = async (e) => {
+    e.preventDefault();
 
-      const response = await endpoint.post(`/motion/create`, data);
-      navigate(`${process.env.PUBLIC_URL}/cases`);
-      SuccessAlert(response.data.message);
-    } catch (err) {
-      console.log(err);
+    const { adjournment_date, comment } = adjournCaseData;
+
+    // Validate the form fields
+    if (!adjournment_date || !comment) {
+      alert("Please provide both date and comment.");
+      return;
+    }
+
+    // Prepare the payload
+    const payload = {
+      adjournment_date,
+      comment,
+    };
+
+    try {
+      // Make the PATCH request to the endpoint
+      const response = await endpoint.patch(`/case/adjourn/${id}`, payload);
+
+      if (response.status === 200) {
+        // Handle successful response
+        console.log("Case adjourned successfully.");
+        getCase(); // Refresh case data
+        // Reset the form fields
+        setAdjournCaseData({
+          adjournment_date: "",
+          comment: "",
+        });
+        SuccessAlert(response.data.message);
+        setLoading(false);
+        closeAdjournCaseModal();
+      } else {
+        // Handle error response
+        console.log("Failed to adjourn the case.");
+        closeAdjournCaseModal();
+      }
+    } catch (error) {
       setLoading(false);
       closeAdjournCaseModal();
-      if (err.response && err.response.data && err.response.data.description) {
-        ErrorAlert(err.response.data.description);
-      } else {
-        ErrorAlert("An error occurred. Please try again.");
-      }
+      ErrorAlert(error.response.data.message);
+      console.log(error);
     }
   };
-
-  const handleAddReport = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("case_id", id);
-      formData.append("report_date", reportDetails.reportDate);
-      formData.append("report_description", reportDetails.reportDescription);
-      formData.append("report_doc_type", reportDetails.reportDocType);
-      for (let i = 0; i < reportDetails.reportFiles.length; i++) {
-        formData.append("report_files", reportDetails.reportFiles[i]);
-      }
-
-      const response = await endpoint.post(`/report/create`, formData);
-      SuccessAlert(response.data.message);
-      getCase(); // Refresh case data to show the new report
-    } catch (err) {
-      console.log(err);
-      ErrorAlert("An error occurred. Please try again.");
-    }
-  };
-
-  //Get Report Document Type List
-  const getReportDocumentTypeList = async () => {
-    setLoading(true);
-    await endpoint
-      .get("/file-type/list")
-      .then((res) => {
-        console.log("document type", res.data.data);
-        setReportDocumentTypeList(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        // console.log(err)
-      });
-  };
-
-  const handleViewReport = (reportId) => {
-    const reportUrl = `/report/view/${reportId}`;
-    window.open(reportUrl, "_blank");
-  };
-
-  const handleEditReport = (reportId) => {
-    const reportUrl = `/report/edit/${reportId}`;
-    navigate(reportUrl);
-  };
-
-  const [rows, setRows] = useState([{ doc_url: "" }]);
-  const handleAddRow = () => {
-    setRows([...rows, { doc_url: "" }]);
-  };
-
-  const handleRemoveRow = (index) => {
-    const updatedRows = rows.filter((_, i) => i !== index);
-    setRows(updatedRows);
-  };
-
-  const handleFileChange = (index, file) => {
-    const updatedRows = [...rows];
-    updatedRows[index].doc_url = file;
-    setRows(updatedRows);
-  };
+  // const handleAdjournCase = async () => {
+  //   await endpoint
+  //     .patch(`/case/adjourn/${id}`, { adjournCaseData })
+  //     .then((res) => {
+  //       console.log("case adjournment", res);
+  //       setData(data.data);
+  //       getCase();  // Refresh case data
+  //       SuccessAlert(res.data.message);
+  //       setLoading(false);
+  //       closeAdjournCaseModal();
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //       closeAdjournCaseModal();
+  //       ErrorAlert(err.response.data.message);
+  //       // console.log(err);
+  //     });
+  // };
 
   return (
     <>
@@ -1077,36 +1072,30 @@ export default function SingleCase() {
             <div>
               <Card>
                 <Card.Header>
-                  <Card.Title as="h3">Adjourn Case </Card.Title>
+                  <Card.Title as="h3">Adjourn Case</Card.Title>
                 </Card.Header>
                 <Card.Body>
                   <Row className="my-5">
                     <Col md={12}>
-                      <label htmlFor="For date">Date </label>
+                      <label htmlFor="adjournment_date">Date</label>
                       <input
-                        // onChange={(e) =>
-                        //   setMotionDetails({
-                        //     ...motionDetails,
-                        //     doc_url: e.target.files[0],
-                        //   })
-                        // }
+                        name="adjournment_date"
                         className="form-control"
                         type="date"
+                        value={adjournCaseData.adjournment_date}
+                        onChange={handleInputChange}
                       />
                     </Col>
                   </Row>
                   <Row className="my-5">
                     <Col md={12}>
-                      <label htmlFor="For comment">Comment</label>
+                      <label htmlFor="comment">Comment</label>
                       <textarea
+                        name="comment"
                         className="form-control"
                         placeholder="Add a reason for the adjournment"
-                        // onChange={(e) =>
-                        //   setMotionDetails({
-                        //     ...motionDetails,
-                        //     motion_description: e.target.value,
-                        //   })
-                        // }
+                        value={adjournCaseData.comment}
+                        onChange={handleInputChange}
                       ></textarea>
                     </Col>
                   </Row>
@@ -1125,7 +1114,7 @@ export default function SingleCase() {
             <Button
               variant="primary"
               className="me-1"
-              onClick={(e) => handleAdjournCase(e)}
+              onClick={handleAdjournCase}
             >
               Adjourn
             </Button>
