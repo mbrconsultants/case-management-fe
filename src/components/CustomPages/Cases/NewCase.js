@@ -270,9 +270,7 @@ export default function CreateCase() {
     }
   };
 
-
-
-   const [rows, setRows] = useState([{ doc_url: "" }]);
+  const [rows, setRows] = useState([{ doc_url: "" }]);
   const handleAddRow = () => {
     setRows([...rows, { doc_url: "" }]);
   };
@@ -294,14 +292,13 @@ export default function CreateCase() {
         <div>
           <h1 className="page-title">New Case</h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Registry
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+              aria-current="page"
+            >
               New Case
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -309,7 +306,8 @@ export default function CreateCase() {
         <div className="ms-auto pageheader-btn">
           <Link
             to={`${process.env.PUBLIC_URL}/cases/`}
-            className="btn btn-primary btn-icon text-white me-3">
+            className="btn btn-primary btn-icon text-white me-3"
+          >
             <span>
               <i className="fe fe-eye"></i>&nbsp;
             </span>
@@ -319,9 +317,7 @@ export default function CreateCase() {
       </div>
 
       <Row>
-        <Col
-          md={12}
-          lg={12}>
+        <Col md={12} lg={12}>
           <Card>
             <Card.Header>
               <Col className="card-title text-center">
@@ -334,7 +330,8 @@ export default function CreateCase() {
               {/* <formvalidation.CustomValidation /> */}
               <CForm
                 onSubmit={handleSubmit(handleCreateUser)}
-                className="row g-3 needs-validation">
+                className="row g-3 needs-validation"
+              >
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom02">
                     Suite Number
@@ -368,13 +365,12 @@ export default function CreateCase() {
                           court_id: e.target.value,
                         });
                         getCourtDivision(e.target.value);
-                      }}>
+                      }}
+                    >
                       <option value="">--select--</option>
                       {courtList &&
                         courtList.map((court, index) => (
-                          <option
-                            value={court.id}
-                            key={index}>
+                          <option value={court.id} key={index}>
                             {court.name}
                           </option>
                         ))}
@@ -397,13 +393,12 @@ export default function CreateCase() {
                           ...details,
                           court_id: e.target.value,
                         })
-                      }>
+                      }
+                    >
                       <option value="">--select--</option>
                       {courtDivisionList &&
                         courtDivisionList.map((court, index) => (
-                          <option
-                            value={court.id}
-                            key={index}>
+                          <option value={court.id} key={index}>
                             {court.division}
                           </option>
                         ))}
@@ -422,14 +417,16 @@ export default function CreateCase() {
                         ...details,
                         case_type_id: e.target.value,
                       })
-                    }>
+                    }
+                  >
                     <option value="">--select-</option>
                     {caseTypelist.map((caseType, index) => (
                       <option
                         key={index + 1}
                         value={caseType.id}
                         selected={details.case_type_id === caseType.id}
-                        className="text-dark">
+                        className="text-dark"
+                      >
                         {caseType.case_type}
                       </option>
                     ))}
@@ -449,7 +446,8 @@ export default function CreateCase() {
                       })
                     }
                     name=""
-                    id="">
+                    id=""
+                  >
                     <option value="">--select--</option>
                     <option value="">--select--</option>
                   </select>
@@ -485,7 +483,8 @@ export default function CreateCase() {
                         })
                       }
                       name=""
-                      id="">
+                      id=""
+                    >
                       <option value="">--select--</option>
                       <option value="">--select--</option>
                     </select>
@@ -540,13 +539,12 @@ export default function CreateCase() {
                           chamber_id: e.target.value,
                         });
                         getChamberLawyers(e.target.value);
-                      }}>
+                      }}
+                    >
                       <option value="">--select--</option>
                       {chamberList &&
                         chamberList.map((chamber, index) => (
-                          <option
-                            value={chamber.id}
-                            key={index}>
+                          <option value={chamber.id} key={index}>
                             {chamber.chamber_name}
                           </option>
                         ))}
@@ -582,7 +580,8 @@ export default function CreateCase() {
                     }
                     type="text"
                     aria-describedby="inputGroupPrepend"
-                    name="case_description">
+                    name="case_description"
+                  >
                     {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
                   </CFormTextarea>
                 </CCol>
@@ -603,9 +602,7 @@ export default function CreateCase() {
                   />
                 </CCol>
                 {rows.map((row, index) => (
-                  <div
-                    className="row"
-                    key={index}>
+                  <div className="row" key={index}>
                     <CCol md={4}>
                       <CFormLabel htmlFor="validationCustomUsername">
                         Attachment Type
@@ -613,9 +610,7 @@ export default function CreateCase() {
                       <select className="form-select">
                         <option value="">--select--</option>
                         {documentTypeList.map((fileType, idx) => (
-                          <option
-                            key={idx}
-                            value={fileType.id}>
+                          <option key={idx} value={fileType.id}>
                             {fileType.name}
                           </option>
                         ))}
@@ -637,9 +632,7 @@ export default function CreateCase() {
                         />
                       </CInputGroup>
                     </CCol>
-                    <CCol
-                      md={3}
-                      className="mt-3">
+                    <CCol md={3} className="mt-3">
                       <CFormLabel htmlFor="validationCustomUsername">
                         {/* Attachment */}
                       </CFormLabel>
@@ -647,7 +640,8 @@ export default function CreateCase() {
                         <button
                           type="button"
                           className="btn btn-danger"
-                          onClick={() => handleRemoveRow(index)}>
+                          onClick={() => handleRemoveRow(index)}
+                        >
                           <span className="fa fa-trash"></span>
                         </button>
                       )}
@@ -655,24 +649,19 @@ export default function CreateCase() {
                   </div>
                 ))}
                 <div className="row">
-                  <CCol
-                    md={12}
-                    className="mt-3 text-right">
+                  <CCol md={12} className="mt-3 text-right">
                     <button
                       type="button"
                       className="btn btn-primary"
-                      onClick={handleAddRow}>
+                      onClick={handleAddRow}
+                    >
                       <span className="fa fa-plus"></span> More Attachment
                     </button>
                   </CCol>
                 </div>
 
-                <CCol
-                  xs={12}
-                  className="text-center">
-                  <CButton
-                    color="primary"
-                    type="submit">
+                <CCol xs={12} className="text-center">
+                  <CButton color="primary" type="submit">
                     <span className="fe fe-plus"></span>
                     {isLoading ? "Saving data..." : "Save"}
                   </CButton>

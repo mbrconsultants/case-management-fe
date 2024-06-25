@@ -3,7 +3,7 @@ import { Card, Row, Col, Button, Modal } from "react-bootstrap";
 import endpoint from "../../context/endpoint";
 import { Context } from "../../context/Context";
 import { ErrorAlert, SuccessAlert } from "../Toast/toast";
-import "./RosterList.css";
+import "./RoasterList.css";
 import Select from "react-select";
 import {
   CForm,
@@ -20,7 +20,7 @@ import {
 import { useForm } from "react-hook-form";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
-export const RosterList = () => {
+export const RoasterList = () => {
   const { user } = useContext(Context);
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(false);
@@ -62,7 +62,7 @@ export const RosterList = () => {
     try {
       const res = await endpoint.post(`/case/list-by-hearing-date`);
       setData(res.data.data);
-      setHeaderText(`COURT ROSTER FOR THE MONTH OF ${monthName} ${year}`);
+      setHeaderText(`COURT ROASTER FOR THE MONTH OF ${monthName} ${year}`);
     } catch (err) {
       console.error(err);
     }
@@ -296,7 +296,7 @@ export const RosterList = () => {
                   className="row g-3 needs-validation"
                 >
                   <CCol md={6}>
-                    <CFormLabel htmlFor="suite_no">Suit Number</CFormLabel>
+                    <CFormLabel htmlFor="suite_no">Suite Number</CFormLabel>
                     <Select
                       id="suite_no"
                       options={caseList.map((caseItem) => ({

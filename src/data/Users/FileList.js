@@ -21,6 +21,7 @@ export const FileList = () => {
   const [id, setId] = useState("");
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [openAddDocumentModal, setDocumentModal] = useState(false);
 
   const [file, setFile] = useState({
     name: "",
@@ -67,10 +68,11 @@ export const FileList = () => {
     await endpoint
       .post(`/file-type/create`, file)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         setFile({ ...file, name: " ", description: " " });
         getAllData();
         SuccessAlert(res.data.message);
+        setDocumentModal(false);
         setLoading(false);
       })
       .catch((err) => {
@@ -90,6 +92,10 @@ export const FileList = () => {
     });
     setOpen(true);
     // console.log("file to update", newFile)
+  };
+
+  const handleAddProcessDocumentModal = () => {
+    setDocumentModal(true);
   };
 
   const handleEdit = async () => {
@@ -144,7 +150,7 @@ export const FileList = () => {
 
   const onClose = () => {
     reset();
-    setOpen(false);
+    setDocumentModal(false);
     setDeleteOpen(false);
   };
 
@@ -220,7 +226,18 @@ export const FileList = () => {
       ) : (
         <div>
           <div id="page-wrapper" className="box box-default">
-            <div className="container-fluid">
+            <button
+              className={
+                isLoading
+                  ? "btn btn-success pull-right btn-loading"
+                  : "btn btn-success pull-right"
+              }
+              disabled={isLoading}
+              onClick={handleAddProcessDocumentModal}
+            >
+              Add Process Document
+            </button>
+            {/* <div className="container-fluid">
               <div className="col-md-12 text-success"></div>
               <br />
               <hr />
@@ -290,11 +307,11 @@ export const FileList = () => {
                 </Col>
                 <Col xs={3} md={4}></Col>
               </Row>
-            </div>
+            </div> */}
           </div>
           <Card>
             <Card.Body>
-              <h3 className="text-center">Motion Document types</h3>
+              <h3 className="text-center">Process Document Types</h3>
               <Row className="row">
                 <Col md={12} className="col-md-12">
                   <DataTable
@@ -316,10 +333,136 @@ export const FileList = () => {
                     highlightOnHover
                   />
 
+                  <Modal show={openAddDocumentModal}>
+                    <Modal.Body className="text-center p-4">
+                      <DialogTitle>
+                        Add Process Document
+                        <Button
+                          onClick={onClose}
+                          className="btn-close"
+                          variant=""
+                          disabled={isLoading}
+                        >
+                          x
+                        </Button>
+                      </DialogTitle>
+                      <DialogContent>
+                        <Row className="row">
+                          <Col>
+                            {" "}
+                            <br />
+                            <Card>
+                              <Card.Body>
+                                <form className="form-horizontal">
+                                  <div className="form-horizontal">
+                                    <div className="form-group">
+                                      <label className="col-md-6  cecontrol-label">
+                                        Document type
+                                      </label>
+                                      <div className="col-md-12">
+                                        <input
+                                          type="text"
+                                          className="form-control"
+                                          value={file.name}
+                                          onChange={(e) => {
+                                            setFile({
+                                              ...file,
+                                              name: e.target.value,
+                                            });
+                                          }}
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                      <label className="col-md-6  cecontrol-label">
+                                        Description
+                                      </label>
+                                      <div className="col-md-12">
+                                        <input
+                                          type="text"
+                                          className="form-control"
+                                          value={file.description}
+                                          onChange={(e) => {
+                                            setFile({
+                                              ...file,
+                                              description: e.target.value,
+                                            });
+                                          }}
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+
+                                    {/* <div className="form-group">
+                                      <div className="col-sm-offset-2 text-center col-sm-9">
+                                        <button
+                                          className={
+                                            isLoading
+                                              ? "btn btn-success pull-right btn-loading"
+                                              : "btn btn-success pull-right"
+                                          }
+                                          disabled={isLoading}
+                                          onClick={handleSubmit}
+                                        >
+                                          Add File
+                                        </button>
+                                      </div>
+                                    </div> */}
+                                  </div>
+                                </form>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                          <Row>
+                            <Col
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                marginLeft: "60px",
+                              }}
+                            >
+                              <Button
+                                onClick={onClose}
+                                disabled={isLoading}
+                                variant="danger"
+                                className="me-1"
+                              >
+                                Cancel
+                              </Button>
+                            </Col>
+                            <Col
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                marginLeft: "60px",
+                              }}
+                            >
+                              <Button
+                                onClick={handleSubmit}
+                                disabled={isLoading}
+                                variant="success"
+                                className={
+                                  isLoading ? "me-1  btn-loading" : "me-1"
+                                }
+                              >
+                                {" "}
+                                {isLoading ? "Add File" : "Add File"}
+                              </Button>
+                            </Col>
+                          </Row>
+                        </Row>
+                      </DialogContent>
+                      <DialogActions></DialogActions>
+                      {/* </Dialog> */}
+                    </Modal.Body>
+                  </Modal>
+
                   <Modal show={open}>
                     <Modal.Body className="text-center p-4">
                       <DialogTitle>
-                        Edit Module
+                        Edit
                         <Button
                           onClick={onClose}
                           className="btn-close"
