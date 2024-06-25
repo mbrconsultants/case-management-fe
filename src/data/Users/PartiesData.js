@@ -1,38 +1,4 @@
-//import { Link, Navigate } from "react-router-dom";
-//import "react-data-table-component-extensions/dist/index.css";
-//import DataTable from "react-data-table-component";
-//import DataTableExtensions from "react-data-table-component-extensions";
-//import { OverlayTrigger, Tooltip, Badge, FormSelect } from "react-bootstrap";
-//import endpoint from "../../context/endpoint";
-//import { Context } from "../../context/Context";
-// import {
-//   CForm,
-//   CCol,
-//   CFormLabel,
-//   CFormFeedback,
-//   CFormInput,
-//   CInputGroup,
-//   CInputGroupText,
-//   CButton,
-//   CFormCheck,
-// } from "@coreui/react";
-// import moment from "moment";
-// import { Modal, FormGroup, Form } from "react-bootstrap";
-// import { ErrorAlert, SuccessAlert } from "../../data/Toast/toast";
-// import {
-//   DropdownButton,
-//   ButtonGroup,
-//   Card,
-//   Button,
-//   Row,
-//   Col,
-//   InputGroup,
-//   Dropdown,
-// } from "react-bootstrap";
-// import Loader from "../Loader/loader";
-// import { useForm } from "react-hook-form";
-//##################################################################################
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import * as formelement from "../../data/Form/formelement/formelement";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import {
@@ -49,12 +15,10 @@ import {
 import { useForm } from "react-hook-form";
 import { Modal } from "react-bootstrap";
 import endpoint from "../../context/endpoint";
-import { Context } from "../../context/Context";
 import Loader from "../Loader/loader";
 import { ErrorAlert, SuccessAlert } from "../../data/Toast/toast";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { trim } from "lodash";
-//import * as CadreList from "../../../data/Title/Cadre";
 import {
   Col,
   Row,
@@ -66,16 +30,8 @@ import {
   Button,
   Breadcrumb,
 } from "react-bootstrap";
-//import * as UnitList from "../../../data/Units/Units";
-// import * as CadreList from '../Cadre/Cadre';
-// import Cadre from './Cadre/Cadre';
-// import Cadre from './../Cadre/Cadre'
 
 export default function PartiesData() {
-  //   const { user, dispatch } = useContext(Context);
-  //   const currentUser = user?.user;
-  //   // console.log("user id", currentUser.id);
-  //   const userID = currentUser.id;
   const {
     register,
     handleSubmit,
@@ -83,109 +39,183 @@ export default function PartiesData() {
     reset,
   } = useForm();
 
+  const params = useParams();
+
+  const id = params?.id;
+
+  const [modalHeading, setModalHeading] = useState("");
+  const [appellantModalHeading, setAppellantModalHeading] = useState("");
+
   const [isLoading, setLoading] = useState(false);
-  const [show, setShow] = useState(false);
-  const [showCadre, setCadreShow] = useState(false);
-  const handleShow = () => setShow(true);
-  const handleCadreShow = () => setCadreShow(true);
+  const [appellantModal, setShowAppellantModal] = useState(false);
+  const [showRespondent, setRespondentShow] = useState(false);
 
-  const [department, setDepartment] = useState("");
-  const [data, setDepartments] = useState([]);
-  const [units, setUnits] = useState([]);
-  const [cadres, setCadre] = useState([]);
-  const [name, setName] = useState("");
-  const [names, setNames] = useState("");
+  const [respondents, setRespondent] = useState([]);
+  const [appellants, setAppellant] = useState([]);
+  const [fullname, setName] = useState("");
+  const [singleAppellant, setSingleAppellant] = useState({});
+  const [singleRespondent, setSingleRespondent] = useState({});
+  const [showAppellantDeleteModal, setShowAppellantDeleteModal] =
+    useState(false);
+  const [showRespondentDeleteModal, setShowRespondentDeleteModal] =
+    useState(false);
 
-  // const [cadres, setCadre] = useState({
-  //   name: "",
-  // });
-
-  const [designation, setDesignationList] = useState([]);
-
-  //create cadre
-  const handleCreateCadre = async () => {
-    await endpoint
-      .post(`/cadre/create`, { name: trim(name) })
-      .then((res) => {
-        // console.log("cadre created", res);
-        // setCadre({
-        //   name: "",
-        // });
-        SuccessAlert(res.data.message);
-        getCadreList();
-        setCadreShow(false);
-        setLoading(false);
-      })
-      .catch((error) => {
-        if (error.response) {
-          ErrorAlert(error.response.data.description);
-          // console.log("error:", error.response.data);
-        }
-      });
+  // Show appellant modal
+  const handleAppellantModal = () => {
+    setShowAppellantModal(true);
+    setSingleAppellant({});
+    setAppellantModalHeading("Add New Appellant");
   };
 
-  //get cadre list
-  const getCadreList = async () => {
+  // Show respondent modal
+  const handleRespondentShow = () => {
+    setRespondentShow(true);
+    setSingleRespondent({});
+    setModalHeading("Add New Respondent");
+  };
+
+  // Show appellant delete modal
+  const handleShowAppellantDeleteModal = (appellant) => {
+    setSingleAppellant(appellant);
+    setShowAppellantDeleteModal(true);
+  };
+
+  // Show respondent delete modal
+  const handleShowRespondentDeleteModal = (respondent) => {
+    setSingleRespondent(respondent);
+    setShowRespondentDeleteModal(true);
+  };
+
+  // Create or edit appellant
+  const handleCreateAppellant = async () => {
+    setLoading(true);
+    if (singleAppellant.id) {
+      await endpoint
+        .put(`/case/appellant/edit/${singleAppellant.id}`, {
+          fullname: trim(fullname),
+        })
+        .then((res) => {
+          SuccessAlert(res.data.message);
+          getAppellantList();
+          setShowAppellantModal(false);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          ErrorAlert(err.response.data.description);
+        });
+    } else {
+      await endpoint
+        .post(`/case/create-appellant/`, { fullname: trim(fullname) })
+        .then((res) => {
+          SuccessAlert(res.data.message);
+          getAppellantList();
+          setShowAppellantModal(false);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          ErrorAlert(error.response.data.description);
+        });
+    }
+  };
+
+  // Create or edit respondent
+  const handleCreateRespondent = async () => {
+    setLoading(true);
+    if (singleRespondent.id) {
+      await endpoint
+        .put(`/case/respondent/edit/${singleRespondent.id}`, {
+          fullname: trim(fullname),
+        })
+        .then((res) => {
+          SuccessAlert(res.data.message);
+          getRespondentList();
+          setRespondentShow(false);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          ErrorAlert(err.response.data.description);
+        });
+    } else {
+      await endpoint
+        .post(`/case/create-respondent`, { fullname: trim(fullname) })
+        .then((res) => {
+          SuccessAlert(res.data.message);
+          getRespondentList();
+          setRespondentShow(false);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          ErrorAlert(error.response.data.description);
+        });
+    }
+  };
+
+  // Get appellant list
+  const getAppellantList = async () => {
     await endpoint
-      .get("/cadre/list")
+      .get("/case/appellants/list")
       .then((res) => {
-        // console.log("cadre list", res.data.data);
-        setCadre(res.data.data);
+        setAppellant(res.data.data);
       })
       .catch((err) => {
-        // console.log(err)
+        console.log(err);
       });
   };
 
-  const handleCreateDepartment = async () => {
-    // console.log("data:", {
-    //   name: trim(name),
-    //   department: trim(department),
-    //   created_by: userID,
-    // });
+  // Get respondent list
+  const getRespondentList = async () => {
     await endpoint
-      .post("/unit/create", { name: trim(name), department: trim(department) })
+      .get("/case/respondents/list")
       .then((res) => {
-        // console.log("Unit created", res);
-        SuccessAlert(res.data.message);
-        getUnitList();
-        setShow(false);
-        setLoading(false);
+        setRespondent(res.data.data);
       })
-      .catch((error) => {
-        if (error.response) {
-          ErrorAlert(error.response.data.description);
-          // console.log("error:", error.response.data);
-        }
+      .catch((err) => {
+        console.log(err);
       });
   };
 
   useEffect(() => {
-    getUnitList();
-    getDepartmentsList();
-    getCadreList();
+    getAppellantList();
+    getRespondentList();
   }, []);
-  //get department list
-  const getUnitList = async () => {
+
+  // Delete appellant
+  const deleteAppellant = async (id) => {
+    setLoading(true);
     await endpoint
-      .get("/unit/all")
+      .delete(`/case/appellant/delete/${id}`)
       .then((res) => {
-        // console.log(res.data.data);
-        setUnits(res.data.data);
+        getAppellantList();
+        setLoading(false);
+        SuccessAlert(res.data.message);
+        setShowAppellantDeleteModal(false);
       })
       .catch((err) => {
-        // console.log(err)
+        setLoading(false);
+        setShowAppellantDeleteModal(false);
+        ErrorAlert(err.response.data.description);
       });
   };
-  const getDepartmentsList = async () => {
+
+  // Delete respondent
+  const deleteRespondent = async (id) => {
+    setLoading(true);
     await endpoint
-      .get("/department/list")
+      .delete(`/case/respondent/delete/${id}`)
       .then((res) => {
-        // console.log(res.data.data);
-        setDepartments(res.data.data);
+        getRespondentList();
+        setLoading(false);
+        SuccessAlert(res.data.message);
+        setShowRespondentDeleteModal(false);
       })
       .catch((err) => {
-        // console.log(err)
+        setLoading(false);
+        setShowRespondentDeleteModal(false);
+        ErrorAlert(err.response.data.description);
       });
   };
 
@@ -201,77 +231,77 @@ export default function PartiesData() {
                     as="h3"
                     style={{ color: "#0A7E51", fontWeight: 900 }}
                   >
-                    APPELANTS
+                    APPELLANTS
                   </Card.Title>
                 </Col>
-
                 <Col className="text-end">
                   <Button
                     className="btn"
                     type="submit"
                     variant="primary"
-                    onClick={handleShow}
+                    onClick={(e) => {
+                      handleAppellantModal();
+                      setAppellantModalHeading("Add New Appellant");
+                    }}
                     style={{ color: "#0A7E51", fontWeight: 900 }}
                   >
-                    {" "}
                     <span className="fe fe-plus"></span>
-                    Add Appelant
+                    Add Appellant
                   </Button>
                 </Col>
               </Card.Header>
               <Card.Body>
-                {/* <UnitList.Units units={units} /> */}
                 <div className="table-responsive">
                   <table className="table table-bordered table-striped">
                     <thead style={{ background: "#0A7E51" }}>
                       <tr>
                         <th style={{ color: "#fff", fontWeight: 900 }}>S/N</th>
                         <th style={{ color: "#fff", fontWeight: 900 }}>Name</th>
-                        {/* <th style={{ color: "#fff", fontWeight: 900 }}>Created By</th> */}
                         <th style={{ color: "#fff", fontWeight: 900 }}>
                           ACTIONS
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {cadres.map((data, index) => (
+                      {appellants.map((data, index) => (
                         <tr key={data.id}>
                           <td>{index + 1}</td>
                           <td>
-                            {data.name == null ? "" : data.name.toUpperCase()}
+                            {data.fullname ? data.fullname.toUpperCase() : ""}
                           </td>
-
                           <td>
                             <Link
                               to="#"
                               className="btn btn-secondary"
                               variant="secondary"
                               onClick={(e) => {
-                                // handleShowEditModal();
-                                // setCadreId(data);
+                                handleAppellantModal();
+                                setSingleAppellant(data);
+                                setAppellantModalHeading(
+                                  `Edit ${data.fullname}`
+                                );
                               }}
                             >
                               <span
                                 className="fe fe-edit"
                                 style={{ fontWeight: 900 }}
-                              ></span>{" "}
+                              ></span>
                               Edit
-                            </Link>{" "}
-                            &nbsp; &nbsp;
+                            </Link>
+                            &nbsp;&nbsp;
                             <Link
                               to="#"
                               className="btn btn-danger"
                               variant="danger"
                               onClick={(e) => {
-                                // handleShowDeleteModal();
-                                // setCadreId(data);
+                                handleShowAppellantDeleteModal(data);
                               }}
                             >
                               <span
                                 className="fe fe-trash"
                                 style={{ fontWeight: 900 }}
-                              ></span>{" "}
-                              Delete{" "}
+                              ></span>
+                              Delete
                             </Link>
                           </td>
                         </tr>
@@ -282,7 +312,6 @@ export default function PartiesData() {
               </Card.Body>
             </Card>
           </Col>
-
           <Col lg={6} xl={6} md={12} sm={12}>
             <Card>
               <Card.Header>
@@ -291,77 +320,75 @@ export default function PartiesData() {
                     as="h3"
                     style={{ color: "#0A7E51", fontWeight: 900 }}
                   >
-                    RESPONDENT
+                    RESPONDENTS
                   </Card.Title>
                 </Col>
-
                 <Col className="text-end">
                   <Button
                     className="btn"
                     type="submit"
                     variant="primary"
-                    onClick={handleCadreShow}
+                    onClick={(e) => {
+                      handleRespondentShow();
+                      setModalHeading("Add New Respondent");
+                    }}
                     style={{ color: "#0A7E51", fontWeight: 900 }}
                   >
-                    {" "}
                     <span className="fe fe-plus"></span>
                     Add Respondent
                   </Button>
                 </Col>
               </Card.Header>
               <Card.Body>
-                {/* <CadreList.Cadre cadres={cadres} /> */}
                 <div className="table-responsive">
                   <table className="table table-bordered table-striped">
                     <thead style={{ background: "#0A7E51" }}>
                       <tr>
                         <th style={{ color: "#fff", fontWeight: 900 }}>S/N</th>
                         <th style={{ color: "#fff", fontWeight: 900 }}>Name</th>
-                        {/* <th style={{ color: "#fff", fontWeight: 900 }}>Created By</th> */}
                         <th style={{ color: "#fff", fontWeight: 900 }}>
                           ACTIONS
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {cadres.map((data, index) => (
+                      {respondents.map((data, index) => (
                         <tr key={data.id}>
                           <td>{index + 1}</td>
                           <td>
-                            {data.name == null ? "" : data.name.toUpperCase()}
+                            {data.fullname ? data.fullname.toUpperCase() : ""}
                           </td>
-
                           <td>
                             <Link
                               to="#"
                               className="btn btn-secondary"
                               variant="secondary"
                               onClick={(e) => {
-                                // handleShowEditModal();
-                                // setCadreId(data);
+                                handleRespondentShow();
+                                setSingleRespondent(data);
+                                setModalHeading(`Edit ${data.fullname}`);
                               }}
                             >
                               <span
                                 className="fe fe-edit"
                                 style={{ fontWeight: 900 }}
-                              ></span>{" "}
+                              ></span>
                               Edit
-                            </Link>{" "}
-                            &nbsp; &nbsp;
+                            </Link>
+                            &nbsp;&nbsp;
                             <Link
                               to="#"
                               className="btn btn-danger"
                               variant="danger"
                               onClick={(e) => {
-                                // handleShowDeleteModal();
-                                // setCadreId(data);
+                                handleShowRespondentDeleteModal(data);
                               }}
                             >
                               <span
                                 className="fe fe-trash"
                                 style={{ fontWeight: 900 }}
-                              ></span>{" "}
-                              Delete{" "}
+                              ></span>
+                              Delete
                             </Link>
                           </td>
                         </tr>
@@ -374,10 +401,10 @@ export default function PartiesData() {
           </Col>
         </Row>
 
-        <Modal show={show}>
+        <Modal show={appellantModal}>
           <Modal.Header>
             <Button
-              onClick={() => setShow(false)}
+              onClick={() => setShowAppellantModal(false)}
               className="btn-close"
               variant=""
             >
@@ -385,41 +412,25 @@ export default function PartiesData() {
             </Button>
           </Modal.Header>
           <CForm
-            onSubmit={handleSubmit(handleCreateDepartment)}
+            onSubmit={handleSubmit(handleCreateAppellant)}
             className="row g-3 needs-validation"
           >
             <Modal.Body>
               <div>
                 <Card>
                   <Card.Header>
-                    <Card.Title as="h3">Add Appellant</Card.Title>
+                    <Card.Title as="h3">{appellantModalHeading}</Card.Title>
                   </Card.Header>
-
                   <Card.Body>
-                    {/* <Col lg={12} md={12}>
-                      <FormGroup>
-                        <label htmlFor="exampleInputname">Department</label>
-                        <select
-                          type="text"
-                          name="department"
-                          onChange={(e) => setDepartment(e.target.value)}
-                          className="form-control"
-                        >
-                          <option value="">--Select Department--</option>
-                          {data.map((item) => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
-                        </select>
-                      </FormGroup>
-                    </Col> */}
                     <Col lg={12} md={12}>
                       <FormGroup>
                         <label htmlFor="exampleInputname">Name</label>
                         <Form.Control
+                          defaultValue={
+                            singleAppellant && singleAppellant.fullname
+                          }
                           type="text"
-                          name="name"
+                          name="fullname"
                           onChange={(e) => setName(e.target.value)}
                           className="form-control"
                         />
@@ -433,12 +444,11 @@ export default function PartiesData() {
               <Button
                 variant="warning"
                 className="me-1"
-                onClick={() => setShow(false)}
+                onClick={() => setShowAppellantModal(false)}
               >
                 Close
               </Button>
               <Button variant="primary" type="submit" className="me-1">
-                {" "}
                 <span className="fe fe-arrow-right"></span>
                 Save
               </Button>
@@ -446,10 +456,10 @@ export default function PartiesData() {
           </CForm>
         </Modal>
 
-        <Modal show={showCadre}>
+        <Modal show={showRespondent}>
           <Modal.Header>
             <Button
-              onClick={() => setCadreShow(false)}
+              onClick={() => setRespondentShow(false)}
               className="btn-close"
               variant=""
             >
@@ -457,23 +467,25 @@ export default function PartiesData() {
             </Button>
           </Modal.Header>
           <CForm
-            onSubmit={handleSubmit(handleCreateCadre)}
+            onSubmit={handleSubmit(handleCreateRespondent)}
             className="row g-3 needs-validation"
           >
             <Modal.Body>
               <div>
                 <Card>
                   <Card.Header>
-                    <Card.Title as="h3">Add Respondent</Card.Title>
+                    <Card.Title as="h3">{modalHeading}</Card.Title>
                   </Card.Header>
-
                   <Card.Body>
                     <Col lg={12} md={12}>
                       <FormGroup>
                         <label htmlFor="exampleInputname">Name</label>
                         <Form.Control
+                          defaultValue={
+                            singleRespondent && singleRespondent.fullname
+                          }
                           type="text"
-                          name="name"
+                          name="fullname"
                           onChange={(e) => setName(e.target.value)}
                           className="form-control"
                         />
@@ -487,17 +499,82 @@ export default function PartiesData() {
               <Button
                 variant="warning"
                 className="me-1"
-                onClick={() => setCadreShow(false)}
+                onClick={() => setRespondentShow(false)}
               >
                 Close
               </Button>
               <Button variant="primary" type="submit" className="me-1">
-                {" "}
                 <span className="fe fe-arrow-right"></span>
                 Save
               </Button>
             </Modal.Footer>
           </CForm>
+        </Modal>
+
+        <Modal
+          show={showAppellantDeleteModal}
+          onHide={() => setShowAppellantDeleteModal(false)}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Remove Appellant</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Card>
+              <Card.Body>
+                <Col lg={12} md={12}>
+                  Please confirm you are about to delete{" "}
+                  {singleAppellant.fullname}?
+                </Col>
+              </Card.Body>
+            </Card>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="warning"
+              onClick={() => setShowAppellantDeleteModal(false)}
+            >
+              Close
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => deleteAppellant(singleAppellant.id)}
+            >
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          show={showRespondentDeleteModal}
+          onHide={() => setShowRespondentDeleteModal(false)}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Remove Respondent</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Card>
+              <Card.Body>
+                <Col lg={12} md={12}>
+                  Please confirm you are about to delete{" "}
+                  {singleRespondent.fullname}?
+                </Col>
+              </Card.Body>
+            </Card>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="warning"
+              onClick={() => setShowRespondentDeleteModal(false)}
+            >
+              Close
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => deleteRespondent(singleRespondent.id)}
+            >
+              Delete
+            </Button>
+          </Modal.Footer>
         </Modal>
       </div>
     </>
