@@ -46,8 +46,8 @@ export default function SingleCase() {
   const [selectedSuiteNo, setSelectedSuiteNo] = useState(null);
 
   const [reportDetails, setReportDetails] = useState({
-    hearing_date: "",
-    reportDescription: "",
+    sitting_date: "",
+    description: "",
     reportFiles: [],
     reportDocType: "",
   });
@@ -210,8 +210,8 @@ export default function SingleCase() {
     try {
       const formData = new FormData();
       formData.append("suite_no", selectedSuiteNo?.value || "");
-      formData.append("hearing_date", reportDetails.hearing_date);
-      formData.append("report_description", reportDetails.reportDescription);
+      formData.append("sitting_date", reportDetails.sitting_date);
+      formData.append("description", reportDetails.description);
       formData.append("report_doc_type", reportDetails.reportDocType);
       for (let i = 0; i < reportDetails.reportFiles.length; i++) {
         formData.append("report_files", reportDetails.reportFiles[i]);
@@ -319,11 +319,11 @@ export default function SingleCase() {
                     />
                   </CCol>
                   <CCol md={6}>
-                    <CFormLabel htmlFor="hearing_date">Hearing Date</CFormLabel>
+                    <CFormLabel htmlFor="hearing_date">Sitting Date</CFormLabel>
                     <CFormInput
                       type="date"
                       id="hearing_date"
-                      value={reportDetails.hearing_date}
+                      value={reportDetails.sitting_date}
                       onChange={(e) =>
                         setReportDetails({
                           ...reportDetails,
@@ -338,13 +338,14 @@ export default function SingleCase() {
                     </CFormLabel>
                     <CFormTextarea
                       id="reportDescription"
-                      value={reportDetails.reportDescription}
+                      value={reportDetails.description}
                       onChange={(e) =>
                         setReportDetails({
                           ...reportDetails,
-                          reportDescription: e.target.value,
+                          description: e.target.value,
                         })
                       }
+                      rows="6" // increase the height of the textarea
                     ></CFormTextarea>
                   </CCol>
                   {rows.map((row, index) => (

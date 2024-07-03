@@ -116,6 +116,7 @@ export const RoasterList = () => {
       setLoading(false);
     }
   };
+  console.log("CaseList", caseList);
 
   const getLegalOfficer = async () => {
     setLoading(true);
@@ -132,7 +133,8 @@ export const RoasterList = () => {
   const handleCreateRoaster = async () => {
     try {
       const formData = new FormData();
-      formData.append("suite_no", selectedSuitNo?.value || "");
+      formData.append("case_id", selectedSuitNo?.value || "");
+      // formData.append("case_id", selectedSuitNo?.value || "");
       formData.append(
         "legal_officer_id",
         JSON.stringify(selectedCouncils.map((council) => council.value))
@@ -140,8 +142,9 @@ export const RoasterList = () => {
       // formData.append("case_id", id);
       console.log("Payload:", formData);
 
-      const response = await endpoint.post(`/case/createroaster`, formData);
+      const response = await endpoint.post(`/case/create-roster`, formData);
       SuccessAlert(response.data.message);
+      setRoasterModal(false);
     } catch (err) {
       console.log(err);
       // setLoading(false);
@@ -152,72 +155,66 @@ export const RoasterList = () => {
   return (
     <div>
       <div className="box box-default">
-        <Button onClick={openRoasterModal} style={{ marginBottom: "20px" }}>
-          Create Roaster
-        </Button>
+        <div className="d-flex justify-content-end mb-3">
+          <Button onClick={openRoasterModal} style={{ marginTop: "-10px" }}>
+            Create Roaster
+          </Button>
+        </div>
+        <div
+          {...{
+            style: {
+              borderBottom: "1px solid #eee",
+              width: "130%",
+              marginLeft: "-30px", // or whatever the parent card's padding is
+              marginRight: "-40px", // or whatever the parent card's padding is
+            },
+          }}
+        ></div>
         <div className="container-fluid">
-          <div className="col-md-12 text-success"></div>
-          {/* <br /> */}
-          {/* <hr /> */}
-          <Row className="">
-            <Col xs={2} md={2}></Col>
-            <Col xs={8} md={8}>
+          <br />
+          <br />
+          <Row className="justify-content-center">
+            <Col xs={12} md={8}>
               <br />
               <Card>
                 <Card.Body>
-                  <div className="form-horizontal">
-                    <div className="form-group">
-                      <label className="col-md-6 cecontrol-label">
-                        Hearing Date
-                      </label>
-                      <div className="col-md-12">
-                        <input
-                          type="date"
-                          className="form-control"
-                          value={hearingdate.hearing_date}
-                          onChange={(e) =>
-                            setHearingdate({
-                              ...hearingdate,
-                              hearing_date: e.target.value,
-                            })
-                          }
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <div className="col-sm-offset-2 text-center col-sm-9">
-                        <button
-                          className={
-                            isLoading
-                              ? "btn btn-success pull-right btn-loading"
-                              : "btn btn-success pull-right"
-                          }
-                          disabled={isLoading}
-                          onClick={handleGetCases}
-                        >
-                          Get All Cases
-                        </button>
-                      </div>
-                    </div>
+                  <div className="d-flex justify-content-center align-items-center">
+                    <label className="me-2 mb-0">Hearing Date</label>
+                    <input
+                      type="date"
+                      className="form-control me-3"
+                      value={hearingdate.hearing_date}
+                      onChange={(e) =>
+                        setHearingdate({
+                          ...hearingdate,
+                          hearing_date: e.target.value,
+                        })
+                      }
+                      required
+                      style={{ width: "auto" }}
+                    />
+                    <button
+                      className="btn btn-success"
+                      onClick={handleGetCases}
+                    >
+                      Get All Cases
+                    </button>
                   </div>
                 </Card.Body>
               </Card>
+              <br />
             </Col>
-            <Col xs={3} md={4}></Col>
           </Row>
         </div>
 
         {data.length > 0 ? (
           <Card id="divToPrint">
             <div>
-              <Button
-                onClick={window.print}
-                style={{ marginBottom: "20px" }}
-                id="hideBtn"
-              >
-                Print
-              </Button>
+              <div className="d-flex justify-content-end mb-3">
+                <Button onClick={window.print} id="hideBtn">
+                  Print
+                </Button>
+              </div>
               <div id="table-to-print">
                 <h2 className="rostertable-header">{headerText}</h2>
                 <table border="1" className="table-responsive">
@@ -252,7 +249,18 @@ export const RoasterList = () => {
                         </td>
                         <td>{row.Court ? row.Court.name : ""}</td>
                         <td>
-                          {row.LegalOfficer ? row.LegalOfficer.surname : ""}
+                          {row.AssignCouncils && row.AssignCouncils.length > 0
+                            ? row.AssignCouncils.map((council, index) => (
+                                <span key={index}>
+                                  {council.LegalOfficer
+                                    ? council.LegalOfficer.surname +
+                                      " " +
+                                      council.LegalOfficer.first_name
+                                    : ""}
+                                  <br />
+                                </span>
+                              ))
+                            : ""}
                         </td>
                         <td>
                           {row.externalSolicitor
@@ -277,26 +285,22 @@ export const RoasterList = () => {
             x
           </Button>
         </Modal.Header>
-
-        <Modal.Body>
-          <div>
-            <Card>
-              <Card.Header>
-                <Card.Title as="h3">
-                  Select Suit No. and Legal Officer(s) to Create Roaster{" "}
-                </Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <CForm
-                  onSubmit={handleSubmit(handleCreateRoaster)}
-                  className="row g-3 needs-validation"
-                >
+        <CForm onSubmit={handleSubmit(handleCreateRoaster)}>
+          <Modal.Body>
+            <div>
+              <Card>
+                <Card.Header>
+                  <Card.Title as="h3">
+                    Select Suite No. and Legal Officer(s) to Create Roaster{" "}
+                  </Card.Title>
+                </Card.Header>
+                <Card.Body className="row g-3 needs-validation">
                   <CCol md={6}>
                     <CFormLabel htmlFor="suite_no">Suite Number</CFormLabel>
                     <Select
                       id="suite_no"
                       options={caseList.map((caseItem) => ({
-                        value: caseItem.suite_no,
+                        value: caseItem.id,
                         label: caseItem.suite_no,
                       }))}
                       value={selectedSuitNo}
@@ -319,22 +323,20 @@ export const RoasterList = () => {
                       onChange={setSelectedCouncils}
                     />
                   </CCol>
-                  <CCol xs={12}>
-                    <CButton type="submit" color="primary">
-                      <span className="fe fe-plus"></span>
-                      Create Roaster
-                    </CButton>
-                  </CCol>
-                </CForm>
-              </Card.Body>
-            </Card>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="dark" className="me-1" onClick={closeRoasterModal}>
-            Close
-          </Button>
-        </Modal.Footer>
+                </Card.Body>
+              </Card>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <CButton type="submit" color="primary">
+              <span className="fe fe-plus"></span>
+              Create Roaster
+            </CButton>
+            <Button variant="dark" className="me-1" onClick={closeRoasterModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </CForm>
       </Modal>
     </div>
   );
