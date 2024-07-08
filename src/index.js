@@ -12,9 +12,9 @@ import FileType from "./components/CustomPages/Users/FileType";
 
 import CaseType from "./components/CustomPages/Users/CaseType";
 import Parties from "./components/CustomPages/Users/Parties";
-import CourtRoster from "./components/CustomPages/Users/CourtRoster";
-import TestRoster from "./components/CustomPages/Users/TestRoster";
 import LegalOfficerlist from "./components/CustomPages/Users/LegalOfficerlist";
+import CourtRoaster from "./components/CustomPages/Users/CourtRoaster";
+import TestRoaster from "./components/CustomPages/Users/TestRoaster";
 
 const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -576,7 +576,7 @@ const Root = () => {
                     path={`${process.env.PUBLIC_URL}/court-roaster`}
                     element={
                       // user ?
-                      <CourtRoaster />
+                      <CourtRoaster/>
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
