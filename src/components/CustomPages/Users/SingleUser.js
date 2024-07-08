@@ -51,10 +51,18 @@ export default function SingleUser() {
           xl={12}
           md={12}>
           <Card className="card border">
+            
             {loading && <Loader />}
             {!loading && (
               <Card.Body>
                 <div className="text-center"></div>
+                <div className="d-flex align-items-center w-100">
+            <Link
+                  className="btn btn-primary ml-auto"
+                  to={"/all-users"}>
+                <span className='fe fe-arrow-left'></span>Back
+                </Link>
+            </div>
                 <div className="mt-5">
                   <div className="container bg-primary text-white custom-height" style={{height:"50px", borderRadius:"5px"}}>
                     <h4 className="text-center text-uppercase pt-3">

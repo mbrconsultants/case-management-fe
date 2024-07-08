@@ -8,11 +8,11 @@ import { Context, ContextProvider } from "./context/Context";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NetworkCheck } from "@mui/icons-material";
-import Stafflist from "./components/CustomPages/Users/Stafflist";
 import FileType from "./components/CustomPages/Users/FileType";
 
 import CaseType from "./components/CustomPages/Users/CaseType";
 import Parties from "./components/CustomPages/Users/Parties";
+import LegalOfficerlist from "./components/CustomPages/Users/LegalOfficerlist";
 import CourtRoaster from "./components/CustomPages/Users/CourtRoaster";
 import TestRoaster from "./components/CustomPages/Users/TestRoaster";
 
@@ -352,8 +352,8 @@ const NewUser = React.lazy(() =>
   import("./components/CustomPages/Users/NewUser")
 );
 
-const NewStaff = React.lazy(() =>
-  import("./components/CustomPages/Users/NewStaff")
+const NewLegalOfficer = React.lazy(() =>
+  import("./components/CustomPages/Users/NewLegalOfficer")
 );
 const CreateRoaster = React.lazy(() =>
   import("./components/CustomPages/Users/CreateRoaster")
@@ -386,8 +386,11 @@ const CaseComment = React.lazy(() =>
 const SingleUser = React.lazy(() =>
   import("./components/CustomPages/Users/SingleUser")
 );
-const StaffList = React.lazy(() =>
-  import("./components/CustomPages/Users/Stafflist")
+const SingleLegalOfficer = React.lazy(() =>
+  import("./components/CustomPages/Users/SingleLegalOfficer")
+);
+const LegalOfficerList = React.lazy(() =>
+  import("./components/CustomPages/Users/LegalOfficerlist")
 );
 
 const NewChamber = React.lazy(() =>
@@ -396,7 +399,9 @@ const NewChamber = React.lazy(() =>
 const ChamberList = React.lazy(() =>
   import("./components/CustomPages/Users/ChamberList")
 );
-
+const SingleChamber = React.lazy(() =>
+  import("./components/CustomPages/Users/SingleChamber")
+);
 const Users = React.lazy(() =>
   import("./components/CustomPages/Users/AllUsers")
 );
@@ -520,8 +525,8 @@ const Root = () => {
                     }
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/new-staff`}
-                    element={<NewStaff />}
+                    path={`${process.env.PUBLIC_URL}/new-legal-officer`}
+                    element={<NewLegalOfficer />}
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/new-case`}
@@ -571,7 +576,7 @@ const Root = () => {
                     path={`${process.env.PUBLIC_URL}/court-roaster`}
                     element={
                       // user ?
-                      <CourtRoaster />
+                      <CourtRoaster/>
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
@@ -615,18 +620,26 @@ const Root = () => {
                     element={<SingleUser />}
                   />
                   <Route
+                    path={`${process.env.PUBLIC_URL}/single-legal-officer/:id`}
+                    element={<SingleLegalOfficer />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/single-chamber/:id`}
+                    element={<SingleChamber />}
+                  />
+                  <Route
                     path={`${process.env.PUBLIC_URL}/edit/case/:id`}
                     element={<NewCase />}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/new-staff/:id`}
-                    element={<NewStaff />}
+                    path={`${process.env.PUBLIC_URL}/new-legal-officer/:id`}
+                    element={<NewLegalOfficer />}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/staff-list`}
+                    path={`${process.env.PUBLIC_URL}/legal-officer-list`}
                     element={
                       // user ?
-                      <Stafflist />
+                      <LegalOfficerlist />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
