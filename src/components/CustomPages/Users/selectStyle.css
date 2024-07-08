@@ -1,0 +1,28 @@
+/* Add this CSS in your stylesheet or component's CSS file */
+.custom-select-wrapper {
+    position: relative;
+  }
+  
+  .custom-select {
+    /* Make sure the custom arrow is visible and positioned correctly */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: url('/public/drop-down-3.png') no-repeat right center; /* Replace 'path-to-your-arrow-icon.png' with your actual arrow icon image path */
+    padding-right: 20px; /* Add some right padding to make space for the arrow */
+  }
+  
+  .custom-select::after {
+    /* Create the custom arrow using the ::after pseudo-element */
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #000; /* Change the color of the arrow here */
+    transform: translateY(-50%);
+    pointer-events: none;
+  }

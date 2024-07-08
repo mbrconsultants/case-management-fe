@@ -39,7 +39,16 @@ export default function AllUser() {
         <Col sm={12} className="col-12">
           <Card>
             <Card.Header>
-                <Col className="card-title text-center mb-0"> USERS LIST </Col>
+            <div className="d-flex align-items-center w-100">
+                <div className="card-title text-center mb-0 flex-grow-1">
+                USERS LIST
+                </div>
+                <Link
+                  className="btn btn-primary ml-auto"
+                  to={"/new-user"}>
+                  New User
+                </Link>
+              </div>
             </Card.Header>
             <Card.Body>
               <div className="">

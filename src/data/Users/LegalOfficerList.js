@@ -19,7 +19,7 @@ import {
 } from "@coreui/react";
 import moment from "moment";
 import { Modal, FormGroup, Form } from "react-bootstrap";
-import { ErrorAlert, SuccessAlert } from "../../data/Toast/toast";
+import { ErrorAlert, SuccessAlert } from "../Toast/toast";
 import {
   DropdownButton,
   ButtonGroup,
@@ -33,7 +33,7 @@ import {
 import Loader from "../Loader/loader";
 import { useForm } from "react-hook-form";
 
-const StaffList = () => {
+const LegalOfficerList = () => {
   const {
     handleSubmit,
     register,
@@ -54,7 +54,7 @@ const StaffList = () => {
   const [url, setUrl] = useState();
 
   // Fetch chambers list
-  const getStaffList = async () => {
+  const getLegalOfficerListList = async () => {
     setLoading(true);
     try {
       const res = await endpoint.get("/legal-officer/list");
@@ -79,7 +79,9 @@ const StaffList = () => {
     //   lga_id: "",
     // signature: null,*/}
     phone: "",
+    phone_2: "",
     email: "",
+    email_2: "",
   });
 
   // Show delete modal
@@ -105,7 +107,7 @@ const StaffList = () => {
   };
 
   useEffect(() => {
-    getStaffList();
+    getLegalOfficerListList();
     getTitletList();
     // getStatestList();
   }, []);
@@ -173,9 +175,14 @@ const StaffList = () => {
       style: { textAlign: "right" },
       cell: (row) => (
         <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
+           <Link
+            to={`/single-legal-officer/${row.id}`}
+            className="btn btn-primary btn-sm mx-1">
+            <span className="fe fe-eye"> </span>
+          </Link>
           <Link
-            to={`/new-staff/${row.id}`}
-            className="btn btn-warning btn-sm my-1 mx-3"
+            to={`/new-legal-officer/${row.id}`}
+            className="btn btn-warning btn-sm mx-1"
           >
             <span className="fe fe-edit"> </span>
           </Link>
@@ -208,7 +215,7 @@ const StaffList = () => {
     await endpoint
       .delete(`/legal-officer/delete/${id}`)
       .then((res) => {
-        getStaffList();
+        getLegalOfficerListList();
         setLoading(false);
         SuccessAlert(res.data.message);
         setShowDeleteModal(false);
@@ -245,13 +252,13 @@ const StaffList = () => {
 
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Remove Unit</Modal.Title>
+          <Modal.Title>Remove Legal Officer</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Card>
             <Card.Body>
               <Col lg={12} md={12}>
-                Please confirm you are about to delete the staff{" "}
+                Please confirm you are about to delete the legal officer{" "}
                 {value.surname +
                   " " +
                   value.first_name +
@@ -276,4 +283,4 @@ const StaffList = () => {
   );
 };
 
-export default StaffList;
+export default LegalOfficerList;
