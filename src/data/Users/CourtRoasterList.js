@@ -12,9 +12,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Loader from "../Loader/loader";
 import { log } from "nvd3";
-import "./CourtRosterList.css";
+import "./CourtRoasterList.css";
 
-export const CourtRosterList = () => {
+export const CourtRoasterList = () => {
   const { user } = useContext(Context);
   const [data, setData] = useState([]);
   const [load, setLoad] = useState(false);
@@ -399,7 +399,7 @@ export const CourtRosterList = () => {
           </div>
           <Card>
             <Card.Body>
-              <h3 className="text-center">COURT ROSTER</h3>
+              <h3 className="text-center">COURT ROASTER</h3>
               <Row className="row">
                 <Col md={12} className="col-md-12">
                   <DataTable

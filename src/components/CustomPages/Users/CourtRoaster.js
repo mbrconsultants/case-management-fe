@@ -4,17 +4,17 @@ import ReactApexChart from "react-apexcharts";
 import { Breadcrumb, Col, Row, Card } from "react-bootstrap";
 
 //import * as casex from "../../../data/Users/CaseList";
-import * as hearingdate from "../../../data/Users/RosterList";
+import * as hearingdate from "../../../data/Users/RoasterList";
 
 import { Link, useNavigate } from "react-router-dom";
 // import { useAuthDispatch, logout, useAuthState } from '../../context'
 
-export default function CourtRoster() {
+export default function CourtRoaster() {
   return (
     <div>
       <div className="page-header ">
         <div>
-          <h1 className="page-title">COURT ROSTER TABLE</h1>
+          <h1 className="page-title">COURT ROASTER TABLE</h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item className="breadcrumb-item" href="#">
               Home
@@ -33,12 +33,12 @@ export default function CourtRoster() {
         <Col sm={12} className="col-12">
           <Card>
             <Card.Header>
-              <h3 className="card-title mb-0">Roster</h3>
+              <h3 className="card-title mb-0">Roaster</h3>
             </Card.Header>
             <Card.Body>
               <div className="">
                 <div className="">
-                  <hearingdate.RosterList />
+                  <hearingdate.RoasterList />
                 </div>
               </div>
             </Card.Body>

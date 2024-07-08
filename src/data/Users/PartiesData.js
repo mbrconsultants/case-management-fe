@@ -52,7 +52,8 @@ export default function PartiesData() {
 
   const [respondents, setRespondent] = useState([]);
   const [appellants, setAppellant] = useState([]);
-  const [fullname, setName] = useState("");
+  const [respondent, setRespondentName] = useState("");
+  const [appellant, setAppellantName] = useState("");
   const [singleAppellant, setSingleAppellant] = useState({});
   const [singleRespondent, setSingleRespondent] = useState({});
   const [showAppellantDeleteModal, setShowAppellantDeleteModal] =
@@ -92,7 +93,7 @@ export default function PartiesData() {
     if (singleAppellant.id) {
       await endpoint
         .put(`/case/appellant/edit/${singleAppellant.id}`, {
-          fullname: trim(fullname),
+          appellant: trim(appellant),
         })
         .then((res) => {
           SuccessAlert(res.data.message);
@@ -106,7 +107,7 @@ export default function PartiesData() {
         });
     } else {
       await endpoint
-        .post(`/case/create-appellant/`, { fullname: trim(fullname) })
+        .post(`/case/create-appellant/`, { appellant: trim(appellant) })
         .then((res) => {
           SuccessAlert(res.data.message);
           getAppellantList();
@@ -126,7 +127,7 @@ export default function PartiesData() {
     if (singleRespondent.id) {
       await endpoint
         .put(`/case/respondent/edit/${singleRespondent.id}`, {
-          fullname: trim(fullname),
+          respondent: trim(respondent),
         })
         .then((res) => {
           SuccessAlert(res.data.message);
@@ -140,7 +141,7 @@ export default function PartiesData() {
         });
     } else {
       await endpoint
-        .post(`/case/create-respondent`, { fullname: trim(fullname) })
+        .post(`/case/create-respondent`, { respondent: trim(respondent) })
         .then((res) => {
           SuccessAlert(res.data.message);
           getRespondentList();
@@ -267,7 +268,7 @@ export default function PartiesData() {
                         <tr key={data.id}>
                           <td>{index + 1}</td>
                           <td>
-                            {data.fullname ? data.fullname.toUpperCase() : ""}
+                            {data.appellant ? data.appellant.toUpperCase() : ""}
                           </td>
                           <td>
                             <Link
@@ -278,7 +279,7 @@ export default function PartiesData() {
                                 handleAppellantModal();
                                 setSingleAppellant(data);
                                 setAppellantModalHeading(
-                                  `Edit ${data.fullname}`
+                                  `Edit ${data.appellant}`
                                 );
                               }}
                             >
@@ -356,7 +357,9 @@ export default function PartiesData() {
                         <tr key={data.id}>
                           <td>{index + 1}</td>
                           <td>
-                            {data.fullname ? data.fullname.toUpperCase() : ""}
+                            {data.respondent
+                              ? data.respondent.toUpperCase()
+                              : ""}
                           </td>
                           <td>
                             <Link
@@ -366,7 +369,7 @@ export default function PartiesData() {
                               onClick={(e) => {
                                 handleRespondentShow();
                                 setSingleRespondent(data);
-                                setModalHeading(`Edit ${data.fullname}`);
+                                setModalHeading(`Edit ${data.respondent}`);
                               }}
                             >
                               <span
@@ -427,11 +430,11 @@ export default function PartiesData() {
                         <label htmlFor="exampleInputname">Name</label>
                         <Form.Control
                           defaultValue={
-                            singleAppellant && singleAppellant.fullname
+                            singleAppellant && singleAppellant.appellant
                           }
                           type="text"
                           name="fullname"
-                          onChange={(e) => setName(e.target.value)}
+                          onChange={(e) => setAppellantName(e.target.value)}
                           className="form-control"
                         />
                       </FormGroup>
@@ -482,11 +485,11 @@ export default function PartiesData() {
                         <label htmlFor="exampleInputname">Name</label>
                         <Form.Control
                           defaultValue={
-                            singleRespondent && singleRespondent.fullname
+                            singleRespondent && singleRespondent.respondent
                           }
                           type="text"
                           name="fullname"
-                          onChange={(e) => setName(e.target.value)}
+                          onChange={(e) => setRespondentName(e.target.value)}
                           className="form-control"
                         />
                       </FormGroup>
@@ -523,7 +526,7 @@ export default function PartiesData() {
               <Card.Body>
                 <Col lg={12} md={12}>
                   Please confirm you are about to delete{" "}
-                  {singleAppellant.fullname}?
+                  {singleAppellant.appellant}?
                 </Col>
               </Card.Body>
             </Card>
@@ -556,7 +559,7 @@ export default function PartiesData() {
               <Card.Body>
                 <Col lg={12} md={12}>
                   Please confirm you are about to delete{" "}
-                  {singleRespondent.fullname}?
+                  {singleRespondent.respondent}?
                 </Col>
               </Card.Body>
             </Card>
