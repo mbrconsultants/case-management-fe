@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import CountUp from "react-countup";
 import ReactApexChart from "react-apexcharts";
 import { Breadcrumb, Col, Row, Card, Button } from "react-bootstrap";
-import  StaffList from "../../../data/Users/StaffList";
 import { Link, useNavigate } from "react-router-dom";
 import * as Search from "../../../data/Search/SearchStaff";
 import endpoint from "../../../context/endpoint";
 import { useForm } from "react-hook-form";
 import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
+import LegalOfficerList from "../../../data/Users/LegalOfficerList";
 
-export default function Stafflist() {
+export default function LegalOfficerlist() {
   return (
     <div>
       <div className="page-header ">
@@ -44,7 +44,7 @@ export default function Stafflist() {
                 </div>
                 <Link
                   className="btn btn-primary ml-auto"
-                  to={"/new-staff"}>
+                  to={"/new-legal-officer"}>
                   New legal officer
                 </Link>
               </div>
@@ -53,7 +53,7 @@ export default function Stafflist() {
             <Card.Body>
               <div className="">
                 <div className="">
-                  <StaffList />
+                  <LegalOfficerList />
                 </div>
               </div>
             </Card.Body>

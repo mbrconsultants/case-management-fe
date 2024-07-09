@@ -1,18 +1,13 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Link,useParams, useNavigate, Navigate } from "react-router-dom";
-import "react-data-table-component-extensions/dist/index.css";
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
-import { OverlayTrigger, Tooltip, Badge } from "react-bootstrap";
-import endpoint from "../../context/endpoint";
-import { Context } from "../../context/Context";
+import { Modal, FormGroup, Form, Button, Card, Col } from "react-bootstrap";
 import { CForm, CCol, CFormLabel, CFormFeedback, CFormInput, CInputGroup, CInputGroupText, CButton, CFormCheck, } from "@coreui/react";
-import moment from 'moment';
-import {Modal, FormGroup, Form } from "react-bootstrap";
-import { ErrorAlert, SuccessAlert } from "../../data/Toast/toast";
-import { DropdownButton, ButtonGroup, Card, Button, Row, Col, InputGroup, Dropdown } from "react-bootstrap";
-import Loader from "../Loader/loader";
+import endpoint from "../../context/endpoint";
 import { useForm } from 'react-hook-form';
+import Loader from "../Loader/loader";
+import { ErrorAlert, SuccessAlert } from "../../data/Toast/toast";
 
 export const AllUsers = () => {
   const { handleSubmit, register, formState: { errors }, reset } = useForm()
@@ -24,35 +19,34 @@ export const AllUsers = () => {
   const [roles, setRoles]=useState([]);
   const params = useParams();
   const id = params.id;
- 
 
-  //get list
+  useEffect(() => {
+    getUsersList();
+    getRoles();
+  }, []);
+
   const getUsersList = async () => {
     setLoading(true);
-    await endpoint.get('/user/list')
-      .then((res) => {
-        console.log("Users list", res.data.data)
-        setUsersList(res.data.data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setLoading(false)
-      })
+    try {
+      const res = await endpoint.get('/user/list');
+      setUsersList(res.data.data);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
   }
-     //get roles
+
   const getRoles = async () => {
-  setLoading(true);
-  await endpoint.get('/role/getRoles')
-    .then((res) => {
-      setRoles(res.data.data)
-      setLoading(false)
-    })
-    .catch((err) => {
-      setLoading(false)
-      // console.log(err)
-    })
-}
-    
+    setLoading(true);
+    try {
+      const res = await endpoint.get('/role/getRoles');
+      console.log("Roles List", res.data.data);
+      setRoles(res.data.data);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  }
 
   const handleShowEditModal = (row) => {
     setValue(row);
@@ -61,297 +55,245 @@ export const AllUsers = () => {
     reset();
 }
 
-const handleShowDeleteModal = (row) => {
-  setValue(row);
-  setShowDeleteModal(true)
-}
-useEffect(() => {
-  getUsersList()
-  getRoles()
-}, [])
+  // const modifyUser = async (data) => {
+  //   setLoading(true);
+  //   try {
+  //     // await endpoint.post('/user/modify', { ...data, user_id: user.id });
+  //     await endpoint.put(`/user/modify`, { ...data, user_id: user.id })
+  //     .then((res) => {
+  //       setLoading(false);
+  //       SuccessAlert(res.data.message);
+  //       getUsersList()
+  //       setShowEditModal(false);
+  //     }).catch((error) => {
+  //     if (error.response) {
+  //         ErrorAlert(error.response.data.description);
+  //     }
+  //     })
+  //   }
+  // }
 
-
-//Edit department
-const modifyUser = async (data) => {
-  await endpoint.put(`/user/modify/${value.id}`, data)
-  .then((res) => {
-    setLoading(false);
-    SuccessAlert(res.data.message);
-    getUsersList()
-    setShowEditModal(false);
-    setLoading(false);
-}).catch((error) => {
-if (error.response) {
-    ErrorAlert(error.response.data.description);
-}
-})
-   
+  const modifyUser = async (data) => {
+    await endpoint.post(`/user/modify`, { ...data, user_id: value.id })
+    .then((res) => {
+      setLoading(false);
+      SuccessAlert(res.data.message);
+      getUsersList()
+      setShowEditModal(false);
+      setLoading(false);
+  }).catch((error) => {
+  if (error.response) {
+      ErrorAlert(error.response.data.description);
   }
-
+  })
+}
 
   const columns = [
-    {
-      name: "#",
-      cell: (row, index) => (index + 1),
-      width: "65px",
+    { name: "#", cell: (row, index) => (index + 1), width: "65px" },
+    { 
+      name: "Surname", 
+      selector: (row) => row.surname, 
+      sortable: true, 
+      width: "200px" 
     },
-    {
-      name: "First Name",
-      selector: (row) => [row.fullname],
-    
-      style: { textAlign: 'right' },
-      sortable: true,
-    
-      width: "300px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold ">
-          {row.fullname ? row.fullname.toUpperCase() : ""}
-        </div>
-      ),
+    { 
+      name: "First Name", 
+      selector: (row) => row.first_name, 
+      sortable: true, 
+      width: "200px" 
     },
-    
-  
- 
-    {
-      name: "Email",
-      selector: (row) => [row.email],
-
-      style: { textAlign: 'right' },
-      sortable: true,
-
-      width: "200px",
-      cell: (row) =>
-        <div className="fs-12 fw-bold ">{row.email !== null ? (row.email) : ""}</div>
-      ,
+    { 
+      name: "Email", 
+      selector: (row) => row.email, 
+      sortable: true, 
+      width: "200px" 
     },
-    {
-      name: "Role",
-      selector: (row) => [row.Role.role_name],
-
-      style: { textAlign: 'right' },
-      sortable: true,
-
-      width: "200px",
-      cell: (row) =>
-        <div className="fs-12 fw-bold ">{row.Role ? (row.Role.role_name ) : ""}</div>
-      ,
+    { 
+      name: "Role", 
+      selector: (row) => row.Role.role_name, 
+      sortable: true, 
+      width: "200px" 
     },
- 
     {
       name: "Action",
-      selector: (row) => [row.id],
-
-      style: { textAlign: 'right' },
+      selector: (row) => row.id,
       cell: (row) => (
-        <div className="fs-12 fw-bold">
-          <Link
-            to={`/user/${row.id}`}
-            className="btn btn-primary btn-sm my-1 bright-btn btn-primary-bright">
-            <span className="fe fe-eye"> </span>
-          </Link>
-          <button
-            className="btn btn-warning btn-sm my-1"
-            variant="warning"
-            onClick={() => handleShowEditModal(row)}
-          >
-            <span className="fe fe-edit"> </span>
-          </button>
-          {/* <button
-            className="btn btn-danger btn-sm"
-            variant="danger"
-            onClick={() => handleShowDeleteModal(row)}
-          >
-            <span className="fe fe-trash"> </span>
-          </button> */}
+        <div className="d-flex justify-content-end">
+          <Link to={`/user/${row.id}`} className="btn btn-primary btn-sm mx-3">View</Link>
+          <button className="btn btn-warning btn-sm" onClick={() => handleShowEditModal(row)}>Edit</button>
         </div>
       )
     }
+  ];
 
-  ]
-
-  const tableDatas = {
-    columns,
-    data,
-  };
+  const tableDatas = { columns, data };
 
   return (
     <>
-      {
+      {isLoading ? <Loader /> : 
         <DataTableExtensions {...tableDatas}>
-          {isLoading ? <Loader />
-            : <DataTable
-              fixedHeader
-              columns={columns}
-              // selectableRows
-              data={data}
-              // customStyles={customStyles}
-              persistTableHead
-              defaultSortField="id"
-              defaultSortAsc={false}
-              striped={true}
-              center={true}
-              pagination
-              paginationServer
-              // paginationTotalRows={totalRows}
-              // onChangePage={handlePageChange}
-              // onChangeRowsPerPage={handlePerRowsChange}
-              paginationRowsPerPageOptions={[10, 15, 20, 25, 30, 50, 100]}
-              // onChangeRowsPerPage(currentRowsPerPage, currentPage)
-              // paginationPerPage={perPage}
-              highlightOnHover
-            />
-          }
-
+          <DataTable
+            columns={columns}
+            data={data}
+            fixedHeader
+            pagination
+            highlightOnHover
+          />
         </DataTableExtensions>
       }
 
+    <Modal show={showEditModal}>
+      <Modal.Header>
+        <Button
+          onClick={() => setShowEditModal(false)}
+          className="btn-close"
+          variant=""
+        >
+          x
+        </Button>
+      </Modal.Header>
+      <CForm onSubmit={handleSubmit(modifyUser)} className="row g-3 needs-validation">
+        <Modal.Body>
+          <div>
+            <Card>
+              <Card.Header>
+                <Card.Title as="h3">Update User Details</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Col lg={12} md={12}>
+                  <FormGroup>
+                    <label htmlFor="exampleInputname">Surname</label>
+                    <Form.Control
+                      style={{ border: "1px solid #000", padding: "10px" }}
+                      type="text"
+                      name="name"
+                      {...register("surname")}
+                      defaultValue={value && value ? value.surname : ''}
+                      className="form-control"
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label htmlFor="exampleInputname">First Name</label>
+                    <Form.Control
+                      style={{ border: "1px solid #000", padding: "10px" }}
+                      type="text"
+                      {...register("first_name")}
+                      defaultValue={value && value ? value.first_name : ''}
+                      className="form-control"
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label htmlFor="exampleInputname">Middle Name</label>
+                    <Form.Control
+                      style={{ border: "1px solid #000", padding: "10px" }}
+                      type="text"
+                      {...register("middle_name")}
+                      defaultValue={value && value ? value.middle_name : ''}
+                      className="form-control"
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label htmlFor="exampleInputname">Email</label>
+                    <Form.Control
+                      style={{ border: "1px solid #000", padding: "10px" }}
+                      type="text"
+                      {...register("email")}
+                      defaultValue={value && value ? value.email : ''}
+                      className="form-control"
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label htmlFor="exampleInputname">Password</label>
+                    <Form.Control
+                      style={{ border: "1px solid #000", padding: "10px" }}
+                      type="password"
+                      {...register("password")}
+                      // defaultValue={value && value.Profile ? value.email : ''}
+                      className="form-control"
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label htmlFor="exampleInputname">New Password</label>
+                    <Form.Control
+                      style={{ border: "1px solid #000", padding: "10px" }}
+                      type="password"
+                      {...register("new_password")}
+                      // defaultValue={value && value.Profile ? value.email : ''}
+                      className="form-control"
+                    />
+                  </FormGroup>
+                  <FormGroup className='custom-select-wrapper'>
+                    <label htmlFor="exampleInputname">Roles</label>
+                    {/* <select className='form-control custom-select' {...register("role_id", { required: "Please select roles" })} style={{ border: "1px solid #000", padding: "10px" }} */}
 
-<Modal show={showEditModal}>
-  <Modal.Header>
-    <Button
-      onClick={() => setShowEditModal(false)}
-      className="btn-close"
-      variant=""
-    >
-      x
-    </Button>
-  </Modal.Header>
-  <CForm onSubmit={handleSubmit(modifyUser)} className="row g-3 needs-validation">
-    <Modal.Body>
-      <div>
-        <Card>
-          <Card.Header>
-            <Card.Title as="h3">Update User Details</Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <Col lg={12} md={12}>
-              <FormGroup>
-                <label htmlFor="exampleInputname">Surname</label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  {...register("first_name")}
-                  readOnly
-                  defaultValue={value && value.surname ? value.surname : ''}
-                  className="form-control"
-                />
-              </FormGroup>
-              <FormGroup>
-                <label htmlFor="exampleInputname">First Name</label>
-                <Form.Control
-                  type="text"
-                  readOnly
-                  {...register("last_name")}
-                  defaultValue={value && value.first_name ? value.first_name : ''}
-                  className="form-control"
-                />
-              </FormGroup>
-              <FormGroup>
-                <label htmlFor="exampleInputname">Middle Name</label>
-                <Form.Control
-                  type="text"
-                  readOnly
-                  {...register("other_name")}
-                  defaultValue={value && value.middle_name ? value.middle_name : ''}
-                  className="form-control"
-                />
-              </FormGroup>
-              <FormGroup>
-                <label htmlFor="exampleInputname">Email</label>
-                <Form.Control
-                  type="text"
-                  {...register("email")}
-                  defaultValue={value && value.email ? value.email : ''}
-                  className="form-control"
-                />
-              </FormGroup>
-              <FormGroup>
-                <label htmlFor="exampleInputname">Password</label>
-                <Form.Control
-                  type="password"
-                  {...register("password")}
-                  // defaultValue={value && value.Profile ? value.email : ''}
-                  className="form-control"
-                />
-              </FormGroup>
-              <FormGroup>
-                <label htmlFor="exampleInputname">New Password</label>
-                <Form.Control
-                  type="password"
-                  {...register("new_password")}
-                  // defaultValue={value && value.Profile ? value.email : ''}
-                  className="form-control"
-                />
-              </FormGroup>
-              <FormGroup>
-                <label htmlFor="exampleInputname">Roles</label>
-                <select className="form-control" {...register("role_id", { required: "Please select roles" })}>
-                    <option  defaultValue={value.Role && value.Role.id ? value.Role.id:""}>{value.Role && value.Role.role_name ? value.Role.role_name : '--Select Roles-- '}</option>
-                    {roles.map(role => (<option key={role.id} value={role.id}>{role.role_name}</option>))}
-                </select>
+                    <select className="form-control custom-select" {...register("role_id", { required: "Please select roles" })} style={{ border: "1px solid #000", padding: "10px" }}>
+                        {/* <option  value={value.Role && value.Role.id ? value.Role.id:""}>
+                          {value.Role && value.Role.role_name ? value.Role.role_name : '--Select Roles-- '}
+                          </option> */}
+                        {roles.map(role => (
+                          <option key={role.id} value={role.id}>
+                            {role.role_name}
+                          </option>))}
+                    </select>
+                    {/* {errors.r?.type === "required" && ( <span className='text-danger'> Role required </span> )} */}
+                  </FormGroup>
+                  
+                </Col>
+              </Card.Body>
+            </Card>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="warning" className="me-1" onClick={() => setShowEditModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" type="submit" className="me-1">
+            <span className="fe fe-arrow-right"></span> Save
+          </Button>
+        </Modal.Footer>
+      </CForm>
+    </Modal>
 
-                {errors.r?.type === "required" && ( <span className='text-danger'> Role required </span> )}
-              </FormGroup>
-              
-            </Col>
-          </Card.Body>
-        </Card>
-      </div>
-    </Modal.Body>
-    <Modal.Footer>
-      <Button variant="warning" className="me-1" onClick={() => setShowEditModal(false)}>
-        Close
-      </Button>
-      <Button variant="primary" type="submit" className="me-1">
-        <span className="fe fe-arrow-right"></span> Save
-      </Button>
-    </Modal.Footer>
-  </CForm>
-</Modal>
+    <Modal show={showDeleteModal} >
+                    <Modal.Header >
+                        <Button
+                            onClick={() => setShowDeleteModal(false)}
+                            className="btn-close"
+                            variant=""
+                        >
+                            x
+                        </Button>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <div>
+                        <Card>
+
+                            <Card.Header>
+                                <Card.Title as="h3">Remove User</Card.Title>
+
+                            </Card.Header>
+                            <Card.Body>
+                                <Col lg={12} md={12}>
+                                    Please confirm you are about to delete ?
+                                </Col>
+
+                            </Card.Body>
+
+                        </Card>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="warning" className="me-1" onClick={() => setShowDeleteModal(false)}>
+                            Close
+                        </Button>
+                        {/* <Button variant="danger" className="me-1" onClick={(e) => deleteDepartment(e, UnitId.id)}>
+                            Delete
+                        </Button> */}
+                    </Modal.Footer>
 
 
-
-        <Modal show={showDeleteModal} >
-                <Modal.Header >
-                    <Button
-                        onClick={() => setShowDeleteModal(false)}
-                        className="btn-close"
-                        variant=""
-                    >
-                        x
-                    </Button>
-                </Modal.Header>
-
-                <Modal.Body>
-                    <div>
-                    <Card>
-
-                        <Card.Header>
-                            <Card.Title as="h3">Remove Unit</Card.Title>
-
-                        </Card.Header>
-                        <Card.Body>
-                            <Col lg={12} md={12}>
-                                Please confirm you are about to delete ?
-                            </Col>
-
-                        </Card.Body>
-
-                    </Card>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="warning" className="me-1" onClick={() => setShowDeleteModal(false)}>
-                        Close
-                    </Button>
-                    {/* <Button variant="danger" className="me-1" onClick={(e) => deleteDepartment(e, UnitId.id)}>
-                        Delete
-                    </Button> */}
-                </Modal.Footer>
-
-
-        </Modal>
+    </Modal>
     </>
   )
-
 };

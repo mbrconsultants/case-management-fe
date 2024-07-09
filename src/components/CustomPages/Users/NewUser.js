@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Breadcrumb, Col, Row, Card, FormGroup, Button } from "react-bootstrap";
+import { Breadcrumb, Col, Row, Card, FormGroup, Form, Button } from "react-bootstrap";
 import MultiSelect from "react-multiple-select-dropdown-lite";
 import "react-multiple-select-dropdown-lite/dist/index.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import { CForm, CCol, CFormLabel, CFormFeedback, CFormInput, CInputGroup, CInput
 import * as formvalidation from "../../../data/Form/formvalidations/formvalidations";
 import endpoint from "../../../context/endpoint";
 import { useForm } from 'react-hook-form';
+import "./selectStyle.css";
+
 
 export default function CreateUser() {
     const navigate = useNavigate()
@@ -19,7 +21,7 @@ export default function CreateUser() {
         setLoading(true);
         await endpoint.get('/role/getRoles')
           .then((res) => {
-            //  console.log("roles", res.data.data)
+             console.log("roles", res.data.data)
             setRoles(res.data.data)
             setLoading(false)
           })
@@ -43,8 +45,6 @@ export default function CreateUser() {
                 .catch((err) => {
                     // console.log(err)
                 })
-
-       
     }
 
     return (
@@ -88,89 +88,70 @@ export default function CreateUser() {
                             <CForm onSubmit={handleSubmit(handleCreateUser)}
                                 className="row g-3 needs-validation"
                             >
-                                <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustom01">Surname</CFormLabel>
-                                    <CFormInput
-                                        type="text"
-                                        id="validationCustom01"
-                                        defaultValue=""
+                                <Col md={4}>
+                                <FormGroup>
+                                    <label htmlFor='exampleInputname1'>Surname</label>
+                                    <Form.Control type='text' className='form-control' 
+                                        style={{ border: "1px solid #000", padding: "10px" }} 
                                         required
                                         name="surname"
                                         {...register("surname")}
-
                                     />
-                                    {/* <CFormFeedback valid>Looks good!</CFormFeedback> */}
-                                </CCol>
-                                <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustom02">Firstname</CFormLabel>
-                                    <CFormInput
-                                        type="text"
+                                </FormGroup>
+                                </Col>
+                                <Col md={4}>
+                                <FormGroup>
+                                    <label htmlFor='exampleInputname1'>Firstname</label>
+                                    <Form.Control type='text' className='form-control' 
+                                        style={{ border: "1px solid #000", padding: "10px" }} 
                                         required
                                         name="first_name"
                                         {...register("first_name")}
-
                                     />
-                                </CCol>
-                                <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustom02">Middlename</CFormLabel>
-                                    <CFormInput
-                                        type="text"
+                                </FormGroup>
+                                </Col>
+                                <Col md={4}>
+                                <FormGroup>
+                                    <label htmlFor='exampleInputname1'>Middlename</label>
+                                    <Form.Control type='text' className='form-control' 
+                                        style={{ border: "1px solid #000", padding: "10px" }} 
+                                        required
                                         name="middle_name"
                                         {...register("middle_name")}
-
                                     />
-                                </CCol>
-                                <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustomUsername">Email</CFormLabel>
-                                    <CInputGroup className="has-validation">
-                                        {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
-                                        <CFormInput
-                                            type="email"
-                                            aria-describedby="inputGroupPrepend"
-                                            required
+                                </FormGroup>
+                                </Col>
+                                <Col md={4}>
+                                    <FormGroup>
+                                        <label htmlFor='exampleInputname1'>Email address</label>
+                                        <Form.Control type='text' className='form-control' 
+                                            style={{ border: "1px solid #000", padding: "10px" }} 
                                             name="email"
-                                            {...register("email")}
-
+                                            {...register("email")} 
                                         />
-                                    </CInputGroup>
-                                </CCol>
-                                {/* <CCol md={2}>
-                                    <CFormLabel htmlFor="validationCustomUsername">Gender</CFormLabel>
-
-                                    <select className="form-control" {...register("gender", { required: "Please select gender" })}>
-                                        <option value=""> --Select Gender-- </option>
-                                        <option value="Male"> Male</option>
-                                        <option value="Male">Female </option>
-                                       
-                                    </select>
-
-                                    {errors.r?.type === "required" && ( <span className='text-danger'> Gender is required </span> )}
-                                </CCol> */}
-                                <CCol md={2}>
-                                    <CFormLabel htmlFor="validationCustomUsername">Roles</CFormLabel>
-
-                                    <select className="form-control" {...register("role_id", { required: "Please select roles" })}>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={4}>
+                                    <FormGroup className='custom-select-wrapper'>
+                                        <label htmlFor='exampleInputname1'>Roles</label>
+                                        <select className='form-control custom-select' {...register("role_id", { required: "Please select roles" })} style={{ border: "1px solid #000", padding: "10px" }}
+                                        >
                                         <option value=""> --Select Roles-- </option>
                                         {roles.map(role => (<option key={role.id} value={role.id}>{role.role_name}</option>))}
-                                    </select>
-
-                                    {errors.r?.type === "required" && ( <span className='text-danger'> Role required </span> )}
-                                </CCol>
-                                
-                                <CCol md={4}>
-                                    <CFormLabel htmlFor="validationCustom02">Password</CFormLabel>
-                                    <CFormInput
-                                        type="password"
-                                        name="password"
-                                        {...register("password")}
-
-                                    />
-                                        {/* <input type="hidden" name="user_type" {...register("user_type")} value="1" />
-                                    {errors.phoneNo?.type === "checkLength" && (<span className='text-danger'> <em>Phone No. is invalid</em> </span>)}
-                                    {errors.phoneNo?.type === "matchPattern" && (<span className='text-danger'> <em>Phone No. is Incorrect</em> </span>)} */}
-
-                                </CCol>
-                              
+                                        </select>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={4}>
+                                    <FormGroup>
+                                        <label htmlFor='exampleInputname1'>Password</label>
+                                        <Form.Control type='text' className='form-control' 
+                                           style={{ border: "1px solid #000", padding: "10px" }}
+                                           type="password"
+                                           name="password"
+                                           {...register("password")}
+                                        />
+                                    </FormGroup>
+                                </Col>
                                 
                                 <CCol xs={12} className="text-center">
                                     <CButton color="primary" type="submit">
