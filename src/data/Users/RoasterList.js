@@ -134,21 +134,32 @@ export const RoasterList = () => {
     try {
       const formData = new FormData();
       formData.append("case_id", selectedSuitNo?.value || "");
-      // formData.append("case_id", selectedSuitNo?.value || "");
+      // formData.append("suite_no", selectedSuitNo?.value || "");
       formData.append(
         "legal_officer_id",
         JSON.stringify(selectedCouncils.map((council) => council.value))
       );
-      // formData.append("case_id", id);
       console.log("Payload:", formData);
 
       const response = await endpoint.post(`/case/create-roster`, formData);
       SuccessAlert(response.data.message);
       setRoasterModal(false);
+      getAllData();
     } catch (err) {
       console.log(err);
       // setLoading(false);
       ErrorAlert("An error occurred. Please try again.");
+    }
+  };
+
+  const parseLawyerName = (lawyerName) => {
+    try {
+      const parsed = JSON.parse(lawyerName);
+      // console.log("Parsed lawyer names:", parsed);
+      return parsed;
+    } catch (error) {
+      console.error("Error parsing lawyer_name:", error);
+      return [];
     }
   };
 
@@ -210,18 +221,20 @@ export const RoasterList = () => {
         {data.length > 0 ? (
           <Card id="divToPrint">
             <div>
-              <div className="d-flex justify-content-end mb-3">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h2 className="rostertable-header text-center flex-grow-1">
+                  {headerText}
+                </h2>
                 <Button onClick={window.print} id="hideBtn">
                   Print
                 </Button>
               </div>
               <div id="table-to-print">
-                <h2 className="rostertable-header">{headerText}</h2>
                 <table border="1" className="table-responsive">
                   <colgroup>
                     <col style={{ width: "150px" }} />
                     <col style={{ width: "200px" }} />
-                    <col style={{ width: "500px" }} />
+                    <col style={{ width: "300px" }} />
                     <col style={{ width: "250px" }} />
                     <col style={{ width: "300px" }} />
                     <col style={{ width: "300px" }} />
@@ -239,37 +252,89 @@ export const RoasterList = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        <td>{rowIndex + 1}</td>
-                        <td>{row.hearing_date ? row.hearing_date : ""}</td>
-                        <td>
-                          {row.suite_no}
-                          <br /> {row.parties}
-                        </td>
-                        <td>{row.Court ? row.Court.name : ""}</td>
-                        <td>
-                          {row.AssignCouncils && row.AssignCouncils.length > 0
-                            ? row.AssignCouncils.map((council, index) => (
-                                <span key={index}>
-                                  {council.LegalOfficer
-                                    ? council.LegalOfficer.surname +
-                                      " " +
-                                      council.LegalOfficer.first_name
-                                    : ""}
-                                  <br />
-                                </span>
-                              ))
-                            : ""}
-                        </td>
-                        <td>
-                          {row.externalSolicitor
-                            ? row.externalSolicitor
-                            : "Not Assigned"}
-                        </td>
-                        <td>{row.nextAdjournedDate}</td>
-                      </tr>
-                    ))}
+                    {caseList.map((row, rowIndex) => {
+                      // console.log(row);
+                      return (
+                        <tr key={rowIndex}>
+                          <td>{rowIndex + 1}</td>
+                          <td>{row.hearing_date ? row.hearing_date : ""}</td>
+                          <td>
+                            {row.suite_no}
+                            <br /> {row.parties}
+                          </td>
+                          <td>{row.Court ? row.Court.name : ""}</td>
+                          <td>
+                            {row.AssignCouncils &&
+                            row.AssignCouncils.length > 0 ? (
+                              <ul
+                                style={{
+                                  listStyleType: "disc",
+                                  paddingLeft: "10px",
+                                }}
+                              >
+                                {row.AssignCouncils.map((council, index) => (
+                                  <li key={index}>
+                                    {council.LegalOfficer
+                                      ? council.LegalOfficer.surname +
+                                        " " +
+                                        council.LegalOfficer.first_name
+                                      : ""}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              ""
+                            )}
+                          </td>
+                          <td>
+                            {/* {console.log(row.ChamberOrSolicitor)} */}
+                            <h4
+                              style={{
+                                // fontWeight: "bold",
+                                textDecoration: "underline",
+                                paddingLeft: "5px",
+                              }}
+                            >
+                              {row.ChamberOrSolicitor &&
+                                row.ChamberOrSolicitor.chamber_name}
+                            </h4>
+
+                            <br />
+                            {row.ChamberLawyers &&
+                            row.ChamberLawyers.length > 0 ? (
+                              <ul
+                              // style={{
+                              //   listStyleType: "disc",
+                              //   paddingLeft: "20px",
+                              // }}
+                              >
+                                {row.ChamberLawyers.map(
+                                  (lawyer, lawyerIndex) => (
+                                    <li key={lawyerIndex}>
+                                      <ul
+                                        style={{
+                                          listStyleType: "disc",
+                                          paddingLeft: "10px",
+                                        }}
+                                      >
+                                        {parseLawyerName(
+                                          lawyer.lawyer_name
+                                        ).map((name, nameIndex) => (
+                                          <li key={nameIndex}>{name}</li>
+                                        ))}
+                                      </ul>
+                                    </li>
+                                  )
+                                )}
+                              </ul>
+                            ) : (
+                              ""
+                            )}
+                          </td>
+                          <td>{row.adjournment_date}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

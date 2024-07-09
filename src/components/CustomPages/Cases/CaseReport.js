@@ -48,8 +48,8 @@ export default function SingleCase() {
   const [reportDetails, setReportDetails] = useState({
     sitting_date: "",
     description: "",
-    reportFiles: [],
-    reportDocType: "",
+    doc_urls: [],
+    doc_type_id: "",
   });
   const [reports, setReports] = useState([]); // State for storing multiple reports
   const [documentTypeList, setReportDocumentTypeList] = useState([]);
@@ -84,9 +84,9 @@ export default function SingleCase() {
 
   useEffect(() => {
     // getCase();
-    getCaseList();
-    getLegalOfficer();
-    getChambers();
+    // getCaseList();
+    // getLegalOfficer();
+    // getChambers();
     getFileType();
     getReportDocumentTypeList();
   }, []);
@@ -107,28 +107,28 @@ export default function SingleCase() {
   //       .catch((err) => console.log(err));
   //   };
 
-  const getLegalOfficer = async () => {
-    setLoading(true);
-    await endpoint
-      .get(`/legal-officer/list`)
-      .then(({ data }) => {
-        setLegalOfficers(data.data);
-        setLoading(false);
-      })
-      .catch((err) => console.log("Legal Officer Error", err));
-  };
+  // const getLegalOfficer = async () => {
+  //   setLoading(true);
+  //   await endpoint
+  //     .get(`/legal-officer/list`)
+  //     .then(({ data }) => {
+  //       setLegalOfficers(data.data);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => console.log("Legal Officer Error", err));
+  // };
 
-  const getChambers = async () => {
-    setLoading(true);
-    await endpoint
-      .get(`/solicitor/list`)
-      .then(({ data }) => {
-        console.log("chamber", data.data);
-        setChambers(data.data);
-        setLoading(false);
-      })
-      .catch((err) => console.log("Chamber Error", err));
-  };
+  // const getChambers = async () => {
+  //   setLoading(true);
+  //   await endpoint
+  //     .get(`/solicitor/list`)
+  //     .then(({ data }) => {
+  //       console.log("chamber", data.data);
+  //       setChambers(data.data);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => console.log("Chamber Error", err));
+  // };
 
   const getFileType = async () => {
     setLoading(true);
@@ -142,57 +142,57 @@ export default function SingleCase() {
       .catch((err) => console.log(err));
   };
 
-  const judgeIDs =
-    selectedCouncil && selectedCouncil.map((option) => option.value);
+  // const judgeIDs =
+  //   selectedCouncil && selectedCouncil.map((option) => option.value);
 
-  const handleAddLegalOfficer = async () => {
-    try {
-      const data = {
-        legal_officer_id: judgeIDs,
-        case_id: id,
-      };
-      const response = await endpoint.post(`/case/assign-council`, data);
-      closeLegalModal();
-      //   getCase();
-      SuccessAlert(response.data.message);
-    } catch (err) {
-      console.log(err);
-      setLoading(false);
-      closeLegalModal();
-      if (err.response && err.response.data && err.response.data.description) {
-        ErrorAlert(err.response.data.description);
-      } else {
-        ErrorAlert("An error occurred. Please try again.");
-        closeLegalModal();
-      }
-    }
-  };
+  // const handleAddLegalOfficer = async () => {
+  //   try {
+  //     const data = {
+  //       legal_officer_id: judgeIDs,
+  //       case_id: id,
+  //     };
+  //     const response = await endpoint.post(`/case/assign-council`, data);
+  //     closeLegalModal();
+  //     //   getCase();
+  //     SuccessAlert(response.data.message);
+  //   } catch (err) {
+  //     console.log(err);
+  //     setLoading(false);
+  //     closeLegalModal();
+  //     if (err.response && err.response.data && err.response.data.description) {
+  //       ErrorAlert(err.response.data.description);
+  //     } else {
+  //       ErrorAlert("An error occurred. Please try again.");
+  //       closeLegalModal();
+  //     }
+  //   }
+  // };
 
-  const chambersIDs =
-    selectedChamber && selectedChamber.map((option) => option.value);
+  // const chambersIDs =
+  //   selectedChamber && selectedChamber.map((option) => option.value);
 
-  const handleAddChamberOfficer = async () => {
-    try {
-      const data = {
-        chamber_solicitor_id: chambersIDs,
-        case_id: id,
-      };
-      const response = await endpoint.post(`/case/assign-solicitor`, data);
-      closeChamberModal();
-      //   getCase();
-      SuccessAlert(response.data.message);
-    } catch (err) {
-      console.log(err);
-      setLoading(false);
-      closeChamberModal();
-      if (err.response && err.response.data && err.response.data.description) {
-        ErrorAlert(err.response.data.description);
-      } else {
-        ErrorAlert("An error occurred. Please try again.");
-        closeChamberModal();
-      }
-    }
-  };
+  // const handleAddChamberOfficer = async () => {
+  //   try {
+  //     const data = {
+  //       chamber_solicitor_id: chambersIDs,
+  //       case_id: id,
+  //     };
+  //     const response = await endpoint.post(`/case/assign-solicitor`, data);
+  //     closeChamberModal();
+  //     //   getCase();
+  //     SuccessAlert(response.data.message);
+  //   } catch (err) {
+  //     console.log(err);
+  //     setLoading(false);
+  //     closeChamberModal();
+  //     if (err.response && err.response.data && err.response.data.description) {
+  //       ErrorAlert(err.response.data.description);
+  //     } else {
+  //       ErrorAlert("An error occurred. Please try again.");
+  //       closeChamberModal();
+  //     }
+  //   }
+  // };
 
   const getCaseList = async () => {
     setLoading(true);
@@ -209,23 +209,23 @@ export default function SingleCase() {
   const handleAddReport = async () => {
     try {
       const formData = new FormData();
-      formData.append("suite_no", selectedSuiteNo?.value || "");
+      formData.append("case_id", selectedSuiteNo?.value || "");
       formData.append("sitting_date", reportDetails.sitting_date);
       formData.append("description", reportDetails.description);
-      formData.append("report_doc_type", reportDetails.reportDocType);
-      for (let i = 0; i < reportDetails.reportFiles.length; i++) {
-        formData.append("report_files", reportDetails.reportFiles[i]);
+      formData.append("doc_type_id", reportDetails.doc_type_id);
+      for (let i = 0; i < reportDetails.doc_urls.length; i++) {
+        formData.append("doc_urls", reportDetails.doc_urls[i]);
       }
       console.log("Payload:", formData);
       for (let pair of formData.entries()) {
         console.log("Payload Key Value Pair", pair[0] + ": " + pair[1]);
       }
 
-      const response = await endpoint.post(`/report/create`, formData);
+      const response = await endpoint.post(`/case/submit-report`, formData);
       SuccessAlert(response.data.message);
       //   getCase(); // Refresh case data to show the new report
     } catch (err) {
-      console.log(err);
+      console.log("Create Report Error", err);
       ErrorAlert("An error occurred. Please try again.");
     }
   };
@@ -271,17 +271,17 @@ export default function SingleCase() {
     updatedRows[index].doc_url = file;
     setRows(updatedRows);
     setReportDetails((prevState) => {
-      const newReportFiles = [...prevState.reportFiles];
-      newReportFiles[index] = file;
-      return { ...prevState, reportFiles: newReportFiles };
+      const newdoc_urls = [...prevState.doc_urls];
+      newdoc_urls[index] = file;
+      return { ...prevState, doc_urls: newdoc_urls };
     });
   };
 
   const handleDocTypeChange = (index, docType) => {
     setReportDetails((prevState) => {
-      const newReportDocTypes = [...prevState.reportDocType];
-      newReportDocTypes[index] = docType;
-      return { ...prevState, reportDocType: newReportDocTypes };
+      const newdoc_type_id = [...prevState.doc_type_id];
+      newdoc_type_id[index] = docType;
+      return { ...prevState, doc_type_id: newdoc_type_id };
     });
   };
 
@@ -311,7 +311,7 @@ export default function SingleCase() {
                     <Select
                       id="suite_no"
                       options={caseList.map((caseItem) => ({
-                        value: caseItem.suite_no,
+                        value: caseItem.id,
                         label: caseItem.suite_no,
                       }))}
                       value={selectedSuiteNo}
@@ -319,15 +319,15 @@ export default function SingleCase() {
                     />
                   </CCol>
                   <CCol md={6}>
-                    <CFormLabel htmlFor="hearing_date">Sitting Date</CFormLabel>
+                    <CFormLabel htmlFor="sitting_date">Sitting Date</CFormLabel>
                     <CFormInput
                       type="date"
-                      id="hearing_date"
+                      id="sitting_date"
                       value={reportDetails.sitting_date}
                       onChange={(e) =>
                         setReportDetails({
                           ...reportDetails,
-                          hearing_date: e.target.value,
+                          sitting_date: e.target.value,
                         })
                       }
                     />
