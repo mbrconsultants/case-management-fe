@@ -21,18 +21,18 @@ const ChamberList = () => {
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  // const [showEditModal, setShowEditModal] = useState(false);
   const [currentChamber, setCurrentChamber] = useState(null);
-  const [editModalDetails, setEditModalDetails] = useState({
-    chamber_name: "",
-    chamber_head: "",
-    address: "",
-    email: "",
-    email_2: "",
-    phone: "",
-    phone_2: "",
-    lawyers: [{ lawyer_name: "", lawyer_phone: "" }],
-  });
+  // const [editModalDetails, setEditModalDetails] = useState({
+  //   chamber_name: "",
+  //   chamber_head: "",
+  //   address: "",
+  //   email: "",
+  //   email_2: "",
+  //   phone: "",
+  //   phone_2: "",
+  //   lawyers: [{ lawyer_name: "", lawyer_phone: "" }],
+  // });
   
 
   const { register, handleSubmit, setValue, reset, control } = useForm({
@@ -69,30 +69,45 @@ const ChamberList = () => {
   };
 
 
-  const handleShowEditModal = (chamberDetails) => {
-    // Ensure `lawyers` is an array and parse the JSON strings
-    const lawyers = Array.isArray(chamberDetails.lawyers)
-      ? chamberDetails.lawyers.map(lawyer => ({
-          lawyer_name: JSON.parse(lawyer.lawyer_name)[0] || "",
-          lawyer_phone: JSON.parse(lawyer.lawyer_phone)[0] || "",
-        }))
-      : [];
-    
-    // Initialize editModalDetails with the necessary properties
-    setEditModalDetails({
-      chamber_name: chamberDetails.chamber_name || "",
-      chamber_head: chamberDetails.chamber_head || "",
-      address: chamberDetails.address || "",
-      email: chamberDetails.email || "",
-      email_2: chamberDetails.email_2 || "",
-      phone: chamberDetails.phone || "",
-      phone_2: chamberDetails.phone_2 || "",
-      lawyers,
-    });
-  
-    // Show the edit modal
-    setShowEditModal(true);
-  };
+  // const handleShowEditModal = (chamberDetails) => {
+  //   // Ensure `lawyers` is an array and parse the JSON strings
+  //   const lawyers = Array.isArray(chamberDetails.lawyers)
+  //     ? chamberDetails.lawyers.map((lawyer) => ({
+  //         lawyer_name: JSON.parse(lawyer.lawyer_name)[0] || "",
+  //         lawyer_phone: JSON.parse(lawyer.lawyer_phone)[0] || "",
+  //       }))
+  //     : [];
+
+  //   // Initialize editModalDetails with the necessary properties
+  //   setEditModalDetails({
+  //     chamber_name: chamberDetails.chamber_name || "",
+  //     chamber_head: chamberDetails.chamber_head || "",
+  //     address: chamberDetails.address || "",
+  //     email: chamberDetails.email || "",
+  //     email_2: chamberDetails.email_2 || "",
+  //     phone: chamberDetails.phone || "",
+  //     phone_2: chamberDetails.phone_2 || "",
+  //     lawyers,
+  //   });
+
+  //   // Set the form values for the edit modal
+  //   setValue("chamber_name", chamberDetails.chamber_name || "");
+  //   setValue("chamber_head", chamberDetails.chamber_head || "");
+  //   setValue("address", chamberDetails.address || "");
+  //   setValue("email", chamberDetails.email || "");
+  //   setValue("email_2", chamberDetails.email_2 || "");
+  //   setValue("phone", chamberDetails.phone || "");
+  //   setValue("phone_2", chamberDetails.phone_2 || "");
+
+  //   lawyers.forEach((lawyer, index) => {
+  //     setValue(`lawyers.${index}.lawyer_name`, lawyer.lawyer_name);
+  //     setValue(`lawyers.${index}.lawyer_phone`, lawyer.lawyer_phone);
+  //   });
+
+  //   // Show the edit modal
+  //   setShowEditModal(true);
+  // };
+
   
   
   
@@ -113,37 +128,37 @@ const ChamberList = () => {
     }
   };
 
-  const updateChamber = async (formData) => {
-    setLoading(true);
-    try {
-      const data = new FormData();
-      data.append("chamber_name", formData.chamber_name);
-      data.append("chamber_head", formData.chamber_head);
-      data.append("address", formData.address);
-      data.append("email", formData.email);
-      data.append("email2", formData.email2);
-      data.append("phone", formData.phone);
-      data.append("phone2", formData.phone2);
-      data.append(
-        "lawyers",
-        JSON.stringify(formData.lawyers.map((lawyer) => ({
-          lawyer_name: lawyer.lawyer_name,
-          lawyer_phone: lawyer.lawyer_phone
-        })))
-      );
+  // const updateChamber = async (formData) => {
+  //   setLoading(true);
+  //   try {
+  //     const data = new FormData();
+  //     data.append("chamber_name", formData.chamber_name);
+  //     data.append("chamber_head", formData.chamber_head);
+  //     data.append("address", formData.address);
+  //     data.append("email", formData.email);
+  //     data.append("email_2", formData.email_2);
+  //     data.append("phone", formData.phone);
+  //     data.append("phone_2", formData.phone_2);
+  //     data.append(
+  //       "lawyers",
+  //       JSON.stringify(formData.lawyers.map((lawyer) => ({
+  //         lawyer_name: lawyer.lawyer_name,
+  //         lawyer_phone: lawyer.lawyer_phone
+  //       })))
+  //     );
 
-      await endpoint.put(`/solicitor/edit/${currentChamber.id}`, data);
-      console.log("Chamber updated data", data);
-      getChamberList();
-      SuccessAlert("Chamber updated successfully.");
-      setShowEditModal(false);
-    } catch (err) {
-      console.error(err);
-      ErrorAlert("Failed to update chamber.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     await endpoint.put(`/solicitor/edit/${currentChamber.id}`, data);
+  //     console.log("Chamber updated data", data);
+  //     getChamberList();
+  //     SuccessAlert("Chamber updated successfully.");
+  //     setShowEditModal(false);
+  //   } catch (err) {
+  //     console.error(err);
+  //     ErrorAlert("Failed to update chamber.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleAddLawyer = () => {
     append({ lawyer_name: "", lawyer_phone: "" });
@@ -174,7 +189,7 @@ const ChamberList = () => {
       selector: (row) => row.chamber_name,
       style: { textAlign: "right" },
       sortable: true,
-      width: "150px",
+      width: "200px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.chamber_name.toUpperCase()}</div>
       ),
@@ -184,7 +199,7 @@ const ChamberList = () => {
       selector: (row) => row.chamber_head,
       style: { textAlign: "left" },
       sortable: true,
-      width: "150px",
+      width: "200px",
       cell: (row) => (
         <div className="fs-12 fw-bold">{row.chamber_head || ""}</div>
       ),
@@ -194,7 +209,7 @@ const ChamberList = () => {
       selector: (row) => row.email,
       style: { textAlign: "left" },
       sortable: true,
-      width: "150px",
+      width: "200px",
       cell: (row) => <div className="fs-12 fw-bold">{row.email || ""}</div>,
     },
     {
@@ -210,7 +225,7 @@ const ChamberList = () => {
       selector: (row) => row.address,
       style: { textAlign: "left" },
       sortable: true,
-      width: "150px",
+      width: "200px",
       cell: (row) => <div className="fs-12 fw-bold">{row.address || ""}</div>,
     },
     {
@@ -225,12 +240,18 @@ const ChamberList = () => {
           >
             <span className="fe fe-eye"> </span>
           </Link>
-          <button
+          <Link
+            to={`/edit-chamber/${row.id}`}
+            className="btn btn-warning btn-sm mx-1"
+          >
+            <span className="fe fe-edit"> </span>
+          </Link>
+          {/* <button
             className="btn btn-warning btn-sm me-2 my-1"
             onClick={() => handleShowEditModal(row)}
           >
             <span className="fe fe-edit"> </span>
-          </button>
+          </button> */}
           <button
             className="btn btn-danger btn-sm my-1"
             onClick={() => handleShowDeleteModal(row)}
@@ -293,7 +314,7 @@ const ChamberList = () => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      {/* <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Chamber</Modal.Title>
         </Modal.Header>
@@ -379,6 +400,7 @@ const ChamberList = () => {
                 name="phone_2"
               />
             </CCol>
+           
             {fields.map((item, index) => (
               <div key={item.id} className="row mb-1">
                 <CCol md={6}>
@@ -463,7 +485,7 @@ const ChamberList = () => {
             </div>
           </CForm>
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

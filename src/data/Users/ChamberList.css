@@ -1,0 +1,18 @@
+.data-table-wrapper {
+    border: 1px solid #000; /* Adjust the color and width of the border as needed */
+    border-radius: 5px; /* Optional: Add border radius for rounded corners */
+  }
+  
+  .data-table {
+    border-collapse: collapse;
+  }
+  
+  .data-table th,
+  .data-table td {
+    border: 1px solid #000; /* Adjust the color and width of the border as needed */
+  }
+  
+  .data-table th {
+    background-color: #f8f9fa; /* Optional: Add background color to header */
+  }
+  

@@ -396,6 +396,9 @@ const LegalOfficerList = React.lazy(() =>
 const NewChamber = React.lazy(() =>
   import("./components/CustomPages/Users/NewChamber")
 );
+const EditChamber = React.lazy(() =>
+  import("./components/CustomPages/Users/EditChamber")
+);
 const ChamberList = React.lazy(() =>
   import("./components/CustomPages/Users/ChamberList")
 );
@@ -658,6 +661,15 @@ const Root = () => {
                     element={
                       // user ?
                       <NewChamber />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/edit-chamber/:id`}
+                    element={
+                      // user ?
+                      <EditChamber />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
