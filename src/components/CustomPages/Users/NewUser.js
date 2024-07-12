@@ -115,7 +115,6 @@ export default function CreateUser() {
                                     <label htmlFor='exampleInputname1'>Middlename</label>
                                     <Form.Control type='text' className='form-control' 
                                         style={{ border: "1px solid #000", padding: "10px" }} 
-                                        required
                                         name="middle_name"
                                         {...register("middle_name")}
                                     />
@@ -125,7 +124,8 @@ export default function CreateUser() {
                                     <FormGroup>
                                         <label htmlFor='exampleInputname1'>Email address</label>
                                         <Form.Control type='text' className='form-control' 
-                                            style={{ border: "1px solid #000", padding: "10px" }} 
+                                            style={{ border: "1px solid #000", padding: "10px" }}
+                                            required 
                                             name="email"
                                             {...register("email")} 
                                         />
@@ -135,6 +135,7 @@ export default function CreateUser() {
                                     <FormGroup className='custom-select-wrapper'>
                                         <label htmlFor='exampleInputname1'>Roles</label>
                                         <select className='form-control custom-select' {...register("role_id", { required: "Please select roles" })} style={{ border: "1px solid #000", padding: "10px" }}
+                                        required
                                         >
                                         <option value=""> --Select Roles-- </option>
                                         {roles.map(role => (<option key={role.id} value={role.id}>{role.role_name}</option>))}
@@ -146,6 +147,7 @@ export default function CreateUser() {
                                         <label htmlFor='exampleInputname1'>Password</label>
                                         <Form.Control type='text' className='form-control' 
                                            style={{ border: "1px solid #000", padding: "10px" }}
+                                           required
                                            type="password"
                                            name="password"
                                            {...register("password")}

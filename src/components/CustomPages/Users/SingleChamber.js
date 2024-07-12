@@ -28,16 +28,12 @@ export default function SingleChamber() {
     }
   };
 
-  const parseAndJoin = (jsonString) => {
+  const parseJSON = (jsonString) => {
     try {
-      const parsed = JSON.parse(jsonString);
-      if (Array.isArray(parsed)) {
-        return parsed.join(", ");
-      }
-      return parsed;
+      return JSON.parse(jsonString);
     } catch (error) {
       console.error("Error parsing JSON string:", error);
-      return jsonString;
+      return [];
     }
   };
 
@@ -97,24 +93,33 @@ export default function SingleChamber() {
                           <div className="col-md-6">{data.address}</div>
                         </div>
                         {data.ChamberLawyers && data.ChamberLawyers.length > 0 && (
-                          <>
-                            <div className="row border">
-                              <div className="fw-bold col-md-6">Counsel in Chamber:</div>
-                              <div className="col-md-6">
-                                {data.ChamberLawyers[0].lawyer_name
-                                  ? parseAndJoin(data.ChamberLawyers[0].lawyer_name)
-                                  : "N/A"}
-                              </div>
+                          <div className="row border">
+                            <div className="col-md-12">
+                              <h5 className="fw-bold text-center mt-5">COUNSEL(S)</h5>
+                              <table className="table">
+                                <thead>
+                                  <tr>
+                                    <th className="fw-bold">S/N</th>
+                                    <th className="fw-bold">Counsel in Chamber</th>
+                                    <th className="fw-bold">Counsel's Phone Number</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {data.ChamberLawyers.map((lawyer, index) => {
+                                    const names = parseJSON(lawyer.lawyer_name);
+                                    const phones = parseJSON(lawyer.lawyer_phone);
+                                    return names.map((name, idx) => (
+                                      <tr key={`${index}-${idx}`}>
+                                        <td>{index * names.length + idx + 1}</td>
+                                        <td>{name || "N/A"}</td>
+                                        <td>{phones[idx] || "N/A"}</td>
+                                      </tr>
+                                    ));
+                                  })}
+                                </tbody>
+                              </table>
                             </div>
-                            <div className="row border">
-                              <div className="fw-bold col-md-6">Counsel's Phone Number:</div>
-                              <div className="col-md-6">
-                                {data.ChamberLawyers[0].lawyer_phone
-                                  ? parseAndJoin(data.ChamberLawyers[0].lawyer_phone)
-                                  : "N/A"}
-                              </div>
-                            </div>
-                          </>
+                          </div>
                         )}
                       </div>
                     )}
