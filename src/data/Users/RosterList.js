@@ -3,7 +3,7 @@ import { Card, Row, Col, Button, Modal } from "react-bootstrap";
 import endpoint from "../../context/endpoint";
 import { Context } from "../../context/Context";
 import { ErrorAlert, SuccessAlert } from "../Toast/toast";
-import "./RoasterList.css";
+import "./RosterList.css";
 import Select from "react-select";
 import {
   CForm,
@@ -20,14 +20,15 @@ import {
 import { useForm } from "react-hook-form";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
-export const RoasterList = () => {
+export const RosterList = () => {
   const { user } = useContext(Context);
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [headerText, setHeaderText] = useState("");
   const [hearingdate, setHearingdate] = useState({ hearing_date: "" });
-  const [RoasterModal, setRoasterModal] = useState(false);
+  const [RosterModal, setRosterModal] = useState(false);
   const [caseList, setCaseList] = useState([]);
+  const [rosterAssignment, setRosterAssignment] = useState([]);
   const [legalOfficers, setLegalOfficers] = useState([]);
   const [selectedSuitNo, setSelectedSuitNo] = useState(null);
   const [selectedCouncils, setSelectedCouncils] = useState([]);
@@ -43,17 +44,18 @@ export const RoasterList = () => {
     reset,
   } = useForm();
 
-  const openRoasterModal = () => {
-    setRoasterModal(true);
+  const openRosterModal = () => {
+    setRosterModal(true);
   };
 
-  const closeRoasterModal = () => {
-    setRoasterModal(false);
+  const closeRosterModal = () => {
+    setRosterModal(false);
   };
 
   useEffect(() => {
     getAllData();
     retrieveHeaderText();
+    getRosterAssignment();
     getCaseList();
     getLegalOfficer();
   }, []);
@@ -62,7 +64,7 @@ export const RoasterList = () => {
     try {
       const res = await endpoint.post(`/case/list-by-hearing-date`);
       setData(res.data.data);
-      setHeaderText(`COURT ROASTER FOR THE MONTH OF ${monthName} ${year}`);
+      setHeaderText(`COURT ROSTER FOR THE MONTH OF ${monthName} ${year}`);
     } catch (err) {
       console.error(err);
     }
@@ -91,12 +93,27 @@ export const RoasterList = () => {
       setData(res.data.data);
       SuccessAlert(res.data.message);
       setLoading(false);
+      getRosterAssignment();
     } catch (err) {
       setLoading(false);
       ErrorAlert(err.response.data.message);
       console.error(err);
     }
   };
+
+  //get-roster-assignments
+  const getRosterAssignment = async () => {
+    setLoading(true);
+    try {
+      const res = await endpoint.get("/case/get-roster-assignments");
+      setRosterAssignment(res.data.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  console.log("RosterAssignment", rosterAssignment);
 
   const retrieveHeaderText = () => {
     const savedHeaderText = localStorage.getItem("headerText");
@@ -130,7 +147,7 @@ export const RoasterList = () => {
   };
 
   // Function to Create Roster
-  const handleCreateRoaster = async () => {
+  const handleCreateRoster = async () => {
     try {
       const formData = new FormData();
       formData.append("case_id", selectedSuitNo?.value || "");
@@ -143,8 +160,11 @@ export const RoasterList = () => {
 
       const response = await endpoint.post(`/case/create-roster`, formData);
       SuccessAlert(response.data.message);
-      setRoasterModal(false);
-      getAllData();
+      reset();
+      setSelectedSuitNo(null);
+      setSelectedCouncils(null);
+      setRosterModal(false);
+      getRosterAssignment();
     } catch (err) {
       console.log(err);
       // setLoading(false);
@@ -167,8 +187,8 @@ export const RoasterList = () => {
     <div>
       <div className="box box-default">
         <div className="d-flex justify-content-end mb-3">
-          <Button onClick={openRoasterModal} style={{ marginTop: "-10px" }}>
-            Create Roaster
+          <Button onClick={openRosterModal} style={{ marginTop: "-10px" }}>
+            Create Roster
           </Button>
         </div>
         <div
@@ -204,12 +224,12 @@ export const RoasterList = () => {
                       required
                       style={{ width: "auto" }}
                     />
-                    <button
+                    <Button
                       className="btn btn-success"
                       onClick={handleGetCases}
                     >
-                      Get All Cases
-                    </button>
+                      Get Roster
+                    </Button>
                   </div>
                 </Card.Body>
               </Card>
@@ -218,7 +238,7 @@ export const RoasterList = () => {
           </Row>
         </div>
 
-        {data.length > 0 ? (
+        {rosterAssignment.length > 0 ? (
           <Card id="divToPrint">
             <div>
               <div className="d-flex justify-content-between align-items-center mb-3">
@@ -232,7 +252,7 @@ export const RoasterList = () => {
               <div id="table-to-print">
                 <table border="1" className="table-responsive">
                   <colgroup>
-                    <col style={{ width: "150px" }} />
+                    <col style={{ width: "70px" }} />
                     <col style={{ width: "200px" }} />
                     <col style={{ width: "300px" }} />
                     <col style={{ width: "250px" }} />
@@ -252,7 +272,7 @@ export const RoasterList = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {caseList.map((row, rowIndex) => {
+                    {rosterAssignment.map((row, rowIndex) => {
                       // console.log(row);
                       return (
                         <tr key={rowIndex}>
@@ -288,13 +308,7 @@ export const RoasterList = () => {
                           </td>
                           <td>
                             {/* {console.log(row.ChamberOrSolicitor)} */}
-                            <h4
-                              style={{
-                                // fontWeight: "bold",
-                                textDecoration: "underline",
-                                paddingLeft: "5px",
-                              }}
-                            >
+                            <h4>
                               {row.ChamberOrSolicitor &&
                                 row.ChamberOrSolicitor.chamber_name}
                             </h4>
@@ -341,26 +355,34 @@ export const RoasterList = () => {
             </div>
           </Card>
         ) : (
-          <div className="text-center"> No Record</div>
+          <p style={{ textAlign: "center" }}>
+            <img
+              src="/img/folder_icn.png"
+              alt="No records icon"
+              height="50"
+              width="50"
+            />
+            No records available.
+          </p>
         )}
       </div>
-      <Modal show={RoasterModal}>
+      <Modal show={RosterModal}>
         <Modal.Header>
-          <Button onClick={closeRoasterModal} className="btn-close" variant="">
+          <Button onClick={closeRosterModal} className="btn-close" variant="">
             x
           </Button>
         </Modal.Header>
-        <CForm onSubmit={handleSubmit(handleCreateRoaster)}>
+        <CForm onSubmit={handleSubmit(handleCreateRoster)}>
           <Modal.Body>
             <div>
               <Card>
                 <Card.Header>
                   <Card.Title as="h3">
-                    Select Suite No. and Legal Officer(s) to Create Roaster{" "}
+                    Select Suite No. and Legal Officer(s) to Create Roster{" "}
                   </Card.Title>
                 </Card.Header>
                 <Card.Body className="row g-3 needs-validation">
-                  <CCol md={6}>
+                  <CCol md={12}>
                     <CFormLabel htmlFor="suite_no">Suite Number</CFormLabel>
                     <Select
                       id="suite_no"
@@ -373,7 +395,7 @@ export const RoasterList = () => {
                     />
                   </CCol>
 
-                  <CCol md={6}>
+                  <CCol md={12}>
                     <CFormLabel htmlFor="legal_officers">
                       Select Legal Officer(s)
                     </CFormLabel>
@@ -395,9 +417,9 @@ export const RoasterList = () => {
           <Modal.Footer>
             <CButton type="submit" color="primary">
               <span className="fe fe-plus"></span>
-              Create Roaster
+              Create Roster
             </CButton>
-            <Button variant="dark" className="me-1" onClick={closeRoasterModal}>
+            <Button variant="dark" className="me-1" onClick={closeRosterModal}>
               Close
             </Button>
           </Modal.Footer>

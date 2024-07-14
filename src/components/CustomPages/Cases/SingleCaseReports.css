@@ -1,0 +1,22 @@
+@media print {
+  .no-print {
+    display: none;
+  }
+}
+
+.description-body {
+  /* max-height: 13em; */
+  /* overflow-y: auto; */
+  margin-bottom: 1em;
+  text-align: justify;
+  text-justify: inter-word;
+  width: 100%;
+  max-width: 100%;
+  margin: auto;
+  padding-right: 1em;
+  box-sizing: content-box;
+}
+
+/* .description-div {
+  border: 0.3px solid;
+} */

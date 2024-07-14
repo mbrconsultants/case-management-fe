@@ -1,3 +1,8 @@
+.table-responsive th,
+.table-responsive td {
+  border: 1px solid black !important;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -37,4 +42,21 @@ tbody td {
 /* Hide the sort icons in table headers */
 .table-responsive th::after {
   display: none !important;
+}
+
+@media print {
+  table {
+    border-collapse: collapse;
+  }
+
+  table,
+  th,
+  td {
+    border: 1px solid black;
+  }
+
+  table th:first-child,
+  table td:first-child {
+    width: 100px;
+  }
 }

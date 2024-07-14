@@ -190,11 +190,11 @@ export const FileList = () => {
           {" "}
           <Col xs={4} style={{ paddingRight: "0px", paddingLeft: "0px" }}>
             <button
-              className="btn btn-sm btn-secondary"
+              className="btn btn-sm btn-blue"
               onClick={(e) => {
                 onEdit(row);
               }}
-              variant="secondary"
+              // variant="secondary"
               title="Action"
               size="sm"
             >
@@ -226,7 +226,7 @@ export const FileList = () => {
       ) : (
         <div>
           <div id="page-wrapper" className="box box-default">
-            <button
+            <Button
               className={
                 isLoading
                   ? "btn btn-success pull-right btn-loading"
@@ -236,7 +236,7 @@ export const FileList = () => {
               onClick={handleAddProcessDocumentModal}
             >
               Add Process Document
-            </button>
+            </Button>
             {/* <div className="container-fluid">
               <div className="col-md-12 text-success"></div>
               <br />
@@ -442,7 +442,7 @@ export const FileList = () => {
                               <Button
                                 onClick={handleSubmit}
                                 disabled={isLoading}
-                                variant="success"
+                                // variant="success"
                                 className={
                                   isLoading ? "me-1  btn-loading" : "me-1"
                                 }

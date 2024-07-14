@@ -13,8 +13,8 @@ import FileType from "./components/CustomPages/Users/FileType";
 import CaseType from "./components/CustomPages/Users/CaseType";
 import Parties from "./components/CustomPages/Users/Parties";
 import LegalOfficerlist from "./components/CustomPages/Users/LegalOfficerlist";
-import CourtRoaster from "./components/CustomPages/Users/CourtRoaster";
-import TestRoaster from "./components/CustomPages/Users/TestRoaster";
+import CourtRoster from "./components/CustomPages/Users/CourtRoster";
+import TestRoster from "./components/CustomPages/Users/TestRoster";
 
 const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -355,8 +355,8 @@ const NewUser = React.lazy(() =>
 const NewLegalOfficer = React.lazy(() =>
   import("./components/CustomPages/Users/NewLegalOfficer")
 );
-const CreateRoaster = React.lazy(() =>
-  import("./components/CustomPages/Users/CreateRoaster")
+const CreateRoster = React.lazy(() =>
+  import("./components/CustomPages/Users/CreateRoster")
 );
 
 const NewCase = React.lazy(() =>
@@ -373,6 +373,9 @@ const ClosedCaseList = React.lazy(() =>
 );
 const SingleCase = React.lazy(() =>
   import("./components/CustomPages/Cases/SingleCase")
+);
+const SingleCaseReports = React.lazy(() =>
+  import("./components/CustomPages/Cases/SingleCaseReports")
 );
 const SingleClosedCase = React.lazy(() =>
   import("./components/CustomPages/Cases/SingleClosedCase")
@@ -564,28 +567,28 @@ const Root = () => {
                     }
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/create-roaster`}
+                    path={`${process.env.PUBLIC_URL}/create-roster`}
                     element={
                       // user ?
-                      <CreateRoaster />
+                      <CreateRoster />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/court-roaster`}
+                    path={`${process.env.PUBLIC_URL}/court-roster`}
                     element={
                       // user ?
-                      <CourtRoaster/>
+                      <CourtRoster />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/test-roaster`}
+                    path={`${process.env.PUBLIC_URL}/test-roster`}
                     element={
                       // user ?
-                      <TestRoaster />
+                      <TestRoster />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }
@@ -606,6 +609,10 @@ const Root = () => {
                   <Route
                     path={`${process.env.PUBLIC_URL}/case/:id`}
                     element={<SingleCase />}
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/case-reports/:id`}
+                    element={<SingleCaseReports />}
                   />
                   <Route
                     path={`${process.env.PUBLIC_URL}/closed-case/:id`}

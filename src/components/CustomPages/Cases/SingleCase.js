@@ -43,7 +43,7 @@ export default function SingleCase() {
   const [ChamberModal, setChamberModal] = useState(false);
   const [attachment, setCaseAttachment] = useState([]);
   const [assigncouncils, setAssignCouncils] = useState([]);
-  const [assignsolicitors, setAssignSolicitors] = useState([]);
+  const [chamberOrSolicitor, setChamberOrSolicitor] = useState([]);
   const [motionData, setMotionData] = useState();
   const [fileType, setFileType] = useState();
   const [selectedCouncil, setSelectedCouncil] = useState(null);
@@ -55,12 +55,7 @@ export default function SingleCase() {
     doc_type_id: "",
     doc_url: null,
   });
-  const [reportDetails, setReportDetails] = useState({
-    reportDate: "",
-    reportDescription: "",
-    reportFiles: [],
-    reportDocType: "",
-  });
+
   const [reports, setReports] = useState([]); // State for storing multiple reports
   const [documentTypeList, setReportDocumentTypeList] = useState([]);
 
@@ -146,9 +141,9 @@ export default function SingleCase() {
         console.log("case", data.data);
         setData(data.data);
         setAssignCouncils(data.data.AssignCouncils);
-        setAssignSolicitors(data.data.AssignSolicitors);
+        setChamberOrSolicitor(data.data.ChamberOrSolicitor);
         setCaseAttachment(data.data.CaseAttachments);
-        setReports(data.data.Reports); // Assuming `Reports` is the array of reports from the API
+        setReports(data.data.CaseReports);
         setLoading(false);
       })
       .catch((err) => console.log(err));
@@ -170,7 +165,7 @@ export default function SingleCase() {
     await endpoint
       .get(`/solicitor/list`)
       .then(({ data }) => {
-        console.log("chamber", data.data);
+        // console.log("chamber", data.data);
         setChambers(data.data);
         setLoading(false);
       })
@@ -182,7 +177,7 @@ export default function SingleCase() {
     await endpoint
       .get(`/file-type/list`)
       .then(({ data }) => {
-        console.log("fileType", data.data);
+        // console.log("fileType", data.data);
         setFileType(data.data);
         setLoading(false);
       })
@@ -350,6 +345,16 @@ export default function SingleCase() {
   //     });
   // };
 
+  const handleViewReport = (reportId) => {
+    const reportUrl = `/case/reports/show/${reportId}`;
+    window.open(reportUrl, "_blank");
+  };
+
+  const handleEditReport = (reportId) => {
+    const reportUrl = `/report/edit/${reportId}`;
+    navigate(reportUrl);
+  };
+
   return (
     <>
       <div>
@@ -431,7 +436,7 @@ export default function SingleCase() {
                                 ))}
                               </>
                             ) : (
-                              <button>No Legal Officer(s) Assigned</button>
+                              <p>No Legal Officer(s) Assigned</p>
                             )}
                           </div>
                         </div>
@@ -441,9 +446,10 @@ export default function SingleCase() {
                             Chamber/Solicitor:
                           </div>
                           <div className="col-md-6">
-                            {assignsolicitors && assignsolicitors.length > 0 ? (
+                            {/* {chamberOrSolicitor &&
+                            chamberOrSolicitor.length > 0 ? (
                               <>
-                                {assignsolicitors.map((solicitor, index) => (
+                                {chamberOrSolicitor.map((solicitor, index) => (
                                   <span key={index}>
                                     <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
                                       {
@@ -456,6 +462,13 @@ export default function SingleCase() {
                               </>
                             ) : (
                               <button>No Chamber/Solicitor Attached</button>
+                            )} */}
+                            {chamberOrSolicitor ? (
+                              <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                {chamberOrSolicitor.chamber_name}
+                              </h3>
+                            ) : (
+                              <p>No Chamber/Solicitor Attached</p>
                             )}
                           </div>
                         </div>
@@ -488,7 +501,7 @@ export default function SingleCase() {
                 className="btn btn-primary bright-btn btn-primary-bright mx-5"
                 onClick={openMotionModal}
               >
-                Attach Motion
+                Attach Process
               </button>
               <button
                 className="btn btn-warning bright-btn btn-primary-bright mx-5"
@@ -517,24 +530,24 @@ export default function SingleCase() {
           </Card>
         </Col>
 
-        <Row>
-          <Col xl={12} md={12}>
-            <Card className="card border">
-              {loading && <Loader />}
-              {!loading && data && (
-                <Card.Body>
-                  <div>
-                    <div
-                      className="container bg-primary text-white custom-height"
-                      style={{
-                        height: "40px",
-                        borderRadius: "2.5px",
-                        maxWidth: "300px",
-                      }}
-                    >
-                      <h6 className="text-center pt-3">Attachment(s)</h6>
-                    </div>
-                    <div className="table-responsive">
+        <Col xl={12} md={12}>
+          <Card className="card border">
+            {loading && <Loader />}
+            {!loading && data && (
+              <Card.Body>
+                <div>
+                  <div
+                    className="container bg-primary text-white custom-height"
+                    style={{
+                      height: "40px",
+                      borderRadius: "2.5px",
+                      maxWidth: "300px",
+                    }}
+                  >
+                    <h6 className="text-center pt-3">Case Attachment(s)</h6>
+                  </div>
+                  <div className="table-responsive">
+                    {attachment && attachment.length > 0 ? (
                       <table className="table table-bordered table-striped">
                         <thead style={{ background: "#0A7E51" }}>
                           <tr>
@@ -568,7 +581,11 @@ export default function SingleCase() {
                           {attachment.map((attach, index) => (
                             <tr key={attach.id}>
                               <td>{index + 1}</td>
-                              <td>{attach.type ? attach.type : "N/A"}</td>
+                              <td>
+                                {attachment.FileType
+                                  ? attachment.FileType.name
+                                  : "N/A"}
+                              </td>
                               <td>
                                 <a
                                   href={`${process.env.REACT_APP_UPLOAD_URL}${attach.doc_url}`}
@@ -584,13 +601,23 @@ export default function SingleCase() {
                           ))}
                         </tbody>
                       </table>
-                    </div>
+                    ) : (
+                      <p className="mt-3" style={{ textAlign: "center" }}>
+                        <img
+                          src="/img/folder_icn.png"
+                          alt="No attachments icon"
+                          height="50"
+                          width="50"
+                        />
+                        No attachments available.
+                      </p>
+                    )}
                   </div>
-                </Card.Body>
-              )}
-            </Card>
-          </Col>
-        </Row>
+                </div>
+              </Card.Body>
+            )}
+          </Card>
+        </Col>
 
         <Col xl={12} md={12}>
           <Card className="card border">
@@ -599,18 +626,27 @@ export default function SingleCase() {
               <Card.Body>
                 <div>
                   <div
-                    className="container bg-primary text-white custom-height"
-                    style={{
-                      height: "40px",
-                      borderRadius: "2.5px",
-                      maxWidth: "300px",
-                    }}
+                    className="container d-flex flex-column align-items-center justify-content-center text-white custom-height"
+                    style={{ height: "30vh" }}
                   >
-                    <h6 className="text-center pt-3">Case Report</h6>
+                    <img
+                      src="/img/Roster_Icon.png"
+                      alt="No reports icon"
+                      height="150"
+                      width="150"
+                    />
+                    <Link
+                      to={`${process.env.PUBLIC_URL}/case-reports/${id}`}
+                      className="btn btn-primary btn-icon text-center pt-3"
+                    >
+                      <span>
+                        <i className="fe fe-eye"></i>&nbsp;
+                      </span>
+                      View Case Reports
+                    </Link>
                   </div>
                   {/* <div className="mt-4">
-                    <h5>Existing Reports</h5>
-                    {reports.length > 0 ? (
+                    {reports && reports.length > 0 ? (
                       <div className="table-responsive">
                         <table className="table table-bordered table-striped">
                           <thead>
@@ -647,7 +683,15 @@ export default function SingleCase() {
                         </table>
                       </div>
                     ) : (
-                      <p>No reports available.</p>
+                      <p style={{ textAlign: "center" }}>
+                        <img
+                          src="/img/folder_icn.png"
+                          alt="No reports icon"
+                          height="50"
+                          width="50"
+                        />
+                        No reports available.
+                      </p>
                     )}
                   </div> */}
                 </div>
@@ -767,12 +811,12 @@ export default function SingleCase() {
             <div>
               <Card>
                 <Card.Header>
-                  <Card.Title as="h3">Attach Motion </Card.Title>
+                  <Card.Title as="h3">Attach Process </Card.Title>
                 </Card.Header>
                 <Card.Body>
                   <Col lg={12} md={12}>
                     <p>
-                      Please complete the details to assign motion to{" "}
+                      Please complete the details to assign process to{" "}
                       {motionData && motionData.suite_no}
                     </p>
                   </Col>
@@ -817,7 +861,7 @@ export default function SingleCase() {
                   </Row>
                   <Row className="my-5">
                     <Col md={12}>
-                      <label htmlFor="document type">Motion Description</label>
+                      <label htmlFor="document type">Process Description</label>
                       <textarea
                         className="form-control"
                         onChange={(e) =>
