@@ -23,26 +23,26 @@ export default function SingleCaseReport() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  const totalItems = reports.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  // const totalItems = reports.length;
+  // const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentReports = reports.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Function for Pagination
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  // const indexOfLastItem = currentPage * itemsPerPage;
+  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // const currentReports = reports.slice(indexOfFirstItem, indexOfLastItem);
 
   // Function for Pagination
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  // const handleNextPage = () => {
+  //   if (currentPage < totalPages) {
+  //     setCurrentPage(currentPage + 1);
+  //   }
+  // };
+
+  // Function for Pagination
+  // const handlePrevPage = () => {
+  //   if (currentPage > 1) {
+  //     setCurrentPage(currentPage - 1);
+  //   }
+  // };
 
   // Function to Get Case Data
   const getCase = useCallback(async () => {
@@ -255,6 +255,7 @@ export default function SingleCaseReport() {
   // Function to Filter Reports
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
+    setCurrentPage(1); // Reset to first page when search query changes
   };
 
   const filteredReports = reports.filter((report) =>
@@ -262,6 +263,28 @@ export default function SingleCaseReport() {
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
+
+  const totalItems = filteredReports.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentReports = filteredReports.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <>
@@ -325,7 +348,7 @@ export default function SingleCaseReport() {
                         <div className="d-flex justify-content-between mb-4">
                           <Form.Control
                             type="text"
-                            placeholder="Search by Submitted By"
+                            placeholder="Search by: Submitted By"
                             value={searchQuery}
                             onChange={handleSearch}
                             className="no-print"
