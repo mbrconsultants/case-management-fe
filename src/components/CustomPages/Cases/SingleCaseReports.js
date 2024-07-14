@@ -9,6 +9,7 @@ export default function SingleCaseReport() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState();
   const [reports, setReports] = useState([]);
+  // const [reportsTypeTwo, setReportsTypeTwo] = useState([]);
   const [attachmentsModal, setAttachmentsModal] = useState({
     show: false,
     attachments: [],
@@ -21,7 +22,7 @@ export default function SingleCaseReport() {
   const iframeRef = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(5);
 
   // const totalItems = reports.length;
   // const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -57,9 +58,30 @@ export default function SingleCaseReport() {
       setLoading(false);
     }
   }, [id, endpoint, setLoading, setData, setReports]);
+  // console.log("Console Start");
+  // console.log("Case Reports", reports);
+  // console.log("Console End");
+
+  // Function 2 to Get Case Data
+  // const getCaseTypeTwo = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const { data } = await endpoint.get(`/case/show/${id}`);
+  //     setData(data.data);
+  //     setReportsTypeTwo(data.data.CaseReports);
+  //     setLoading(false);
+  //   } catch (err) {
+  //     console.log(err);
+  //     setLoading(false);
+  //   }
+  // };
+  // console.log("Console Start");
+  // console.log("Case Reports Type 2", reportsTypeTwo);
+  // console.log("Console End");
 
   useEffect(() => {
     getCase();
+    // getCaseTypeTwo();
   }, [getCase]);
 
   // Function to View Attachment
@@ -185,7 +207,53 @@ export default function SingleCaseReport() {
 
   const handlePrintAllReports = () => {
     const printHeader = document.querySelector(".print-header").outerHTML;
-    const printContent = document.getElementById("all-reports").innerHTML;
+    const printContent = reports
+      .map(
+        (report, index) => `
+        <div id="report-${report.id}" class="${
+          index !== 0 ? "page-break" : ""
+        }">
+          <div class="card border border-success">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <p>
+                  <strong>Submitted By:</strong> 
+                  ${report.User.surname} ${report.User.first_name} ${
+          report.User.middle_name
+        }
+                </p>
+              </div>
+              <hr class="my-4" />
+              <div class="rpt-head row mt-7">
+                <div class="fw-bold col-md-6 mb-1">
+                  Sitting Date:
+                </div>
+                <div class="col-md-6">
+                  ${formatDate(report.sitting_date)}
+                </div>
+              </div>
+              <div class="rpt-head row">
+                <div class="fw-bold col-md-6">
+                  Created At:
+                </div>
+                <div class="col-md-6">
+                  ${formatDate(report.createdAt)}
+                </div>
+              </div>
+              <br />
+              <p class="">
+                <strong>Description:</strong>
+              </p>
+              <div class="description-body">
+                ${report.description}
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+      )
+      .join("");
+
     const iframe = iframeRef.current;
     const doc = iframe.contentDocument || iframe.contentWindow.document;
 
@@ -201,29 +269,29 @@ export default function SingleCaseReport() {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                flex-direction: column;line-height: 1;
+                flex-direction: column;
+                line-height: 1;
                 margin-bottom: 40px;
               }
-                .print-header * {
-                  margin: 0;
-                  padding: 0;
+              .print-header * {
+                margin: 0;
+                padding: 0;
               }
               .print-header h4, .print-header h5 {
                 text-align: center;
                 color: #006400;
                 font-weight: bold;
               }
-             .rpt-head {
-               display: flex;
-               flex-wrap: wrap;
-               margin-right: -15px;
-               margin-left: -15px;
+              .rpt-head {
+                display: flex;
+                flex-wrap: wrap;
+                margin-right: -15px;
+                margin-left: -15px;
               }
-
               .col-md-6 {
                 position: relative;
                 width: 50%;
-                adding-right: 15px;
+                padding-right: 15px;
                 padding-left: 15px;
                 box-sizing: border-box;
               }
