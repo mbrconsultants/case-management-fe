@@ -56,12 +56,22 @@ export default function ReopenCase() {
   const [hearingdate, setHearingdate] = useState({ hearing_date: "" });
 
   //##
+  const [documentTypeList, setReportDocumentTypeList] = useState([]);
+  const [appellantList, setAppellantList] = useState([]);
+  const [respondentList, setRespondentList] = useState([]);
+  const [reportUpdate, setReportUpdate] = useState({
+    doc_urls: [],
+    doc_type_id: "",
+  });
+  const [lines, setLines] = useState([{ doc_url: "" }]);
 
   const [details, setDetails] = useState({
     case_type_id: "",
     suite_no: "",
     parties: "",
+    appellant_id: "",
     appellants: "",
+    respondent_id: "",
     respondent: "",
     court_id: "",
     comment: "",
@@ -189,6 +199,52 @@ export default function ReopenCase() {
       });
   };
 
+  //get appellant titles
+  const getAppellantTitles = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/case/appellants/list")
+      .then((res) => {
+        setAppellantList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
+  //get respondent titles
+  const getRespondentsTitles = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/case/respondents/list")
+      .then((res) => {
+        setRespondentList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
+  //get document type list
+  const getDocumentTypeList = async () => {
+    setLoading(true);
+    await endpoint
+      .get("/file-type/list")
+      .then((res) => {
+        console.log("document type", res.data.data);
+        setReportDocumentTypeList(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        // console.log(err)
+      });
+  };
+
   //get case Type
   const getCaseType = async () => {
     setLoading(true);
@@ -208,6 +264,9 @@ export default function ReopenCase() {
     getCourtList();
     getStatestList();
     getCaseType();
+    getAppellantTitles();
+    getRespondentsTitles();
+    getDocumentTypeList();
     //#
     getUser();
     getLegalOfficer();
@@ -239,7 +298,9 @@ export default function ReopenCase() {
     data.append("suite_no", details.suite_no);
     data.append("parties", details.parties);
     data.append("appellants", details.appellants);
+    data.append("appellant_id", details.appellant_id);
     data.append("respondent", details.respondent);
+    data.append("respondent_id", details.respondent_id);
     data.append("court_id", details.court_id);
     data.append("comment", details.comment);
     data.append("case_description", details.case_description);
@@ -287,6 +348,41 @@ export default function ReopenCase() {
   const hideRemarks = () => {
     setRemarksModal(false);
     console.log("here");
+  };
+
+  //Function to handle file(doc) change for report update
+  const handleDocChange = (index, doc) => {
+    const updatedLines = [...lines];
+    updatedLines[index].doc_url = doc;
+    setLines(updatedLines);
+
+    // Block to Update, reportFiles state for attachment update section
+    const updatedDocs = [...reportUpdate.doc_urls];
+    updatedDocs[index] = doc;
+    setReportUpdate({ ...reportUpdate, doc_urls: updatedDocs });
+  };
+
+  //Function to handle document type change for update section
+  const handleDocTypeUpdate = (index, docType) => {
+    setReportUpdate((prevState) => {
+      const newdoc_type_id = [...prevState.doc_type_id];
+      newdoc_type_id[index] = docType;
+      return { ...prevState, doc_type_id: newdoc_type_id };
+    });
+  };
+
+  //Function to add a new line for report attcahment update
+  const handleAddLine = () => {
+    setLines([...lines, { doc_url: "" }]);
+  };
+
+  //Function to remove line for report attachment update
+  const handleRemoveLine = (index) => {
+    const updatedLines = lines.filter((_, i) => i !== index);
+    setLines(updatedLines);
+
+    const updatedDocs = reportUpdate.doc_urls.filter((_, i) => i !== index);
+    setReportUpdate({ ...reportUpdate, doc_urls: updatedDocs });
   };
 
   return (
@@ -474,7 +570,30 @@ export default function ReopenCase() {
                     />
                     {/* <CFormFeedback valid>Looks good!</CFormFeedback> */}
                   </CCol>
-
+                  <CCol md={4}>
+                    <CFormLabel htmlFor="validationCustom02">
+                      Appellant Title
+                    </CFormLabel>
+                    <select
+                      className="form-select"
+                      defaultValue={details.appellant_id}
+                      onChange={(e) =>
+                        setDetails({
+                          ...details,
+                          appellant_id: e.target.value,
+                        })
+                      }
+                      name=""
+                      id=""
+                    >
+                      <option value="">--select--</option>
+                      {appellantList.map((appellant) => (
+                        <option value={appellant.id} key={appellant.id}>
+                          {appellant.appellant}
+                        </option>
+                      ))}
+                    </select>
+                  </CCol>
                   <CCol md={4}>
                     <CFormLabel htmlFor="validationCustom02">
                       Appellant
@@ -490,6 +609,32 @@ export default function ReopenCase() {
                       type="text"
                       name="appellant"
                     />
+                  </CCol>
+                  <CCol md={4}>
+                    <CFormLabel htmlFor="validationCustomUsername">
+                      Respondent Title
+                    </CFormLabel>
+                    <CInputGroup className="has-validation">
+                      <select
+                        className="form-select"
+                        defaultValue={details.respondent_id}
+                        onChange={(e) =>
+                          setDetails({
+                            ...details,
+                            respondent_id: e.target.value,
+                          })
+                        }
+                        name=""
+                        id=""
+                      >
+                        <option value="">--select--</option>
+                        {respondentList.map((respondent) => (
+                          <option value={respondent.id} key={respondent.id}>
+                            {respondent.respondent}
+                          </option>
+                        ))}
+                      </select>
+                    </CInputGroup>
                   </CCol>
                   <CCol md={4}>
                     <CFormLabel htmlFor="validationCustomUsername">
@@ -510,6 +655,22 @@ export default function ReopenCase() {
                         name="respondent"
                       />
                     </CInputGroup>
+                  </CCol>
+                  <CCol md={4}>
+                    <CFormLabel htmlFor="validationCustom02">
+                      Hearing Date
+                    </CFormLabel>
+                    <CFormInput
+                      defaultValue={details.hearing_date}
+                      onChange={(e) =>
+                        setDetails({
+                          ...details,
+                          hearing_date: e.target.value,
+                        })
+                      }
+                      type="date"
+                      name="hearing_date"
+                    />
                   </CCol>
                   <CCol md={12}>
                     <CFormLabel htmlFor="validationCustomUsername">
@@ -551,42 +712,70 @@ export default function ReopenCase() {
                       {/* <CInputGroupText id="inputGroupPrepend">@</CInputGroupText> */}
                     </CFormTextarea>
                   </CCol>
-                  <CCol md={4}>
-                    <CFormLabel htmlFor="validationCustom02">
-                      Hearing Date
-                    </CFormLabel>
-                    <CFormInput
-                      defaultValue={details.hearing_date}
-                      onChange={(e) =>
-                        setDetails({
-                          ...details,
-                          hearing_date: e.target.value,
-                        })
-                      }
-                      type="date"
-                      name="hearing_date"
-                    />
-                  </CCol>
-                  <CCol md={4}></CCol>
-                  <CCol md={4}>
-                    <CFormLabel htmlFor="validationCustomUsername">
-                      Attachment
-                    </CFormLabel>
-                    <CInputGroup className="has-validation">
-                      <input
-                        defaultValue={details.doc_url}
-                        onChange={(e) =>
-                          setDetails({
-                            ...details,
-                            doc_url: e.target.files[0],
-                          })
-                        }
-                        type="file"
-                        aria-describedby="inputGroupPrepend"
-                        name="document"
-                      />
-                    </CInputGroup>
-                  </CCol>
+                  {lines.map((row, index) => (
+                    <div key={index}>
+                      <div className="row">
+                        <CCol md={6}>
+                          <CFormLabel htmlFor="edit_validationCustomUsername">
+                            Attachment Type
+                          </CFormLabel>
+                          <select
+                            className="form-select"
+                            value={reportUpdate.doc_type_id[index] || ""}
+                            onChange={(e) =>
+                              handleDocTypeUpdate(index, e.target.value)
+                            }
+                          >
+                            <option value="">--select--</option>
+                            {documentTypeList.map((fileType, idx) => (
+                              <option key={idx} value={fileType.id}>
+                                {fileType.name}
+                              </option>
+                            ))}
+                          </select>
+                        </CCol>
+                        <CCol md={6}>
+                          <CFormLabel htmlFor="edit_validationCustomUsername">
+                            Attachment
+                          </CFormLabel>
+                          <CInputGroup className="has-validation">
+                            <CFormInput
+                              type="file"
+                              id="inputGroupFile01"
+                              aria-describedby="inputGroupFileAddon01"
+                              aria-label="Upload"
+                              onChange={(e) =>
+                                handleDocChange(index, e.target.files[0])
+                              }
+                            />
+                          </CInputGroup>
+                        </CCol>
+                      </div>
+                      <div className="row mt-2">
+                        <CCol md={12} className="d-flex justify-content-start">
+                          {index !== 0 && (
+                            <CButton
+                              className="me-2"
+                              size="sm"
+                              color="red"
+                              onClick={() => handleRemoveLine(index)}
+                            >
+                              Remove
+                            </CButton>
+                          )}
+                          {index === lines.length - 1 && (
+                            <CButton
+                              className="btn btn-secondary"
+                              size="sm"
+                              onClick={handleAddLine}
+                            >
+                              Add
+                            </CButton>
+                          )}
+                        </CCol>
+                      </div>
+                    </div>
+                  ))}
 
                   <CCol xs={12} className="text-center">
                     <CButton color="primary" type="submit">
