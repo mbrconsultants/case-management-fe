@@ -94,7 +94,7 @@ export default function ReopenCase() {
     await endpoint
       .get(`/case/show/${id}`)
       .then(({ data }) => {
-        console.log("case", data.data);
+        // console.log("case", data.data);
         setData(data.data);
 
         setCaseAttachment(data.data.CaseAttachments);
@@ -108,7 +108,7 @@ export default function ReopenCase() {
     await endpoint
       .get(`/legal-officer/list`)
       .then(({ data }) => {
-        console.log("legal officer", data.data);
+        // console.log("legal officer", data.data);
         setLegalOfficers(data.data);
         setLoading(false);
       })
@@ -119,7 +119,7 @@ export default function ReopenCase() {
     await endpoint
       .get(`/solicitor/list`)
       .then(({ data }) => {
-        console.log("chamber", data.data);
+        // console.log("chamber", data.data);
         setChambers(data.data);
         setLoading(false);
       })
@@ -131,7 +131,7 @@ export default function ReopenCase() {
     await endpoint
       .get(`/file-type/list`)
       .then(({ data }) => {
-        console.log("fileType", data.data);
+        // console.log("fileType", data.data);
         setFileType(data.data);
         setLoading(false);
       })
@@ -152,7 +152,7 @@ export default function ReopenCase() {
     await endpoint
       .get("/court/list")
       .then((res) => {
-        console.log("courtlist", res.data.data);
+        // console.log("courtlist", res.data.data);
         setCourtList(res.data.data);
         setLoading(false);
       })
@@ -171,10 +171,10 @@ export default function ReopenCase() {
       .get(`/case/show/${id}`)
       .then((res) => {
         setDetails(res.data.data);
-        setremarksList(data.data.Remarks);
-        console.log("Console Start");
-        console.log(res.data.data);
-        console.log("Console End");
+        setremarksList(res.data.data.Remarks);
+        // console.log("Console Start");
+        // console.log(res.data.data);
+        // console.log("Console End");
 
         setLoading(false);
       })
@@ -183,6 +183,9 @@ export default function ReopenCase() {
         // console.log(err)
       });
   };
+  // console.log("Console Start");
+  // console.log("remark", remarksList);
+  // console.log("Console End");
 
   //get states list
   const getStatestList = async () => {
@@ -235,7 +238,7 @@ export default function ReopenCase() {
     await endpoint
       .get("/file-type/list")
       .then((res) => {
-        console.log("document type", res.data.data);
+        // console.log("document type", res.data.data);
         setReportDocumentTypeList(res.data.data);
         setLoading(false);
       })
@@ -251,7 +254,7 @@ export default function ReopenCase() {
     await endpoint
       .get("/case-type/list")
       .then((res) => {
-        console.log("casetype", res.data.data);
+        // console.log("casetype", res.data.data);
         setCaseTypeList(res.data.data);
         setLoading(false);
       })
@@ -305,7 +308,16 @@ export default function ReopenCase() {
     data.append("comment", details.comment);
     data.append("case_description", details.case_description);
     data.append("hearing_date", details.hearing_date);
-    data.append("doc_url", details.doc_url);
+    data.append("doc_type_id", reportUpdate.doc_type_id);
+    for (let i = 0; i < reportUpdate.doc_urls.length; i++) {
+      data.append("doc_urls", reportUpdate.doc_urls[i]);
+    }
+
+    // console.log("reopen case payload:", data);
+    // for (let pair of data.entries()) {
+    //   console.log("Payload Key Value Pair", pair[0] + ": " + pair[1]);
+    // }
+    // return;
     if (id) {
       await endpoint
         .post(`/case/reopen`, data)
@@ -343,11 +355,11 @@ export default function ReopenCase() {
   //show remark modal
   const showRemarks = () => {
     setRemarksModal(true);
-    console.log("here");
+    // console.log("here");
   };
   const hideRemarks = () => {
     setRemarksModal(false);
-    console.log("here");
+    // console.log("here");
   };
 
   //Function to handle file(doc) change for report update

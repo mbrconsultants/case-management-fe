@@ -138,7 +138,7 @@ export default function SingleCase() {
     await endpoint
       .get(`/case/show/${id}`)
       .then(({ data }) => {
-        console.log("case", data.data);
+        // console.log("case", data.data);
         setData(data.data);
         setAssignCouncils(data.data.AssignCouncils);
         setChamberOrSolicitor(data.data.ChamberOrSolicitor);

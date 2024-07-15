@@ -192,6 +192,7 @@ export default function CaseReport() {
 
       const response = await endpoint.post(`/case/submit-report`, formData);
       SuccessAlert(response.data.message);
+      getUserReports();
 
       // Reset form fields
       reset();
