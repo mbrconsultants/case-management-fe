@@ -207,7 +207,10 @@ export default function CreateChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="email">Alternative Email</CFormLabel>
+                  <CFormLabel htmlFor="email">
+                    Alternative Email
+                    <span style={{color: 'red', fontSize: '20px'}}></span>
+                  </CFormLabel>
                   <CFormInput
                     id="email2"
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -236,7 +239,10 @@ export default function CreateChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="phone">Alternative Phone Number</CFormLabel>
+                  <CFormLabel htmlFor="phone">
+                    Alternative Phone Number
+                    <span style={{color: 'red', fontSize: '20px'}}></span>
+                  </CFormLabel>
                   <CFormInput
                     id="phone2"
                     style={{ border: "1px solid #000", padding: "10px" }}

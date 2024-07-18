@@ -309,12 +309,15 @@ export default function EditChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="email">Alternative Email</CFormLabel>
+                  <CFormLabel htmlFor="email">
+                    Alternative Email
+                    <span style={{ color: "red", fontSize: "20px" }}></span>
+                    </CFormLabel>
                   <CFormInput
                     id="email2"
                     style={{
                       border: "1px solid #000",
-                      marginTop: "15px",
+                      // marginTop: "15px",
                       padding: "10px",
                     }}
                     value={editDetails.email_2}
@@ -344,12 +347,13 @@ export default function EditChamber() {
                 <CCol md={6}>
                   <CFormLabel htmlFor="phone">
                     Alternative Phone Number
+                    <span style={{ color: "red", fontSize: "20px" }}></span>
                   </CFormLabel>
                   <CFormInput
                     id="phone2"
                     style={{
                       border: "1px solid #000",
-                      marginTop: "15px",
+                      // marginTop: "15px",
                       padding: "10px",
                     }}
                     value={editDetails.phone_2}
