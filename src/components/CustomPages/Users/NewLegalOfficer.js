@@ -24,42 +24,30 @@ export default function CreateStaff() {
     email: "",
     email_2: "",
     signature: null,
-    // initialSignature: null,
   });
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const params = useParams();
   const id = params?.id;
 
-  // // Get single staff
-  // const getSingleStaff = async () => {
-  //   setLoading(true);
-  //   await endpoint
-  //     .get(`/legal-officer/show/${id}`)
-  //     .then((res) => {
-  //       setDetails(res.data.data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       setLoading(false);
-  //     });
-  // };
-
-
-    // Get single staff
-    const getSingleStaff = async () => {
-      setLoading(true);
-      await endpoint
-        .get(`/legal-officer/show/${id}`)
-        .then((res) => {
-          setDetails(res.data.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setLoading(false);
+  // Get single staff
+  const getSingleStaff = async () => {
+    setLoading(true);
+    await endpoint
+      .get(`/legal-officer/show/${id}`)
+      .then((res) => {
+        const data = res.data.data;
+        setDetails({
+          ...data,
+          signature: data.signature || null
         });
-    };
-
+        setUrl(data.signature); // Save the current signature URL
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+      });
+  };
 
   // Get title list
   const getTitleList = async () => {
@@ -84,7 +72,7 @@ export default function CreateStaff() {
 
   const handleCreateUser = async () => {
     setLoading(true);
-  
+
     const data = new FormData();
     data.append("title_id", details.title_id);
     data.append("first_name", details.first_name);
@@ -95,8 +83,13 @@ export default function CreateStaff() {
     data.append("email_2", details.email_2);
     data.append("phone", details.phone);
     data.append("phone_2", details.phone_2);
-    data.append("signature", details.signature);
-  
+
+    if (details.signature && details.signature instanceof File) {
+      data.append("signature", details.signature);
+    } else {
+      data.append("signature_url", details.signature);
+    }
+
     if (id) {
       await endpoint
         .put(`/legal-officer/edit/${id}`, data)
@@ -115,7 +108,6 @@ export default function CreateStaff() {
         });
     }
   };
-  
 
   return (
     <div>
@@ -123,14 +115,10 @@ export default function CreateStaff() {
         <div>
           <h1 className="page-title">New Legal officer</h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Registry
             </Breadcrumb.Item>
-            <Breadcrumb.Item
-              className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+            <Breadcrumb.Item className="breadcrumb-item active breadcrumds" aria-current="page">
               New Legal officer
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -159,35 +147,35 @@ export default function CreateStaff() {
 
             <Card.Body>
               <CForm onSubmit={handleSubmit(handleCreateUser)} className="row g-3 needs-validation">
-              <CCol md={4}>
-                <CFormLabel htmlFor="validationCustomUsername">Title</CFormLabel>
-                <select
-                  value={details.title_id}
-                  className="form-control custom-select"
-                  style={{ border: "1px solid #000", padding: "10px" }} 
-                  onChange={(e) =>
-                    setDetails({
-                      ...details,
-                      title_id: e.target.value,
-                    })
-                  }>
-                  <option value=""> --Select title-- </option>
-                  {titleList.map((title) => (
-                    <option key={title.id} value={title.id}>
-                      {title.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.r?.type === "required" && (
-                  <span className="text-danger"> Title required </span>
-                )}
-              </CCol>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustomUsername">Title</CFormLabel>
+                  <select
+                    value={details.title_id}
+                    className="form-control custom-select"
+                    style={{ border: "1px solid #000", padding: "10px" }}
+                    onChange={(e) =>
+                      setDetails({
+                        ...details,
+                        title_id: e.target.value,
+                      })
+                    }>
+                    <option value=""> --Select title-- </option>
+                    {titleList.map((title) => (
+                      <option key={title.id} value={title.id}>
+                        {title.name}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.r?.type === "required" && (
+                    <span className="text-danger"> Title required </span>
+                  )}
+                </CCol>
 
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom02">Surname</CFormLabel>
                   <CFormInput
                     defaultValue={details.surname}
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -202,7 +190,7 @@ export default function CreateStaff() {
                   <CFormLabel htmlFor="validationCustom01">Firstname</CFormLabel>
                   <CFormInput
                     defaultValue={details.first_name}
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -218,7 +206,7 @@ export default function CreateStaff() {
                   <CFormLabel htmlFor="validationCustom02">OtherName</CFormLabel>
                   <CFormInput
                     defaultValue={details.middle_name}
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -233,7 +221,7 @@ export default function CreateStaff() {
                   <CFormLabel htmlFor="validationCustom01">Designation</CFormLabel>
                   <CFormInput
                     defaultValue={details.designation}
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -296,10 +284,7 @@ export default function CreateStaff() {
                     name="phone"
                   />
                   {errors.phoneNo?.type === "matchPattern" && (
-                    <span className="text-danger">
-                      {" "}
-                      <em>Phone Number is Incorrect</em>{" "}
-                    </span>
+                    <span className="text-danger">Enter valid phone number</span>
                   )}
                 </CCol>
                 <CCol md={4}>
@@ -316,72 +301,41 @@ export default function CreateStaff() {
                     type="text"
                     name="phone_2"
                   />
-                  {errors.phoneNo?.type === "matchPattern" && (
-                    <span className="text-danger">
-                      {" "}
-                      <em>Phone Number is Incorrect</em>{" "}
-                    </span>
-                  )}
                 </CCol>
-                <CCol md={6}>
-                  <div className="form-group">
-                    <label>Signature</label>
-                    <div className="input-group" style={{ border: "1px solid #000", padding: "1px", borderRadius: "5px" }}>
-                      <input
-                        type="file"
-                        name="signature"
-                        className="form-control input-default"
-                        onChange={(e) => {
-                          // console.log(e.target.files[0]);
-                          setDetails({ ...details, signature: e.target.files[0] });
-                        }}
-                        
-                      />
-                    </div>
-                    <br />
-                    {isLoading ? (
-                      <Loader />
-                    ) : (
-                      // <>
-                      //   {details.signature && (
-                      //     <img
-                      //       className="img-fluid"
-                      //       src={details.signature instanceof Blob ? URL.createObjectURL(details.signature) : details.signature}
-                      //       alt="signature..."
-                      //       style={{ height: `80px`, width: `200px` }}
-                      //     />
-                      //   )}
-                      //   {details.initialSignature && (
-                      //     <img
-                      //       className="img-fluid"
-                      //       crossOrigin="anonymous"
-                      //       src={details.initialSignature}
-                      //       alt="signature..."
-                      //       style={{ height: `80px`, width: `200px` }}
-                      //     />
-                      //   )}
-                      // </>
-                      <>
-                     {details.signature && (
-                        <img
-                          className="img-fluid"
-                          src={details.signature instanceof Blob ? URL.createObjectURL(details.signature) : details.signature}
-                          alt="signature..."
-                          style={{ height: '80px', width: '200px' }}
-                        />
-                      )}
-                      {details.signature !== null && (
-                         <img
-                         src={`${process.env.REACT_APP_UPLOAD_URL}${details.signature}`}
-                         alt="Signature"
-                         crossOrigin="anonymous"
-                         style={{ maxWidth: '200px', height: 'auto' }}
-                       />
-                      )}
-
-                    </>
-                    )}
-                  </div>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">Signature</CFormLabel>
+                  <Form.Control
+                    type="file"
+                    className="form-control"
+                    style={{ border: "1px solid #000", padding: "10px" }}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      setDetails({
+                        ...details,
+                        signature: file,
+                      });
+                    }}
+                    name="signature"
+                    accept=".jpg, .jpeg, .png"
+                  />
+                </CCol>
+                <CCol md={4}>
+                  {url && !details.signature && (
+                    <img
+                      src={`${process.env.REACT_APP_UPLOAD_URL}${url}`}
+                      alt="Signature"
+                      crossOrigin="anonymous"
+                      style={{ maxWidth: '200px', height: 'auto' }}
+                    />
+                  )}
+                  {details.signature && (
+                    <img
+                      src={details.signature instanceof Blob ? URL.createObjectURL(details.signature) : `${process.env.REACT_APP_UPLOAD_URL}${details.signature}`}
+                      alt="Signature"
+                      crossOrigin="anonymous"
+                      style={{ maxWidth: '200px', height: 'auto' }}
+                    />
+                  )}
                 </CCol>
                 <CCol xs={12} className="text-center">
                   <CButton color="primary" type="submit">
