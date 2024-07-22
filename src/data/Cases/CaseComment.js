@@ -1,68 +1,97 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import endpoint from "../../context/endpoint";
-
-
+import Loader from "../Loader/loader";
+import { Card, Row, Col } from "react-bootstrap";
+import DataTable from "react-data-table-component";
 
 const CaseComment = () => {
-  const [data, setData] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  const params = useParams();
+  const id = params.id;
 
- // Show delete modal
- const handleShowDeleteModal = (row) => {
-    setData(row);
-    setShowDeleteModal(true);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+
+  const handlePageChange = (page) => {
+    setPage(page);
   };
 
+  const handlePerRowsChange = async (newPerPage, page) => {
+    setPerPage(newPerPage);
+  };
 
   useEffect(() => {
     getCaseComment();
   }, []);
 
-
   const getCaseComment = async () => {
     setLoading(true);
     try {
-      const res = await endpoint.get("/case/comments");
-      setData(res.data.data);
+      const res = await endpoint.get(`/case/show/${id}`);
+      setComments(res.data.data.Remarks);
+      // console.log("Start ************************************************");
+      // console.log("Case", res.data.data);
+      // console.log("End ##################################################");
+
+      // console.log("Start ************************************************");
+      // console.log("Case Comments", res.data.data.Remarks);
+      // console.log("End ##################################################");
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-
-  const columns = [
-    { name: "#", cell: (row, index) => index + 1, width: "65px" },
+  const commentColumns = [
     {
-      name: "Name",
-      selector: (row) => row.suite_no,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "120px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.name.toUpperCase()}</div>
-      ),
+      name: "S/N",
+      cell: (row, index) => index + 1 + (page - 1) * perPage,
+      width: "7%",
     },
     {
-      name: "Action",
-      selector: (row) => row.id,
-      style: { textAlign: "right" },
-      cell: (row) => (
-        <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
-          <button
-            className="btn btn-dark btn-sm bright-btn btn-dark-bright"
-            onClick={() => handleShowDeleteModal(row)}>
-            <span className="fe fe-trash"> </span>
-          </button>
-        </div>
-      ),
+      name: "Comment",
+      selector: (row) => row.comment,
+      sortable: true,
+      width: "93%",
+      cell: (row) => <div>{row.comment}</div>,
     },
   ];
 
-
+  return (
+    <>
+      <div>
+        <Card className="card border">
+          {loading && <Loader />}
+          {!loading && comments && (
+            <Card.Body>
+              <Row className="row">
+                <Col md={12} className="col-md-12">
+                  <DataTable
+                    columns={commentColumns}
+                    data={comments}
+                    defaultSortField="id"
+                    defaultSortAsc={false}
+                    striped={true}
+                    center={true}
+                    pagination
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handlePerRowsChange}
+                    paginationRowsPerPageOptions={[10, 15, 20, 25, 30, 50, 100]}
+                    paginationPerPage={perPage}
+                    highlightOnHover
+                  />
+                </Col>
+              </Row>
+            </Card.Body>
+          )}
+        </Card>
+      </div>
+    </>
+  );
 };
 
 export default CaseComment;

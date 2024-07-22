@@ -4,17 +4,17 @@ import ReactApexChart from "react-apexcharts";
 import { Breadcrumb, Col, Row, Card } from "react-bootstrap";
 
 //import * as casex from "../../../data/Users/CaseList";
-import * as hearingdate from "../../../data/Users/RoasterList";
+import * as hearingdate from "../../../data/Users/RosterList";
 
 import { Link, useNavigate } from "react-router-dom";
 // import { useAuthDispatch, logout, useAuthState } from '../../context'
 
-export default function CourtRoaster() {
+export default function CourtRoster() {
   return (
     <div>
       <div className="page-header ">
         <div>
-          <h1 className="page-title">COURT ROASTER TABLE</h1>
+          <h1 className="page-title">COURT ROSTER</h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item className="breadcrumb-item" href="#">
               Home
@@ -23,7 +23,7 @@ export default function CourtRoaster() {
               className="breadcrumb-item active breadcrumds"
               aria-current="page"
             >
-              Enter Hearing Date
+              Create/View Court Roster
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
@@ -32,13 +32,13 @@ export default function CourtRoaster() {
       <Row>
         <Col sm={12} className="col-12">
           <Card>
-            <Card.Header>
-              <h3 className="card-title mb-0">Roaster</h3>
-            </Card.Header>
+            {/* <Card.Header>
+              <h3 className="card-title mb-0">Roster</h3>
+            </Card.Header> */}
             <Card.Body>
               <div className="">
                 <div className="">
-                  <hearingdate.RoasterList />
+                  <hearingdate.RosterList />
                 </div>
               </div>
             </Card.Body>
