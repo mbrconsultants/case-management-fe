@@ -429,7 +429,7 @@ export const CaseTypeList = () => {
                               <Button
                                 onClick={onClose}
                                 disabled={isLoading}
-                                variant="danger"
+                                variant="dark"
                                 className="me-1"
                               >
                                 Cancel
@@ -539,7 +539,7 @@ export const CaseTypeList = () => {
                               <Button
                                 onClick={onClose}
                                 disabled={isLoading}
-                                variant="danger"
+                                variant="dark"
                                 className="me-1"
                               >
                                 Cancel
@@ -555,9 +555,11 @@ export const CaseTypeList = () => {
                               <Button
                                 onClick={handleEdit}
                                 disabled={isLoading}
-                                variant="success"
+                                // variant="success"
                                 className={
-                                  isLoading ? "me-1  btn-loading" : "me-1"
+                                  isLoading
+                                    ? "me-1  btn btn-success pull-right"
+                                    : "me-1"
                                 }
                               >
                                 {" "}
@@ -596,22 +598,19 @@ export const CaseTypeList = () => {
 
                           <Row>
                             <Col xs={5} md={5} align="right">
-                              <button
+                              <Button
                                 type="button"
-                                className="btn btn-sm btn-secondary"
+                                variant="dark"
                                 onClick={onClose}
                               >
                                 Cancel
-                              </button>
+                              </Button>
                             </Col>
                             <Col xs={1} md={1}></Col>
                             <Col xs={5} md={5} align="left">
-                              <button
-                                onClick={handleDelete}
-                                className="btn btn-sm btn-danger"
-                              >
+                              <Button onClick={handleDelete} variant="danger">
                                 Yes, Delete{" "}
-                              </button>
+                              </Button>
                             </Col>
                           </Row>
                         </div>

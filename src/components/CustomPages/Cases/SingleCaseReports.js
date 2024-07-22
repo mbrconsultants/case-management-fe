@@ -232,6 +232,7 @@ export default function SingleCaseReport() {
                   ${formatDate(report.sitting_date)}
                 </div>
               </div>
+              <hr />
               <div class="rpt-head row">
                 <div class="fw-bold col-md-6">
                   Created At:
@@ -240,6 +241,7 @@ export default function SingleCaseReport() {
                   ${formatDate(report.createdAt)}
                 </div>
               </div>
+              <hr />
               <br />
               <p class="">
                 <strong>Description:</strong>
@@ -442,8 +444,16 @@ export default function SingleCaseReport() {
                               >
                                 <Card className="card border border-success">
                                   <Card.Body>
-                                    <div className="d-flex justify-content-between align-items-center mb-3">
-                                      <p>
+                                    <div
+                                      className="d-flex justify-content-between align-items-center mb-3"
+                                      style={{ marginTop: "-30px" }}
+                                    >
+                                      <p
+                                        style={{
+                                          marginTop: "20px",
+                                          marginBottom: "-5px",
+                                        }}
+                                      >
                                         <strong>Submitted By:</strong>{" "}
                                         {report.User.surname}{" "}
                                         {report.User.first_name}{" "}
@@ -469,7 +479,7 @@ export default function SingleCaseReport() {
                                         </Button>
                                       </div>
                                     </div>
-                                    <hr className="my-4" />
+                                    <hr className="my-2" />
                                     <div className="rpt-head row mt-7">
                                       <div className="fw-bold col-md-6 mb-1">
                                         Sitting Date:
@@ -478,6 +488,7 @@ export default function SingleCaseReport() {
                                         {formatDate(report.sitting_date)}
                                       </div>
                                     </div>
+                                    <hr />
                                     {/* <p className="mt-7">
                                       <strong>Sitting Date:</strong>{" "}
                                       {formatDate(report.sitting_date)}
@@ -490,6 +501,7 @@ export default function SingleCaseReport() {
                                         {formatDate(report.createdAt)}
                                       </div>
                                     </div>
+                                    <hr />
                                     {/* <p>
                                       <strong>Created At:</strong>{" "}
                                       {formatDate(report.createdAt)}

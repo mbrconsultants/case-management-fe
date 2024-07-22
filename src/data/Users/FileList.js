@@ -152,6 +152,7 @@ export const FileList = () => {
     reset();
     setDocumentModal(false);
     setDeleteOpen(false);
+    setOpen(false);
   };
 
   const columns = [
@@ -426,7 +427,7 @@ export const FileList = () => {
                               <Button
                                 onClick={onClose}
                                 disabled={isLoading}
-                                variant="danger"
+                                variant="dark"
                                 className="me-1"
                               >
                                 Cancel
@@ -536,7 +537,7 @@ export const FileList = () => {
                               <Button
                                 onClick={onClose}
                                 disabled={isLoading}
-                                variant="danger"
+                                variant="dark"
                                 className="me-1"
                               >
                                 Cancel
@@ -593,22 +594,23 @@ export const FileList = () => {
 
                           <Row>
                             <Col xs={5} md={5} align="right">
-                              <button
+                              <Button
                                 type="button"
-                                className="btn btn-sm btn-secondary"
+                                variant="dark"
                                 onClick={onClose}
                               >
                                 Cancel
-                              </button>
+                              </Button>
                             </Col>
                             <Col xs={1} md={1}></Col>
                             <Col xs={5} md={5} align="left">
-                              <button
+                              <Button
                                 onClick={handleDelete}
-                                className="btn btn-sm btn-danger"
+                                // className="btn btn-sm btn-danger"
+                                variant="danger"
                               >
                                 Yes, Delete{" "}
-                              </button>
+                              </Button>
                             </Col>
                           </Row>
                         </div>

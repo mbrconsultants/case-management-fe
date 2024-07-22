@@ -619,7 +619,7 @@ const Root = () => {
                     element={<SingleClosedCase />}
                   />
                   <Route
-                    path={`${process.env.PUBLIC_URL}/comments`}
+                    path={`${process.env.PUBLIC_URL}/comments/:id`}
                     element={<CaseComment />}
                   />
                   <Route

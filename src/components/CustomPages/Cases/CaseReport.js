@@ -3,7 +3,15 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import endpoint from "../../../context/endpoint";
 import Select from "react-select";
 import Loader from "../../../data/Loader/loader";
-import { Breadcrumb, Row, Card, Col, Button, Modal } from "react-bootstrap";
+import {
+  Breadcrumb,
+  Row,
+  Card,
+  Col,
+  Button,
+  Modal,
+  Form,
+} from "react-bootstrap";
 import {
   CForm,
   CCol,
@@ -38,6 +46,7 @@ export default function CaseReport() {
     doc_type_id: "",
   });
   const [lines, setLines] = useState([{ doc_url: "" }]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   //Function to handle file(doc) change for report update
   const handleDocChange = (index, doc) => {
@@ -98,12 +107,25 @@ export default function CaseReport() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  const totalItems = reports.length;
+  // Function to Filter Reports
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+    setCurrentPage(1); // Reset to first page when search query changes
+  };
+
+  const filteredReports = reports.filter((report) =>
+    `${report.Case.suite_no}`.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalItems = filteredReports.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentReports = reports.slice(indexOfFirstItem, indexOfLastItem);
+  const currentReports = filteredReports.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -337,9 +359,9 @@ export default function CaseReport() {
       padding-left: 15px;
       box-sizing: border-box;
     }
-    .mb-1 {
+    /*.mb-1 {
       margin-bottom: 0.25rem !important;
-    }
+    }*/
     .fw-bold {
       font-weight: 700 !important;
     }
@@ -369,7 +391,56 @@ export default function CaseReport() {
 
   const handlePrintAllReports = () => {
     const printHeader = document.querySelector(".print-header").outerHTML;
-    const printContent = document.getElementById("all-reports").innerHTML;
+    const printContent = reports
+      .map(
+        (report, index) => `
+        <div id="report-${report.id}" class="${
+          index !== 0 ? "page-break" : ""
+        }">
+          <div class="card border border-success">
+            <div class="card-body">
+              <hr class="my-4" />
+              <div class="rpt-head row mt-7">
+                <div class="fw-bold col-md-6 mb-1">
+                  Suite Number:
+                </div>
+                <div class="col-md-6">
+                 ${report.Case.suite_no}
+                </div>
+              </div>
+              <hr />
+              <div class="rpt-head row">
+                <div class="fw-bold col-md-6 mb-1">
+                  Sitting Date:
+                </div>
+                <div class="col-md-6">
+                  ${formatDate(report.sitting_date)}
+                </div>
+              </div>
+              <hr />
+              <div class="rpt-head row">
+                <div class="fw-bold col-md-6">
+                  Created At:
+                </div>
+                <div class="col-md-6">
+                  ${formatDate(report.createdAt)}
+                </div>
+              </div>
+              <hr />
+              <br />
+              <p class="">
+                <strong>Description:</strong>
+              </p>
+              <div class="description-body">
+                ${report.description}
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+      )
+      .join("");
+
     const iframe = iframeRef.current;
     const doc = iframe.contentDocument || iframe.contentWindow.document;
 
@@ -385,31 +456,43 @@ export default function CaseReport() {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                flex-direction: column;line-height: 1;
+                flex-direction: column;
+                line-height: 1;
                 margin-bottom: 40px;
               }
-                .print-header * {
-                  margin: 0;
-                  padding: 0;
+              .print-header * {
+                margin: 0;
+                padding: 0;
               }
               .print-header h4, .print-header h5 {
                 text-align: center;
                 color: #006400;
                 font-weight: bold;
               }
-             .rpt-head {
-               display: flex;
-               flex-wrap: wrap;
-               margin-right: -15px;
-               margin-left: -15px;
+              .rpt-head {
+                display: flex;
+                flex-wrap: wrap;
+                margin-right: -15px;
+                margin-left: -15px;
               }
-
+              .row {
+                display: flex;
+                flex-wrap: wrap;
+                margin-right: -15px;
+                margin-left: -15px;
+              }
               .col-md-6 {
                 position: relative;
                 width: 50%;
-                adding-right: 15px;
+                padding-right: 15px;
                 padding-left: 15px;
                 box-sizing: border-box;
+              }
+              /*.mb-1 {
+                margin-bottom: 0.25rem !important;
+              }*/
+              .fw-bold {
+                font-weight: 700 !important;
               }
               .description-body {
                 margin-bottom: 1em;
@@ -624,14 +707,14 @@ export default function CaseReport() {
           <Card className="card border">
             <Card.Body>
               <div>
-                <div
+                {/* <div
                   className="container bg-primary text-white custom-height"
                   style={{ height: "50px", borderRadius: "5px" }}
                 >
                   <h4 className="text-center text-uppercase pt-3">
                     Create Case Report
                   </h4>
-                </div>
+                </div> */}
                 <CForm
                   onSubmit={handleSubmit(handleAddReport)}
                   className="row g-3 needs-validation"
@@ -809,7 +892,15 @@ export default function CaseReport() {
                     <>
                       {reports && reports.length > 0 ? (
                         <>
-                          <div className="d-flex justify-content-end mb-4">
+                          <div className="d-flex justify-content-between mb-4">
+                            <Form.Control
+                              type="text"
+                              placeholder="Search by: Suite Number"
+                              value={searchQuery}
+                              onChange={handleSearch}
+                              className="no-print"
+                              style={{ width: "300px" }}
+                            />
                             <Button
                               variant="primary"
                               onClick={handlePrintAllReports}
@@ -830,7 +921,10 @@ export default function CaseReport() {
                                 >
                                   <Card className="card border border-success">
                                     <Card.Body>
-                                      <div className="d-flex justify-content-end align-items-center mb-3">
+                                      <div
+                                        className="d-flex justify-content-end align-items-center mb-2"
+                                        style={{ marginTop: "-30px" }}
+                                      >
                                         {/* <p>
                                           <strong>Submitted By:</strong>{" "}
                                           {report.User.surname}{" "}
@@ -869,7 +963,7 @@ export default function CaseReport() {
                                           </Button>
                                         </div>
                                       </div>
-                                      <hr className="my-4" />
+                                      <hr className="my-2" />
                                       <div className="rpt-head row mt-7">
                                         <div className="fw-bold col-md-6 mb-1">
                                           Suite Number:
@@ -878,6 +972,7 @@ export default function CaseReport() {
                                           {report.Case.suite_no}
                                         </div>
                                       </div>
+                                      <hr />
                                       {/* <p>
                                         <strong>Suite Number:</strong>{" "}
                                         {formatDate(report.Case.suite_no)}
@@ -890,6 +985,7 @@ export default function CaseReport() {
                                           {formatDate(report.sitting_date)}
                                         </div>
                                       </div>
+                                      <hr />
                                       {/* <p>
                                         <strong>Sitting Date:</strong>{" "}
                                         {formatDate(report.sitting_date)}
@@ -902,6 +998,7 @@ export default function CaseReport() {
                                           {formatDate(report.createdAt)}
                                         </div>
                                       </div>
+                                      <hr />
                                       {/* <p>
                                         <strong>Created At:</strong>{" "}
                                         {formatDate(report.createdAt)}
@@ -1086,16 +1183,16 @@ export default function CaseReport() {
                               className="me-2"
                               size="sm"
                               color="red"
-                              onClick={() => handleEditRemoveRow(index)}
+                              onClick={() => handleRemoveLine(index)}
                             >
                               Remove
                             </CButton>
                           )}
-                          {index === editRows.length - 1 && (
+                          {index === lines.length - 1 && (
                             <CButton
                               className="btn btn-secondary"
                               size="sm"
-                              onClick={handleEditAddRow}
+                              onClick={handleAddLine}
                             >
                               Add
                             </CButton>

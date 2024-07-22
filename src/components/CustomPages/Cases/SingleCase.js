@@ -138,7 +138,7 @@ export default function SingleCase() {
     await endpoint
       .get(`/case/show/${id}`)
       .then(({ data }) => {
-        // console.log("case", data.data);
+        console.log("case", data.data);
         setData(data.data);
         setAssignCouncils(data.data.AssignCouncils);
         setChamberOrSolicitor(data.data.ChamberOrSolicitor);
@@ -345,16 +345,6 @@ export default function SingleCase() {
   //     });
   // };
 
-  const handleViewReport = (reportId) => {
-    const reportUrl = `/case/reports/show/${reportId}`;
-    window.open(reportUrl, "_blank");
-  };
-
-  const handleEditReport = (reportId) => {
-    const reportUrl = `/report/edit/${reportId}`;
-    navigate(reportUrl);
-  };
-
   return (
     <>
       <div>
@@ -480,15 +470,28 @@ export default function SingleCase() {
                               href={`#`}
                               className="btn bright-btn btn-secondary-bright m-1"
                             >
-                              <i className="fa fa-file" aria-hidden="true"></i>
+                              {/* <i className="fa fa-file" aria-hidden="true"></i> */}
                               {data.status == 1 ? "Pending" : " Resolved"}
                             </a>
                           </div>
                         </div>
-                        <p style={{ color: "green" }}>
+                        <div className="row border">
+                          <div className="fw-bold col-md-6">Case Comments:</div>
+                          <div className="col-md-6">
+                            <a
+                              href={`${process.env.PUBLIC_URL}/comments/${id}`}
+                              className="btn bright-btn btn-secondary-bright m-1"
+                              target="_blank"
+                            >
+                              <i className="fa fa-file" aria-hidden="true"></i>{" "}
+                              View Comments
+                            </a>
+                          </div>
+                        </div>
+                        {/* <p style={{ color: "green" }}>
                           {" "}
                           <a href="/comments">View Comments </a>
-                        </p>
+                        </p> */}
                       </div>
                     )}
                   </div>
@@ -504,7 +507,7 @@ export default function SingleCase() {
                 Attach Process
               </button>
               <button
-                className="btn btn-warning bright-btn btn-primary-bright mx-5"
+                className="btn bright-btn btn-secondary-bright mx-5"
                 onClick={openAdjournCaseModal}
               >
                 Adjourn Case
@@ -638,6 +641,7 @@ export default function SingleCase() {
                     <Link
                       to={`${process.env.PUBLIC_URL}/case-reports/${id}`}
                       className="btn btn-primary btn-icon text-center pt-3"
+                      target="_blank"
                     >
                       <span>
                         <i className="fe fe-eye"></i>&nbsp;
@@ -878,11 +882,7 @@ export default function SingleCase() {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="warning"
-              className="me-1"
-              onClick={closeMotionModal}
-            >
+            <Button variant="dark" className="me-1" onClick={closeMotionModal}>
               Close
             </Button>
             <Button
@@ -943,11 +943,7 @@ export default function SingleCase() {
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button
-                variant="warning"
-                className="me-1"
-                onClick={closeCaseModal}
-              >
+              <Button variant="dark" className="me-1" onClick={closeCaseModal}>
                 Cancel
               </Button>
 
@@ -1017,7 +1013,7 @@ export default function SingleCase() {
           </Modal.Body>
           <Modal.Footer>
             <Button
-              variant="warning"
+              variant="dark"
               className="me-1"
               onClick={closeAdjournCaseModal}
             >

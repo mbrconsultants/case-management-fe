@@ -271,10 +271,11 @@ export default function PartiesData() {
                             {data.appellant ? data.appellant.toUpperCase() : ""}
                           </td>
                           <td>
-                            <Link
+                            <Button
                               to="#"
-                              className="btn btn-secondary"
-                              variant="secondary"
+                              className="btn bright-btn btn-secondary-bright"
+                              // style={{ backgroundColor: "blue" }}
+                              variant="blue"
                               onClick={(e) => {
                                 handleAppellantModal();
                                 setSingleAppellant(data);
@@ -288,7 +289,7 @@ export default function PartiesData() {
                                 style={{ fontWeight: 900 }}
                               ></span>
                               Edit
-                            </Link>
+                            </Button>
                             &nbsp;&nbsp;
                             <Link
                               to="#"
@@ -362,10 +363,10 @@ export default function PartiesData() {
                               : ""}
                           </td>
                           <td>
-                            <Link
+                            <Button
                               to="#"
-                              className="btn btn-secondary"
-                              variant="secondary"
+                              className="btn bright-btn btn-secondary-bright"
+                              variant="blue"
                               onClick={(e) => {
                                 handleRespondentShow();
                                 setSingleRespondent(data);
@@ -377,7 +378,7 @@ export default function PartiesData() {
                                 style={{ fontWeight: 900 }}
                               ></span>
                               Edit
-                            </Link>
+                            </Button>
                             &nbsp;&nbsp;
                             <Link
                               to="#"
@@ -445,7 +446,7 @@ export default function PartiesData() {
             </Modal.Body>
             <Modal.Footer>
               <Button
-                variant="warning"
+                variant="dark"
                 className="me-1"
                 onClick={() => setShowAppellantModal(false)}
               >
@@ -500,7 +501,7 @@ export default function PartiesData() {
             </Modal.Body>
             <Modal.Footer>
               <Button
-                variant="warning"
+                variant="dark"
                 className="me-1"
                 onClick={() => setRespondentShow(false)}
               >

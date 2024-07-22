@@ -45,6 +45,15 @@ tbody td {
 }
 
 @media print {
+  #hideBtn {
+    display: none;
+  }
+
+  .rostertable-header {
+    text-align: center !important;
+    margin-bottom: 10px;
+  }
+
   table {
     border-collapse: collapse;
   }

@@ -183,6 +183,15 @@ export const RosterList = () => {
     }
   };
 
+  const handlePrint = () => {
+    const originalTitle = document.title; // Store original document title
+    document.title = "Court Roster_NJC-CM"; // Set specific name for the document
+
+    window.print(); // Trigger the print dialog
+
+    document.title = originalTitle; // Restore original document title after printing
+  };
+
   return (
     <div>
       <div className="box box-default">
@@ -241,15 +250,16 @@ export const RosterList = () => {
         {rosterAssignment.length > 0 ? (
           <Card id="divToPrint">
             <div>
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2 className="rostertable-header text-center flex-grow-1">
-                  {headerText}
-                </h2>
-                <Button onClick={window.print} id="hideBtn">
-                  Print
-                </Button>
-              </div>
               <div id="table-to-print">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h2 className="rostertable-header text-center flex-grow-1">
+                    {headerText}
+                  </h2>
+                  <Button onClick={handlePrint} id="hideBtn">
+                    Print
+                  </Button>
+                </div>
+
                 <table border="1" className="table-responsive">
                   <colgroup>
                     <col style={{ width: "70px" }} />
