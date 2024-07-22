@@ -23,8 +23,7 @@ export default function CreateStaff() {
     phone_2: "",
     email: "",
     email_2: "",
-    signature: "",
-    // initialSignature: null,
+    signature: null,
   });
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
@@ -37,7 +36,12 @@ export default function CreateStaff() {
     await endpoint
       .get(`/legal-officer/show/${id}`)
       .then((res) => {
-        setDetails(res.data.data);
+        const data = res.data.data;
+        setDetails({
+          ...data,
+          signature: data.signature || null
+        });
+        setUrl(data.signature); // Save the current signature URL
         setLoading(false);
       })
       .catch((err) => {
@@ -79,7 +83,12 @@ export default function CreateStaff() {
     data.append("email_2", details.email_2);
     data.append("phone", details.phone);
     data.append("phone_2", details.phone_2);
-    data.append("signature", details.signature);
+
+    if (details.signature && details.signature instanceof File) {
+      data.append("signature", details.signature);
+    } else {
+      data.append("signature_url", details.signature);
+    }
 
     if (id) {
       await endpoint
@@ -106,14 +115,10 @@ export default function CreateStaff() {
         <div>
           <h1 className="page-title">New Legal officer</h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Registry
             </Breadcrumb.Item>
-            <Breadcrumb.Item
-              className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+            <Breadcrumb.Item className="breadcrumb-item active breadcrumds" aria-current="page">
               New Legal officer
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -145,9 +150,9 @@ export default function CreateStaff() {
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustomUsername">Title</CFormLabel>
                   <select
-                    defaultValue={details.title_id}
+                    value={details.title_id}
                     className="form-control custom-select"
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -165,11 +170,12 @@ export default function CreateStaff() {
                     <span className="text-danger"> Title required </span>
                   )}
                 </CCol>
+
                 <CCol md={4}>
                   <CFormLabel htmlFor="validationCustom02">Surname</CFormLabel>
                   <CFormInput
                     defaultValue={details.surname}
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -184,7 +190,7 @@ export default function CreateStaff() {
                   <CFormLabel htmlFor="validationCustom01">Firstname</CFormLabel>
                   <CFormInput
                     defaultValue={details.first_name}
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -200,7 +206,7 @@ export default function CreateStaff() {
                   <CFormLabel htmlFor="validationCustom02">OtherName</CFormLabel>
                   <CFormInput
                     defaultValue={details.middle_name}
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -215,7 +221,7 @@ export default function CreateStaff() {
                   <CFormLabel htmlFor="validationCustom01">Designation</CFormLabel>
                   <CFormInput
                     defaultValue={details.designation}
-                    style={{ border: "1px solid #000", padding: "10px" }} 
+                    style={{ border: "1px solid #000", padding: "10px" }}
                     onChange={(e) =>
                       setDetails({
                         ...details,
@@ -278,10 +284,7 @@ export default function CreateStaff() {
                     name="phone"
                   />
                   {errors.phoneNo?.type === "matchPattern" && (
-                    <span className="text-danger">
-                      {" "}
-                      <em>Phone Number is Incorrect</em>{" "}
-                    </span>
+                    <span className="text-danger">Enter valid phone number</span>
                   )}
                 </CCol>
                 <CCol md={4}>
@@ -298,78 +301,41 @@ export default function CreateStaff() {
                     type="text"
                     name="phone_2"
                   />
-                  {errors.phoneNo?.type === "matchPattern" && (
-                    <span className="text-danger">
-                      {" "}
-                      <em>Phone Number is Incorrect</em>{" "}
-                    </span>
-                  )}
                 </CCol>
-                <CCol md={6}>
-                  <div className="form-group">
-                    <label>Signature</label>
-                    <div className="input-group" style={{ border: "1px solid #000", padding: "1px", borderRadius: "5px" }}>
-                      <input
-                        type="file"
-                        name="signature"
-                        className="form-control input-default"
-                        onChange={(e) => setDetails({ ...details, signature: e.target.files[0] })}
-                      />
-                    </div>
-                    <br />
-                    {isLoading ? (
-                      <Loader />
-                    ) : (
-                      // <>
-                      //   {details.signature && (
-                      //     <img
-                      //       className="img-fluid"
-                      //       src={details.signature instanceof Blob ? URL.createObjectURL(details.signature) : details.signature}
-                      //       alt="signature..."
-                      //       style={{ height: `80px`, width: `200px` }}
-                      //     />
-                      //   )}
-                      //   {details.initialSignature && (
-                      //     <img
-                      //       className="img-fluid"
-                      //       crossOrigin="anonymous"
-                      //       src={details.initialSignature}
-                      //       alt="signature..."
-                      //       style={{ height: `80px`, width: `200px` }}
-                      //     />
-                      //   )}
-                      // </>
-                      <>
-                     {details.signature && (
-                        <img
-                          className="img-fluid"
-                          src={details.signature instanceof Blob ? URL.createObjectURL(details.signature) : details.signature}
-                          alt="signature..."
-                          style={{ height: '80px', width: '200px' }}
-                        />
-                      )}
-                       {/* {details.signature && (
-                        <img
-                          className="img-fluid"
-                          crossOrigin="anonymous"
-                          src={details.signature}
-                          alt="signature..."
-                          style={{ height: '80px', width: '200px' }}
-                        />
-                      )} */}
-                      {/* {details.initialSignature !== null && (
-                        <img
-                          className="img-fluid"
-                          crossOrigin="anonymous"
-                          src={details.initialSignature}
-                          alt="signature..."
-                          style={{ height: '80px', width: '200px' }}
-                        />
-                      )} */}
-
-                    </>
-                    )}
-                  </div>
+                <CCol md={4}>
+                  <CFormLabel htmlFor="validationCustom02">Signature</CFormLabel>
+                  <Form.Control
+                    type="file"
+                    className="form-control"
+                    style={{ border: "1px solid #000", padding: "10px" }}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      setDetails({
+                        ...details,
+                        signature: file,
+                      });
+                    }}
+                    name="signature"
+                    accept=".jpg, .jpeg, .png"
+                  />
+                </CCol>
+                <CCol md={4}>
+                  {url && !details.signature && (
+                    <img
+                      src={`${process.env.REACT_APP_UPLOAD_URL}${url}`}
+                      alt="Signature"
+                      crossOrigin="anonymous"
+                      style={{ maxWidth: '200px', height: 'auto' }}
+                    />
+                  )}
+                  {details.signature && (
+                    <img
+                      src={details.signature instanceof Blob ? URL.createObjectURL(details.signature) : `${process.env.REACT_APP_UPLOAD_URL}${details.signature}`}
+                      alt="Signature"
+                      crossOrigin="anonymous"
+                      style={{ maxWidth: '200px', height: 'auto' }}
+                    />
+                  )}
                 </CCol>
                 <CCol xs={12} className="text-center">
                   <CButton color="primary" type="submit">

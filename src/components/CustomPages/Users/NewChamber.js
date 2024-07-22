@@ -158,7 +158,10 @@ export default function CreateChamber() {
                 className="row g-3 needs-validation"
               >
                 <CCol md={6}>
-                  <CFormLabel htmlFor="chamberName">Chamber's Name</CFormLabel>
+                  <CFormLabel htmlFor="chamberName">
+                    Chamber's Name
+                    <span style={{color: 'red', fontSize: '20px'}}>*</span>
+                  </CFormLabel>
                   <CFormInput
                     id="chamberName"
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -171,7 +174,10 @@ export default function CreateChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="chamberHead">Head of Chamber</CFormLabel>
+                  <CFormLabel htmlFor="chamberHead">
+                    Head of Chamber
+                    <span style={{color: 'red', fontSize: '20px'}}>*</span>
+                    </CFormLabel>
                   <CFormInput
                     id="chamberHead"
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -185,7 +191,10 @@ export default function CreateChamber() {
                 </CCol>
   
                 <CCol md={6}>
-                  <CFormLabel htmlFor="email">Email</CFormLabel>
+                  <CFormLabel htmlFor="email">
+                    Email
+                    <span style={{color: 'red', fontSize: '20px'}}>*</span>
+                  </CFormLabel>
                   <CFormInput
                     id="email"
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -198,7 +207,10 @@ export default function CreateChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="email">Alternative Email</CFormLabel>
+                  <CFormLabel htmlFor="email">
+                    Alternative Email
+                    <span style={{color: 'red', fontSize: '20px'}}></span>
+                  </CFormLabel>
                   <CFormInput
                     id="email2"
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -211,7 +223,10 @@ export default function CreateChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="phone">Phone Number</CFormLabel>
+                  <CFormLabel htmlFor="phone">
+                    Phone Number
+                    <span style={{color: 'red', fontSize: '20px'}}>*</span>
+                  </CFormLabel>
                   <CFormInput
                     id="phone"
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -224,7 +239,10 @@ export default function CreateChamber() {
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel htmlFor="phone">Alternative Phone Number</CFormLabel>
+                  <CFormLabel htmlFor="phone">
+                    Alternative Phone Number
+                    <span style={{color: 'red', fontSize: '20px'}}></span>
+                  </CFormLabel>
                   <CFormInput
                     id="phone2"
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -238,7 +256,10 @@ export default function CreateChamber() {
                 </CCol>
   
                 <CCol md={12}>
-                  <CFormLabel htmlFor="address">Address</CFormLabel>
+                  <CFormLabel htmlFor="address">
+                    Address
+                    <span style={{color: 'red', fontSize: '20px'}}>*</span>
+                  </CFormLabel>
                   <CFormTextarea
                     id="address"
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -249,7 +270,12 @@ export default function CreateChamber() {
                     name="address"
                   />
                 </CCol>
-  
+                <Card.Header>
+                  <Col className="card-title text-center">
+                    <span> Create Counsel </span>
+                    <span className="fe fe-user"></span>
+                  </Col>
+                </Card.Header>
                 <CCol md={12}>
                   {Array.isArray(details.lawyer_name) && details.lawyer_name.map((name, index) => (
                     <React.Fragment key={index}>

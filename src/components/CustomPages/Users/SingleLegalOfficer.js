@@ -69,20 +69,9 @@ export default function SingleLegalOfficer() {
                           <div className="col-md-6">{}</div>
                         </div>
                         <div className="row border">
-                          <div className="fw-bold col-md-6">Surname:</div>
-                          <div className="col-md-6">{data.surname}</div>
+                          <div className="fw-bold col-md-6">Fullname:</div>
+                          <div className="col-md-6"> {data.surname.toUpperCase() + " " + data.first_name.toUpperCase() + " " + data.middle_name.toUpperCase()}</div>
                         </div>
-
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">First Name:</div>
-                          <div className="col-md-6">{data.first_name}</div>
-                        </div>
-
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Middle Name:</div>
-                          <div className="col-md-6">{data.middle_name}</div>
-                        </div>
-
                         <div className="row border">
                           <div className="fw-bold col-md-6">Email:</div>
                           <div className="col-md-6">{data.email}</div>
@@ -114,7 +103,14 @@ export default function SingleLegalOfficer() {
                         <div className="row border">
                           <div className="fw-bold col-md-6">Signature:</div>
                           <div className="col-md-6">
-                            {data.signature && <img src={data.signature} alt="Signature" style={{ maxWidth: '100%', height: 'auto' }} />}
+                            {data.signature && (
+                              <img
+                                src={`${process.env.REACT_APP_UPLOAD_URL}${data.signature}`}
+                                alt="Signature"
+                                crossOrigin="anonymous"
+                                style={{ maxWidth: '200px', height: 'auto' }}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
