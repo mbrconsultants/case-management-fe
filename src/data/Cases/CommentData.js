@@ -1,17 +1,9 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import endpoint from "../../context/endpoint";
-import Loader from "../Loader/loader";
+import React, { useState } from "react";
 import { Card, Row, Col } from "react-bootstrap";
 import DataTable from "react-data-table-component";
+import Loader from "../Loader/loader";
 
-const CaseComment = () => {
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const params = useParams();
-  const id = params.id;
-
+const CommentData = ({ comments, data, loading }) => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
@@ -21,29 +13,6 @@ const CaseComment = () => {
 
   const handlePerRowsChange = async (newPerPage, page) => {
     setPerPage(newPerPage);
-  };
-
-  useEffect(() => {
-    getCaseComment();
-  }, []);
-
-  const getCaseComment = async () => {
-    setLoading(true);
-    try {
-      const res = await endpoint.get(`/case/show/${id}`);
-      setComments(res.data.data.Remarks);
-      // console.log("Start ************************************************");
-      // console.log("Case", res.data.data);
-      // console.log("End ##################################################");
-
-      // console.log("Start ************************************************");
-      // console.log("Case Comments", res.data.data.Remarks);
-      // console.log("End ##################################################");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const commentColumns = [
@@ -64,10 +33,12 @@ const CaseComment = () => {
   return (
     <>
       <div>
-        <Card className="card border">
+        {/* <Card className="card border"> */}
+        <Card className="">
           {loading && <Loader />}
           {!loading && comments && (
             <Card.Body>
+              {/* <h5 className="text-center">{data.suite_no}</h5> */}
               <Row className="row">
                 <Col md={12} className="col-md-12">
                   <DataTable
@@ -94,4 +65,4 @@ const CaseComment = () => {
   );
 };
 
-export default CaseComment;
+export default CommentData;
