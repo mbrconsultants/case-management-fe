@@ -15,7 +15,7 @@ export default function Dashboard() {
   const [totalCases, setTotalCases] = useState([]);
   const [closedCases, setClosedCases] = useState([]);
   const [notificationModal, setNotificationModal] = useState(false);
-  //const [externalSolicitors, setExternalSolicitors] = useState([]);
+  const [externalSolicitors, setExternalSolicitors] = useState([]);
   const [councilLegalOfficers, setCouncilLegalOfficers] = useState([]);
 
   useEffect(() => {
@@ -24,6 +24,7 @@ export default function Dashboard() {
     getTotalClosedCases();
     // setNotificationModal(true);
     getCouncilLegalOfficers();
+    getExternalSolicitors();
   }, []);
 
   const getTotalCases = async () => {
@@ -74,17 +75,17 @@ export default function Dashboard() {
       });
   };
 
-  // const getExternalSolicitors = async () => {
-  // //   await endpoint
-  // //     .get(`/solicitor/count-all`)
-  // //     .then((res) => {
-  // //       // console.log("external solicitors", res.data.data);
-  // //       setExternalSolicitors(res.data.data);
-  // //     })
-  // //     .catch((err) => {
-  // //       // console.log(err)
-  // //     });
-  // // };
+  const getExternalSolicitors = async () => {
+    await endpoint
+      .get(`/solicitor/count-all`)
+      .then((res) => {
+        console.log("external solicitors", res.data.data);
+        setExternalSolicitors(res.data.data);
+      })
+      .catch((err) => {
+        // console.log(err)
+      });
+  };
 
   return (
     <div>
@@ -92,14 +93,13 @@ export default function Dashboard() {
         <div>
           <h1 className="page-title">Dashboard </h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Home
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page">
+              aria-current="page"
+            >
               Dashboard
             </Breadcrumb.Item>
           </Breadcrumb>
@@ -120,11 +120,7 @@ export default function Dashboard() {
         </div>
       </div>
       <Row>
-        <Col
-          lg={12}
-          md={12}
-          sm={12}
-          xl={12}>
+        <Col lg={12} md={12} sm={12} xl={12}>
           <h4
             className="text-center text-primary"
             style={{
@@ -132,17 +128,14 @@ export default function Dashboard() {
               fontFamily: "comic sans serif",
               fontSize: "25px",
               // color: "#05A850",
-            }}>
+            }}
+          >
             CASE MANAGEMENT SYSTEM
           </h4>
         </Col>
       </Row>
       <Row>
-        <Col
-          lg={12}
-          md={12}
-          sm={12}
-          xl={12}>
+        <Col lg={12} md={12} sm={12} xl={12}>
           <h5 className="">
             <strong>
               Welcome <em>{user.user ? user.user.fullname : ""}</em>
@@ -151,11 +144,7 @@ export default function Dashboard() {
         </Col>
       </Row>
       <Row>
-        <Col
-          sm={12}
-          md={6}
-          lg={6}
-          xl={4}>
+        <Col sm={12} md={6} lg={6} xl={4}>
           <Card className="card bg-primary img-card box-primary-shadow">
             <Card.Body className="">
               <div className="d-flex">
@@ -180,11 +169,7 @@ export default function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col
-          sm={12}
-          md={6}
-          lg={6}
-          xl={4}>
+        <Col sm={12} md={6} lg={6} xl={4}>
           <Card className="card bg-warning img-card box-secondary-shadow">
             <Card.Body className="">
               <div className="d-flex">
@@ -210,11 +195,7 @@ export default function Dashboard() {
           </Card>
         </Col>
 
-        <Col
-          sm={12}
-          md={6}
-          lg={6}
-          xl={4}>
+        <Col sm={12} md={6} lg={6} xl={4}>
           <Card className="card bg-secondary img-card box-secondary-shadow">
             <Card.Body className="">
               <div className="d-flex">
@@ -235,11 +216,7 @@ export default function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col
-          sm={12}
-          md={6}
-          lg={6}
-          xl={6}>
+        <Col sm={12} md={6} lg={6} xl={6}>
           <Card className="card  bg-success img-card box-success-shadow">
             <Card.Body className="">
               <div className="d-flex">
@@ -266,19 +243,15 @@ export default function Dashboard() {
             </Card.Body>
           </Card>
         </Col>
-        <Col
-          sm={12}
-          md={6}
-          lg={6}
-          xl={6}>
+        <Col sm={12} md={6} lg={6} xl={6}>
           <Card className="card bg-info img-card box-info-shadow">
             <Card.Body className="">
               <div className="d-flex">
-                <div className="text-white">
+                {/* <div className="text-white">
                   <h2 className="mb-0 number-font">12</h2>
                   <p className="text-white mb-0">External Solicitors</p>
-                </div>
-                {/* <div>
+                </div> */}
+                <div>
                   {externalSolicitors !== null ? (
                     <div className="text-white">
                       <h2 className="mb-0 number-font">{externalSolicitors}</h2>
@@ -287,7 +260,7 @@ export default function Dashboard() {
                   ) : (
                     <p className="text-white">Loading...</p>
                   )}
-                </div> */}
+                </div>
                 <div className="ms-auto">
                   <i className="fa fa-user text-white fs-30 me-2 mt-2"></i>
                 </div>
@@ -297,11 +270,7 @@ export default function Dashboard() {
         </Col>
       </Row>
       <Row>
-        <Col
-          lg={12}
-          md={12}
-          sm={12}
-          xl={12}>
+        <Col lg={12} md={12} sm={12} xl={12}>
           <Row>
             {/* <Col
               lg={6}
@@ -462,16 +431,15 @@ export default function Dashboard() {
       </Row>
       <Modal
         show={notificationModal}
-        onHide={() => setNotificationModal(false)}>
+        onHide={() => setNotificationModal(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Remove Unit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Card>
             <Card.Body>
-              <Col
-                lg={12}
-                md={12}>
+              <Col lg={12} md={12}>
                 Please confirm you are about to delete the case with suite
                 {/* number of {value.suite_no}? */}
               </Col>
@@ -479,13 +447,9 @@ export default function Dashboard() {
           </Card>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="warning"
-            onClick={() => setNotificationModal(false)}>
+          <Button variant="warning" onClick={() => setNotificationModal(false)}>
             Close
           </Button>
-  
-         
         </Modal.Footer>
       </Modal>
     </div>

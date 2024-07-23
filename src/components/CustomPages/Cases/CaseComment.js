@@ -1,7 +1,37 @@
 import { Breadcrumb, Col, Row, Card, Button } from "react-bootstrap";
-import CaseComment from "../../../data/Cases/CaseComment";
+import CommentData from "../../../data/Cases/CommentData";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+// import endpoint from "../../context/endpoint";
+// import Loader from "../Loader/loader";
+import Loader from "../../../data/Loader/loader";
+import endpoint from "../../../../src/context/endpoint";
 
-export default function Caselist() {
+export default function CaseComment() {
+  const [data, setData] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const params = useParams();
+  const id = params.id;
+
+  useEffect(() => {
+    getCaseComment();
+  }, []);
+
+  const getCaseComment = async () => {
+    setLoading(true);
+    try {
+      const res = await endpoint.get(`/case/show/${id}`);
+      setComments(res.data.data.Remarks);
+      setData(res.data.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <div className="page-header ">
@@ -21,24 +51,24 @@ export default function Caselist() {
         </div>
       </div>
 
-      {/* <Search.SearchStaff handleSearch={handleSearch} data={data}/> */}
-
       <Row>
         <Col sm={12} className="col-12">
           <Card>
             <Card.Header>
               <div className="d-flex align-items-center w-100">
                 <div className="card-title text-center mb-0 flex-grow-1">
-                  Case Comments{" "}
+                  Case Comments For {data.suite_no}
                 </div>
               </div>
             </Card.Header>
 
             <Card.Body>
               <div className="">
-                <div className="">
-                  <CaseComment />
-                </div>
+                <CommentData
+                  comments={comments}
+                  data={data}
+                  loading={loading}
+                />
               </div>
             </Card.Body>
           </Card>

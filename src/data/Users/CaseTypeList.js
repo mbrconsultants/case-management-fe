@@ -72,6 +72,7 @@ export const CaseTypeList = () => {
         setCasex({ ...casex, case_type: " ", case_color: " " });
         getAllData();
         SuccessAlert(res.data.message);
+        onClose();
         setLoading(false);
       })
       .catch((err) => {

@@ -51,6 +51,7 @@ export default function SingleCase() {
   const [comment, setComment] = useState(""); // State for the comment
   const [motionDetails, setMotionDetails] = useState({
     case_id: "",
+    suite_no: "",
     motion_description: "",
     doc_type_id: "",
     doc_url: null,
@@ -140,6 +141,7 @@ export default function SingleCase() {
       .then(({ data }) => {
         console.log("case", data.data);
         setData(data.data);
+        setMotionData(data.data);
         setAssignCouncils(data.data.AssignCouncils);
         setChamberOrSolicitor(data.data.ChamberOrSolicitor);
         setCaseAttachment(data.data.CaseAttachments);
@@ -240,13 +242,15 @@ export default function SingleCase() {
     try {
       const data = new FormData();
       data.append("case_id", motionDetails.case_id);
+      data.append("suite_no", motionData.suite_no);
       data.append("motion_description", motionDetails.motion_description);
       data.append("doc_type_id", motionDetails.doc_type_id);
       data.append("doc_url", motionDetails.doc_url);
 
       const response = await endpoint.post(`/motion/create`, data);
-      navigate(`${process.env.PUBLIC_URL}/cases`);
+      // navigate(`${process.env.PUBLIC_URL}/cases`);
       SuccessAlert(response.data.message);
+      closeMotionModal();
     } catch (err) {
       console.log(err);
       setLoading(false);
@@ -471,7 +475,7 @@ export default function SingleCase() {
                               className="btn bright-btn btn-secondary-bright m-1"
                             >
                               {/* <i className="fa fa-file" aria-hidden="true"></i> */}
-                              {data.status == 1 ? "Pending" : " Resolved"}
+                              {data.status == 1 ? "Pending" : " Closed"}
                             </a>
                           </div>
                         </div>
@@ -890,7 +894,7 @@ export default function SingleCase() {
               className="me-1"
               onClick={(e) => handleAddMotion(e)}
             >
-              Assign
+              Attach
             </Button>
           </Modal.Footer>
         </Modal>
