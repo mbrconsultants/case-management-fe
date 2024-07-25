@@ -261,6 +261,7 @@ export default function CreateCase() {
     data.append("court_id", details.court_id);
     data.append("case_description", details.case_description);
     data.append("hearing_date", details.hearing_date);
+    data.append("chamber_solicitor_id", details.chamber_solicitor_id);
     // data.append("chamber_lawyer_ids", JSON.stringify(chamber_lawyer_ids));
     data.append("doc_type_id", details.doc_type_id);
     for (let i = 0; i < details.doc_urls.length; i++) {
