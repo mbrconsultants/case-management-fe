@@ -171,17 +171,17 @@ export const RosterList = () => {
       ErrorAlert("An error occurred. Please try again.");
     }
   };
-
-  const parseLawyerName = (lawyerName) => {
-    try {
-      const parsed = JSON.parse(lawyerName);
-      // console.log("Parsed lawyer names:", parsed);
-      return parsed;
-    } catch (error) {
-      console.error("Error parsing lawyer_name:", error);
-      return [];
-    }
-  };
+  // Function to parse chamber lawyer name from json data
+  // const parseLawyerName = (lawyerName) => {
+  //   try {
+  //     const parsed = JSON.parse(lawyerName);
+  //     // console.log("Parsed lawyer names:", parsed);
+  //     return parsed;
+  //   } catch (error) {
+  //     console.error("Error parsing lawyer_name:", error);
+  //     return [];
+  //   }
+  // };
 
   const handlePrint = () => {
     const originalTitle = document.title; // Store original document title
@@ -262,7 +262,7 @@ export const RosterList = () => {
 
                 <table border="1" className="table-responsive">
                   <colgroup>
-                    <col style={{ width: "70px" }} />
+                    <col style={{ width: "100px" }} />
                     <col style={{ width: "200px" }} />
                     <col style={{ width: "300px" }} />
                     <col style={{ width: "250px" }} />
@@ -272,7 +272,7 @@ export const RosterList = () => {
                   </colgroup>
                   <thead>
                     <tr>
-                      <th>S/N</th>
+                      <th style={{ whiteSpace: "nowrap" }}>S/N</th>
                       <th>DATE</th>
                       <th className="w-15s">CASE</th>
                       <th>COURT</th>
@@ -289,7 +289,9 @@ export const RosterList = () => {
                           <td>{rowIndex + 1}</td>
                           <td>{row.hearing_date ? row.hearing_date : ""}</td>
                           <td>
-                            {row.suite_no}
+                            <span style={{ fontWeight: "bold" }}>
+                              {row.suite_no}
+                            </span>
                             <br /> {row.parties}
                           </td>
                           <td>{row.Court ? row.Court.name : ""}</td>
@@ -323,7 +325,7 @@ export const RosterList = () => {
                                 row.ChamberOrSolicitor.chamber_name}
                             </h4>
 
-                            <br />
+                            {/* <br />
                             {row.ChamberLawyers &&
                             row.ChamberLawyers.length > 0 ? (
                               <ul
@@ -353,7 +355,7 @@ export const RosterList = () => {
                               </ul>
                             ) : (
                               ""
-                            )}
+                            )} */}
                           </td>
                           <td>{row.adjournment_date}</td>
                         </tr>

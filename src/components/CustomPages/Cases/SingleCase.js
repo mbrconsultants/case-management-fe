@@ -387,16 +387,51 @@ export default function SingleCase() {
                           <div className="fw-bold col-md-6">Parties:</div>
                           <div className="col-md-6">{data.parties}</div>
                         </div>
-
                         <div className="row border">
-                          <div className="fw-bold col-md-6">Respondent:</div>
-                          <div className="col-md-6">{data.respondent}</div>
+                          <div className="fw-bold col-md-6">
+                            {data && data.Appellant
+                              ? data.Appellant.appellant + ":"
+                              : "Appellant"}
+                          </div>
+                          <div className="col-md-6">
+                            {data && data.Appellant
+                              ? data.Appellant.appellant_name
+                              : ""}
+                          </div>
+                        </div>
+                        <div className="row border">
+                          <div className="fw-bold col-md-6">
+                            {data && data.Respondent
+                              ? data.Respondent.respondent + ":"
+                              : "Respondent"}
+                          </div>
+                          <div className="col-md-6">
+                            {data && data.Respondent
+                              ? data.Respondent.respondent_name
+                              : ""}
+                          </div>
                         </div>
 
                         <div className="row border">
                           <div className="fw-bold col-md-6">Case Type:</div>
                           <div className="col-md-6">
-                            {data.CaseType ? data.CaseType.case_type : ""}
+                            <span
+                              className="btn bright-btn btn-secondary-bright m-1"
+                              style={{
+                                backgroundColor: `${
+                                  data.CaseType ? data.CaseType.case_color : ""
+                                }`,
+                                color: "white",
+                                paddingTop: "5px",
+                                paddingLeft: "7px",
+                                paddingRight: "7px",
+                                paddingBottom: "5px",
+                                borderRadius: "7px",
+                                boxShadow: "6px 6px 15px rgba(0, 0, 0, 0.7)",
+                              }}
+                            >
+                              {data.CaseType ? data.CaseType.case_type : ""}
+                            </span>
                           </div>
                         </div>
                         <div className="row border">
@@ -824,7 +859,7 @@ export default function SingleCase() {
                 <Card.Body>
                   <Col lg={12} md={12}>
                     <p>
-                      Please complete the details to assign process to{" "}
+                      Please complete the details to attach process to{" "}
                       {motionData && motionData.suite_no}
                     </p>
                   </Col>

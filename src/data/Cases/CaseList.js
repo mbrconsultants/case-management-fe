@@ -243,6 +243,7 @@ const CaseList = () => {
       .catch((err) => {
         setLoading(false);
         setShowDeleteModal(false);
+        ErrorAlert(err.response.data.description);
         console.log(err);
       });
   };

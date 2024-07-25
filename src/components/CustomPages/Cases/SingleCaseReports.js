@@ -52,6 +52,10 @@ export default function SingleCaseReport() {
       const { data } = await endpoint.get(`/case/show/${id}`);
       setData(data.data);
       setReports(data.data.CaseReports);
+      console.log("Start ************************************************");
+      console.log("Report", data.data.CaseReports);
+      console.log("End ##################################################");
+
       setLoading(false);
     } catch (err) {
       console.log(err);
