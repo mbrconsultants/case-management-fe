@@ -103,7 +103,7 @@ export const FileList = () => {
     setLoading(true);
     // console.log("my updating data", newFile)
     await endpoint
-      .put(`/file-type/edit/${newFile.file_id}`, newFile)
+      .put(`/file-type/edit/${newFile.id}`, newFile)
       .then((res) => {
         // console.log(res.data);
         getAllData();
@@ -335,7 +335,7 @@ export const FileList = () => {
                   />
 
                   <Modal show={openAddDocumentModal}>
-                    <Modal.Body className="text-center p-4">
+                    <Modal.Body className="text-right p-4">
                       <DialogTitle>
                         Add Process Document
                         <Button
@@ -416,52 +416,32 @@ export const FileList = () => {
                               </Card.Body>
                             </Card>
                           </Col>
-                          <Row>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={onClose}
-                                disabled={isLoading}
-                                variant="dark"
-                                className="me-1"
-                              >
-                                Cancel
-                              </Button>
-                            </Col>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={handleSubmit}
-                                disabled={isLoading}
-                                // variant="success"
-                                className={
-                                  isLoading ? "me-1  btn-loading" : "me-1"
-                                }
-                              >
-                                {" "}
-                                {isLoading ? "Add File" : "Add File"}
-                              </Button>
-                            </Col>
-                          </Row>
                         </Row>
                       </DialogContent>
-                      <DialogActions></DialogActions>
-                      {/* </Dialog> */}
                     </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        // variant="success"
+                        className={isLoading ? "me-1  btn-loading" : "me-1"}
+                      >
+                        {" "}
+                        {isLoading ? "Add File" : "Add File"}
+                      </Button>
+                      <Button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        variant="dark"
+                        className="me-1"
+                      >
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
                   </Modal>
 
                   <Modal show={open}>
-                    <Modal.Body className="text-center p-4">
+                    <Modal.Body className="text-right p-4">
                       <DialogTitle>
                         Edit
                         <Button
@@ -526,48 +506,28 @@ export const FileList = () => {
                               </Card.Body>
                             </Card>
                           </Col>
-                          <Row>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={onClose}
-                                disabled={isLoading}
-                                variant="dark"
-                                className="me-1"
-                              >
-                                Cancel
-                              </Button>
-                            </Col>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={handleEdit}
-                                disabled={isLoading}
-                                variant="success"
-                                className={
-                                  isLoading ? "me-1  btn-loading" : "me-1"
-                                }
-                              >
-                                {" "}
-                                {isLoading ? "Save" : "Save"}
-                              </Button>
-                            </Col>
-                          </Row>
                         </Row>
                       </DialogContent>
-                      <DialogActions></DialogActions>
-                      {/* </Dialog> */}
                     </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        onClick={handleEdit}
+                        disabled={isLoading}
+                        // variant="success"
+                        className={isLoading ? "me-1  btn-loading" : "me-1"}
+                      >
+                        {" "}
+                        {isLoading ? "Save" : "Save"}
+                      </Button>
+                      <Button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        variant="dark"
+                        className="me-1"
+                      >
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
                   </Modal>
 
                   <Modal show={deleteOpen}>

@@ -14,13 +14,14 @@ export default function Dashboard() {
   // console.log(user)
   const [totalCases, setTotalCases] = useState([]);
   const [closedCases, setClosedCases] = useState([]);
+  const [openCases, setOpenCases] = useState([]);
   const [notificationModal, setNotificationModal] = useState(false);
   const [externalSolicitors, setExternalSolicitors] = useState([]);
   const [councilLegalOfficers, setCouncilLegalOfficers] = useState([]);
 
   useEffect(() => {
     getTotalCases();
-    //getTotalOpenCases();
+    getTotalOpenCases();
     getTotalClosedCases();
     // setNotificationModal(true);
     getCouncilLegalOfficers();
@@ -39,17 +40,17 @@ export default function Dashboard() {
       });
   };
 
-  // const getTotalOpenCases = async () => {
-  //   await endpoint
-  //     .get(`/case/total-open-cases`)
-  //     .then((res) => {
-  //       // console.log("total open cases", res.data);
-  //       setOpenCases(res.data);
-  //     })
-  //     .catch((err) => {
-  //       // console.log(err)
-  //     });
-  // };
+  const getTotalOpenCases = async () => {
+    await endpoint
+      .get(`/case/total-open-cases`)
+      .then((res) => {
+        // console.log("total open cases", res.data);
+        setOpenCases(res.data.data);
+      })
+      .catch((err) => {
+        // console.log(err)
+      });
+  };
 
   const getTotalClosedCases = async () => {
     await endpoint
@@ -79,7 +80,7 @@ export default function Dashboard() {
     await endpoint
       .get(`/solicitor/count-all`)
       .then((res) => {
-        console.log("external solicitors", res.data.data);
+        // console.log("external solicitors", res.data.data);
         setExternalSolicitors(res.data.data);
       })
       .catch((err) => {
@@ -178,9 +179,9 @@ export default function Dashboard() {
                   <p className="text-white mb-0">Closed Cases</p>
                 </div> */}
                 <div>
-                  {closedCases !== null ? (
+                  {openCases !== null ? (
                     <div className="text-white">
-                      <h2 className="mb-0 number-font">{closedCases}</h2>
+                      <h2 className="mb-0 number-font">{openCases}</h2>
                       <p className="text-white mb-0">Active Cases</p>
                     </div>
                   ) : (

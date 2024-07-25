@@ -57,7 +57,7 @@ export default function CaseComment() {
             <Card.Header>
               <div className="d-flex align-items-center w-100">
                 <div className="card-title text-center mb-0 flex-grow-1">
-                  Case Comments For {data.suite_no}
+                  Comments For {data.suite_no}
                 </div>
               </div>
             </Card.Header>

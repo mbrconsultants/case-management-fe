@@ -72,8 +72,8 @@ export const CaseTypeList = () => {
         setCasex({ ...casex, case_type: " ", case_color: " " });
         getAllData();
         SuccessAlert(res.data.message);
-        onClose();
         setLoading(false);
+        onClose();
       })
       .catch((err) => {
         setLoading(false);
@@ -99,13 +99,10 @@ export const CaseTypeList = () => {
   };
 
   const handleEdit = async () => {
-    // console.log("casex id to update", newCasex.casex_id)
     setLoading(true);
-    // console.log("my updating data", newCasex)
     await endpoint
-      .put(`/case-type/edit/${newCasex.casex_id}`, newCasex)
+      .put(`/case-type/edit/${newCasex.id}`, newCasex)
       .then((res) => {
-        // console.log(res.data);
         getAllData();
         setLoading(false);
         setOpen(false);
@@ -114,7 +111,6 @@ export const CaseTypeList = () => {
       .catch((err) => {
         setLoading(false);
         ErrorAlert(err.response.data.message);
-        // console.log(err)
       });
   };
 
@@ -167,23 +163,23 @@ export const CaseTypeList = () => {
       name: "Case Type",
       selector: (row) => [row.case_type],
       sortable: true,
-      width: "30%",
+      width: "45%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.case_type}</h6>,
     },
     {
       name: "Case Colour",
       selector: (row) => [row.case_color],
       sortable: true,
-      width: "45%",
+      width: "20%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.case_color}</h6>,
     },
-    {
-      name: "Status",
-      selector: (row) => [row.status],
-      sortable: true,
-      // width: "25%",
-      cell: (row) => <>{row.status}</>,
-    },
+    // {
+    //   name: "Status",
+    //   selector: (row) => [row.status],
+    //   sortable: true,
+    //   // width: "25%",
+    //   cell: (row) => <>{row.status}</>,
+    // },
     {
       name: "Action",
       cell: (row) => (
@@ -338,7 +334,7 @@ export const CaseTypeList = () => {
                   />
 
                   <Modal show={openAddCaseTypeModal}>
-                    <Modal.Body className="text-center p-4">
+                    <Modal.Body className="text-right p-4">
                       <DialogTitle>
                         Add Case Type
                         <Button
@@ -398,73 +394,37 @@ export const CaseTypeList = () => {
                                         />
                                       </div>
                                     </div>
-
-                                    {/* <div className="form-group">
-                                      <div className="col-sm-offset-2 text-center col-sm-9">
-                                        <button
-                                          className={
-                                            isLoading
-                                              ? "btn btn-success pull-right btn-loading"
-                                              : "btn btn-success pull-right"
-                                          }
-                                          disabled={isLoading}
-                                          onClick={handleSubmit}
-                                        >
-                                          Add File
-                                        </button>
-                                      </div>
-                                    </div> */}
                                   </div>
                                 </form>
                               </Card.Body>
                             </Card>
                           </Col>
-                          <Row>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={onClose}
-                                disabled={isLoading}
-                                variant="dark"
-                                className="me-1"
-                              >
-                                Cancel
-                              </Button>
-                            </Col>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={handleSubmit}
-                                disabled={isLoading}
-                                // variant="success"
-                                className={
-                                  isLoading ? "me-1  btn-loading" : "me-1"
-                                }
-                              >
-                                {" "}
-                                {isLoading ? "Add Case Type" : "Add Case Type"}
-                              </Button>
-                            </Col>
-                          </Row>
                         </Row>
                       </DialogContent>
-                      <DialogActions></DialogActions>
-                      {/* </Dialog> */}
                     </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        // variant="success"
+                        className={isLoading ? "me-1  btn-loading" : "me-1"}
+                      >
+                        {" "}
+                        {isLoading ? "Add Case Type" : "Add Case Type"}
+                      </Button>
+                      <Button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        variant="dark"
+                        className="me-1"
+                      >
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
                   </Modal>
 
                   <Modal show={open}>
-                    <Modal.Body className="text-center p-4">
+                    <Modal.Body className="text-right p-4">
                       <DialogTitle>
                         Edit Module
                         <Button
@@ -529,50 +489,28 @@ export const CaseTypeList = () => {
                               </Card.Body>
                             </Card>
                           </Col>
-                          <Row>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={onClose}
-                                disabled={isLoading}
-                                variant="dark"
-                                className="me-1"
-                              >
-                                Cancel
-                              </Button>
-                            </Col>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={handleEdit}
-                                disabled={isLoading}
-                                // variant="success"
-                                className={
-                                  isLoading
-                                    ? "me-1  btn btn-success pull-right"
-                                    : "me-1"
-                                }
-                              >
-                                {" "}
-                                {isLoading ? "Save" : "Save"}
-                              </Button>
-                            </Col>
-                          </Row>
                         </Row>
                       </DialogContent>
-                      <DialogActions></DialogActions>
-                      {/* </Dialog> */}
                     </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        onClick={handleEdit}
+                        disabled={isLoading}
+                        // variant="success"
+                        className={isLoading ? "me-1  btn-loading" : "me-1"}
+                      >
+                        {" "}
+                        {isLoading ? "Save" : "Save"}
+                      </Button>
+                      <Button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        variant="dark"
+                        className="me-1"
+                      >
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
                   </Modal>
 
                   <Modal show={deleteOpen}>
