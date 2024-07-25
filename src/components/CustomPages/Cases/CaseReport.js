@@ -156,8 +156,9 @@ export default function CaseReport() {
   const getCaseList = async () => {
     setLoading(true);
     try {
-      const res = await endpoint.get(`/user/case-reports/show/${id}`);
-      // console.log("Response Data:", res.data);
+      const res = await endpoint.get(`/user/case-roster/show/${id}`);
+      console.log("Response Data:", res.data);
+      console.log("Response Data:", res);
       setCaseList(res.data.data); // Setting the entire data array
     } catch (err) {
       console.error("Error fetching case list:", err);
