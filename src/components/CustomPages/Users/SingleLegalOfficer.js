@@ -40,6 +40,13 @@ export default function SingleLegalOfficer() {
       });
   };
 
+
+  // Utility function to convert text to capitalize the first letter of each word
+  const toTitleCase = (text) => {
+    return text.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+  };
+
+
   return (
     <>
       <div>
@@ -65,12 +72,8 @@ export default function SingleLegalOfficer() {
                     {data && (
                       <div className="col-md-12">
                         <div className="row border">
-                          <div className="fw-bold col-md-6">Title:</div>
-                          <div className="col-md-6">{}</div>
-                        </div>
-                        <div className="row border">
                           <div className="fw-bold col-md-6">Fullname:</div>
-                          <div className="col-md-6"> {data.surname.toUpperCase() + " " + data.first_name.toUpperCase() + " " + data.middle_name.toUpperCase()}</div>
+                          <div className="col-md-6"> {(data.Title ? toTitleCase(data.Title.name) : "")} {toTitleCase(data.surname) + " " + toTitleCase(data.first_name) + " " + toTitleCase(data.middle_name)}</div>
                         </div>
                         <div className="row border">
                           <div className="fw-bold col-md-6">Email:</div>
@@ -80,18 +83,6 @@ export default function SingleLegalOfficer() {
                           <div className="fw-bold col-md-6">Alternative Email:</div>
                           <div className="col-md-6">{data.email_2}</div>
                         </div>
-                        {/* <div className="row border">
-                          <div className="fw-bold col-md-6">Court:</div>
-                          <div className="col-md-6">{data.Court ? data.Court.name : ""}</div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">State:</div>
-                          <div className="col-md-6">{data.State ? data.State.name : ""}</div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">LGEA:</div>
-                          <div className="col-md-6">{data.Lga ? data.Lga.role_name : ""}</div>
-                        </div> */}
                         <div className="row border">
                           <div className="fw-bold col-md-6">Phone Number:</div>
                           <div className="col-md-6">{data.phone}</div>
@@ -108,7 +99,7 @@ export default function SingleLegalOfficer() {
                                 src={`${process.env.REACT_APP_UPLOAD_URL}${data.signature}`}
                                 alt="Signature"
                                 crossOrigin="anonymous"
-                                style={{ maxWidth: '200px', height: 'auto' }}
+                                style={{ maxWidth: '150px', height: 'auto' }}
                               />
                             )}
                           </div>
