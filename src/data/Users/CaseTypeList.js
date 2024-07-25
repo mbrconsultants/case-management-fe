@@ -21,6 +21,7 @@ export const CaseTypeList = () => {
   const [id, setId] = useState("");
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [openAddCaseTypeModal, setCaseTypeModal] = useState(false);
 
   const [casex, setCasex] = useState({
     case_type: "",
@@ -72,6 +73,7 @@ export const CaseTypeList = () => {
         getAllData();
         SuccessAlert(res.data.message);
         setLoading(false);
+        onClose();
       })
       .catch((err) => {
         setLoading(false);
@@ -92,14 +94,15 @@ export const CaseTypeList = () => {
     // console.log("casex to update", newCasex)
   };
 
+  const handleAddCaseTypeModal = () => {
+    setCaseTypeModal(true);
+  };
+
   const handleEdit = async () => {
-    // console.log("casex id to update", newCasex.casex_id)
     setLoading(true);
-    // console.log("my updating data", newCasex)
     await endpoint
-      .put(`/case-type/edit/${newCasex.casex_id}`, newCasex)
+      .put(`/case-type/edit/${newCasex.id}`, newCasex)
       .then((res) => {
-        // console.log(res.data);
         getAllData();
         setLoading(false);
         setOpen(false);
@@ -108,7 +111,6 @@ export const CaseTypeList = () => {
       .catch((err) => {
         setLoading(false);
         ErrorAlert(err.response.data.message);
-        // console.log(err)
       });
   };
 
@@ -145,6 +147,7 @@ export const CaseTypeList = () => {
   const onClose = () => {
     reset();
     setOpen(false);
+    setCaseTypeModal(false);
     setDeleteOpen(false);
   };
 
@@ -160,23 +163,23 @@ export const CaseTypeList = () => {
       name: "Case Type",
       selector: (row) => [row.case_type],
       sortable: true,
-      width: "30%",
+      width: "45%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.case_type}</h6>,
     },
     {
       name: "Case Colour",
       selector: (row) => [row.case_color],
       sortable: true,
-      width: "45%",
+      width: "20%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.case_color}</h6>,
     },
-    {
-      name: "Status",
-      selector: (row) => [row.status],
-      sortable: true,
-      // width: "25%",
-      cell: (row) => <>{row.status}</>,
-    },
+    // {
+    //   name: "Status",
+    //   selector: (row) => [row.status],
+    //   sortable: true,
+    //   // width: "25%",
+    //   cell: (row) => <>{row.status}</>,
+    // },
     {
       name: "Action",
       cell: (row) => (
@@ -184,11 +187,11 @@ export const CaseTypeList = () => {
           {" "}
           <Col xs={4} style={{ paddingRight: "0px", paddingLeft: "0px" }}>
             <button
-              className="btn btn-sm btn-secondary"
+              className="btn btn-sm btn-blue"
               onClick={(e) => {
                 onEdit(row);
               }}
-              variant="secondary"
+              // variant="secondary"
               title="Action"
               size="sm"
             >
@@ -220,7 +223,18 @@ export const CaseTypeList = () => {
       ) : (
         <div>
           <div id="page-wrapper" className="box box-default">
-            <div className="container-fluid">
+            <Button
+              className={
+                isLoading
+                  ? "btn btn-success pull-right btn-loading"
+                  : "btn btn-success pull-right"
+              }
+              disabled={isLoading}
+              onClick={handleAddCaseTypeModal}
+            >
+              Add Case Type
+            </Button>
+            {/* <div className="container-fluid">
               <div className="col-md-12 text-success"></div>
               <br />
               <hr />
@@ -286,14 +300,14 @@ export const CaseTypeList = () => {
                               Add Case Type
                             </button>
                           </div>
-                        </div>
+                        </div> 
                       </div>
                     </Card.Body>
                   </Card>
                 </Col>
                 <Col xs={3} md={4}></Col>
               </Row>
-            </div>
+            </div>*/}
           </div>
           <Card>
             <Card.Body>
@@ -319,8 +333,98 @@ export const CaseTypeList = () => {
                     highlightOnHover
                   />
 
+                  <Modal show={openAddCaseTypeModal}>
+                    <Modal.Body className="text-right p-4">
+                      <DialogTitle>
+                        Add Case Type
+                        <Button
+                          onClick={onClose}
+                          className="btn-close"
+                          variant=""
+                          disabled={isLoading}
+                        >
+                          x
+                        </Button>
+                      </DialogTitle>
+                      <DialogContent>
+                        <Row className="row">
+                          <Col>
+                            {" "}
+                            <br />
+                            <Card>
+                              <Card.Body>
+                                <form className="form-horizontal">
+                                  <div className="form-horizontal">
+                                    <div className="form-group">
+                                      <label className="col-md-6  cecontrol-label">
+                                        Case Type
+                                      </label>
+                                      <div className="col-md-12">
+                                        <input
+                                          type="text"
+                                          className="form-control"
+                                          value={casex.case_type}
+                                          onChange={(e) => {
+                                            setCasex({
+                                              ...casex,
+                                              case_type: e.target.value,
+                                            });
+                                          }}
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                      <label className="col-md-6  cecontrol-label">
+                                        Case Colour
+                                      </label>
+                                      <div className="col-md-12">
+                                        <input
+                                          type="text"
+                                          className="form-control"
+                                          value={casex.case_color}
+                                          onChange={(e) => {
+                                            setCasex({
+                                              ...casex,
+                                              case_color: e.target.value,
+                                            });
+                                          }}
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </form>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        </Row>
+                      </DialogContent>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        // variant="success"
+                        className={isLoading ? "me-1  btn-loading" : "me-1"}
+                      >
+                        {" "}
+                        {isLoading ? "Add Case Type" : "Add Case Type"}
+                      </Button>
+                      <Button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        variant="dark"
+                        className="me-1"
+                      >
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </Modal>
+
                   <Modal show={open}>
-                    <Modal.Body className="text-center p-4">
+                    <Modal.Body className="text-right p-4">
                       <DialogTitle>
                         Edit Module
                         <Button
@@ -385,48 +489,28 @@ export const CaseTypeList = () => {
                               </Card.Body>
                             </Card>
                           </Col>
-                          <Row>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={onClose}
-                                disabled={isLoading}
-                                variant="danger"
-                                className="me-1"
-                              >
-                                Cancel
-                              </Button>
-                            </Col>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={handleEdit}
-                                disabled={isLoading}
-                                variant="success"
-                                className={
-                                  isLoading ? "me-1  btn-loading" : "me-1"
-                                }
-                              >
-                                {" "}
-                                {isLoading ? "Save" : "Save"}
-                              </Button>
-                            </Col>
-                          </Row>
                         </Row>
                       </DialogContent>
-                      <DialogActions></DialogActions>
-                      {/* </Dialog> */}
                     </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        onClick={handleEdit}
+                        disabled={isLoading}
+                        // variant="success"
+                        className={isLoading ? "me-1  btn-loading" : "me-1"}
+                      >
+                        {" "}
+                        {isLoading ? "Save" : "Save"}
+                      </Button>
+                      <Button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        variant="dark"
+                        className="me-1"
+                      >
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
                   </Modal>
 
                   <Modal show={deleteOpen}>
@@ -453,22 +537,19 @@ export const CaseTypeList = () => {
 
                           <Row>
                             <Col xs={5} md={5} align="right">
-                              <button
+                              <Button
                                 type="button"
-                                className="btn btn-sm btn-secondary"
+                                variant="dark"
                                 onClick={onClose}
                               >
                                 Cancel
-                              </button>
+                              </Button>
                             </Col>
                             <Col xs={1} md={1}></Col>
                             <Col xs={5} md={5} align="left">
-                              <button
-                                onClick={handleDelete}
-                                className="btn btn-sm btn-danger"
-                              >
+                              <Button onClick={handleDelete} variant="danger">
                                 Yes, Delete{" "}
-                              </button>
+                              </Button>
                             </Col>
                           </Row>
                         </div>

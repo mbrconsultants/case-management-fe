@@ -103,7 +103,7 @@ export const FileList = () => {
     setLoading(true);
     // console.log("my updating data", newFile)
     await endpoint
-      .put(`/file-type/edit/${newFile.file_id}`, newFile)
+      .put(`/file-type/edit/${newFile.id}`, newFile)
       .then((res) => {
         // console.log(res.data);
         getAllData();
@@ -152,6 +152,7 @@ export const FileList = () => {
     reset();
     setDocumentModal(false);
     setDeleteOpen(false);
+    setOpen(false);
   };
 
   const columns = [
@@ -190,11 +191,11 @@ export const FileList = () => {
           {" "}
           <Col xs={4} style={{ paddingRight: "0px", paddingLeft: "0px" }}>
             <button
-              className="btn btn-sm btn-secondary"
+              className="btn btn-sm btn-blue"
               onClick={(e) => {
                 onEdit(row);
               }}
-              variant="secondary"
+              // variant="secondary"
               title="Action"
               size="sm"
             >
@@ -226,7 +227,7 @@ export const FileList = () => {
       ) : (
         <div>
           <div id="page-wrapper" className="box box-default">
-            <button
+            <Button
               className={
                 isLoading
                   ? "btn btn-success pull-right btn-loading"
@@ -236,7 +237,7 @@ export const FileList = () => {
               onClick={handleAddProcessDocumentModal}
             >
               Add Process Document
-            </button>
+            </Button>
             {/* <div className="container-fluid">
               <div className="col-md-12 text-success"></div>
               <br />
@@ -334,7 +335,7 @@ export const FileList = () => {
                   />
 
                   <Modal show={openAddDocumentModal}>
-                    <Modal.Body className="text-center p-4">
+                    <Modal.Body className="text-right p-4">
                       <DialogTitle>
                         Add Process Document
                         <Button
@@ -415,52 +416,32 @@ export const FileList = () => {
                               </Card.Body>
                             </Card>
                           </Col>
-                          <Row>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={onClose}
-                                disabled={isLoading}
-                                variant="danger"
-                                className="me-1"
-                              >
-                                Cancel
-                              </Button>
-                            </Col>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={handleSubmit}
-                                disabled={isLoading}
-                                variant="success"
-                                className={
-                                  isLoading ? "me-1  btn-loading" : "me-1"
-                                }
-                              >
-                                {" "}
-                                {isLoading ? "Add File" : "Add File"}
-                              </Button>
-                            </Col>
-                          </Row>
                         </Row>
                       </DialogContent>
-                      <DialogActions></DialogActions>
-                      {/* </Dialog> */}
                     </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        // variant="success"
+                        className={isLoading ? "me-1  btn-loading" : "me-1"}
+                      >
+                        {" "}
+                        {isLoading ? "Add File" : "Add File"}
+                      </Button>
+                      <Button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        variant="dark"
+                        className="me-1"
+                      >
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
                   </Modal>
 
                   <Modal show={open}>
-                    <Modal.Body className="text-center p-4">
+                    <Modal.Body className="text-right p-4">
                       <DialogTitle>
                         Edit
                         <Button
@@ -525,48 +506,28 @@ export const FileList = () => {
                               </Card.Body>
                             </Card>
                           </Col>
-                          <Row>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={onClose}
-                                disabled={isLoading}
-                                variant="danger"
-                                className="me-1"
-                              >
-                                Cancel
-                              </Button>
-                            </Col>
-                            <Col
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                marginLeft: "60px",
-                              }}
-                            >
-                              <Button
-                                onClick={handleEdit}
-                                disabled={isLoading}
-                                variant="success"
-                                className={
-                                  isLoading ? "me-1  btn-loading" : "me-1"
-                                }
-                              >
-                                {" "}
-                                {isLoading ? "Save" : "Save"}
-                              </Button>
-                            </Col>
-                          </Row>
                         </Row>
                       </DialogContent>
-                      <DialogActions></DialogActions>
-                      {/* </Dialog> */}
                     </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        onClick={handleEdit}
+                        disabled={isLoading}
+                        // variant="success"
+                        className={isLoading ? "me-1  btn-loading" : "me-1"}
+                      >
+                        {" "}
+                        {isLoading ? "Save" : "Save"}
+                      </Button>
+                      <Button
+                        onClick={onClose}
+                        disabled={isLoading}
+                        variant="dark"
+                        className="me-1"
+                      >
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
                   </Modal>
 
                   <Modal show={deleteOpen}>
@@ -593,22 +554,23 @@ export const FileList = () => {
 
                           <Row>
                             <Col xs={5} md={5} align="right">
-                              <button
+                              <Button
                                 type="button"
-                                className="btn btn-sm btn-secondary"
+                                variant="dark"
                                 onClick={onClose}
                               >
                                 Cancel
-                              </button>
+                              </Button>
                             </Col>
                             <Col xs={1} md={1}></Col>
                             <Col xs={5} md={5} align="left">
-                              <button
+                              <Button
                                 onClick={handleDelete}
-                                className="btn btn-sm btn-danger"
+                                // className="btn btn-sm btn-danger"
+                                variant="danger"
                               >
                                 Yes, Delete{" "}
-                              </button>
+                              </Button>
                             </Col>
                           </Row>
                         </div>

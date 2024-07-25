@@ -184,18 +184,21 @@ const CaseList = () => {
       sortable: true,
       width: "180px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">
-          {Array.isArray(row.AssignSolicitors) &&
-          row.AssignSolicitors.length > 0
-            ? row.AssignSolicitors.map((solicitor, index) => (
-                <span key={index}>
-                  <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
-                    {solicitor.ChamberOrSolicitor.chamber_name}
-                  </h3>
-                </span>
-              ))
-            : "Not yet assigned"}
+        <div>
+          {row.ChamberOrSolicitor && row.ChamberOrSolicitor.chamber_name}
         </div>
+        // <div className="fs-12 fw-bold">
+        //   {Array.isArray(row.AssignSolicitors) &&
+        //   row.AssignSolicitors.length > 0
+        //     ? row.AssignSolicitors.map((solicitor, index) => (
+        //         <span key={index}>
+        //           <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+        //             {solicitor.ChamberOrSolicitor.chamber_name}
+        //           </h3>
+        //         </span>
+        //       ))
+        //     : "Not yet assigned"}
+        // </div>
       ),
     },
     {
@@ -240,6 +243,7 @@ const CaseList = () => {
       .catch((err) => {
         setLoading(false);
         setShowDeleteModal(false);
+        ErrorAlert(err.response.data.description);
         console.log(err);
       });
   };
