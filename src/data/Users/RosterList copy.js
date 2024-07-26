@@ -51,12 +51,11 @@ export const RosterList = () => {
   const closeRosterModal = () => {
     setRosterModal(false);
   };
-  console.log("hearingdate", hearingdate);
+
   useEffect(() => {
-    // getAllData();
+    getAllData();
     retrieveHeaderText();
-    // getRosterAssignment();
-    handleGetCases();
+    getRosterAssignment();
     getCaseList();
     getLegalOfficer();
   }, []);
@@ -76,21 +75,14 @@ export const RosterList = () => {
     .toUpperCase();
   const year = currentDate.getFullYear();
 
-  const handleGetCases = async () => {
-    // e.preventDefault();
-
-    // if (!hearingdate.hearing_date) {
-    //     setHeaderText(`COURT ROSTER LIST`);
-    // }
+  const handleGetCases = async (e) => {
+    e.preventDefault();
 
     const date = new Date(hearingdate.hearing_date);
     const month = date.toLocaleString("default", { month: "long" });
     const year = date.getFullYear();
-    // console.log(date);
     setHeaderText(
-      hearingdate.hearing_date
-        ? `COURT ROSTER FOR THE MONTH OF ${month.toUpperCase()}, ${year}`
-        : `COURT ROSTER LIST`
+      `COURT ROSTER FOR THE MONTH OF ${month.toUpperCase()}, ${year}`
     );
 
     try {
@@ -98,11 +90,10 @@ export const RosterList = () => {
         `/case/list-by-hearing-date`,
         hearingdate
       );
-      setLoading(true);
-      setRosterAssignment(res.data.data);
+      setData(res.data.data);
+      SuccessAlert(res.data.message);
       setLoading(false);
-      // SuccessAlert(res.data.message);
-      // getRosterAssignment();
+      getRosterAssignment();
     } catch (err) {
       setLoading(false);
       ErrorAlert(err.response.data.message);
@@ -235,6 +226,7 @@ export const RosterList = () => {
                       value={hearingdate.hearing_date}
                       onChange={(e) =>
                         setHearingdate({
+                          ...hearingdate,
                           hearing_date: e.target.value,
                         })
                       }

@@ -41,7 +41,7 @@ export default function SingleCase() {
   const [caseModal, setCaseModal] = useState(false);
   const [adjournCaseModal, setAdjournCaseModal] = useState(false);
   const [ChamberModal, setChamberModal] = useState(false);
-  const [attachment, setCaseAttachment] = useState([]);
+  const [attachments, setCaseAttachment] = useState([]);
   const [assigncouncils, setAssignCouncils] = useState([]);
   const [chamberOrSolicitor, setChamberOrSolicitor] = useState([]);
   const [motionData, setMotionData] = useState();
@@ -393,11 +393,7 @@ export default function SingleCase() {
                               ? data.Appellant.appellant + ":"
                               : "Appellant"}
                           </div>
-                          <div className="col-md-6">
-                            {data && data.Appellant
-                              ? data.Appellant.appellant_name
-                              : ""}
-                          </div>
+                          <div className="col-md-6">{data.appellant_name}</div>
                         </div>
                         <div className="row border">
                           <div className="fw-bold col-md-6">
@@ -405,11 +401,7 @@ export default function SingleCase() {
                               ? data.Respondent.respondent + ":"
                               : "Respondent"}
                           </div>
-                          <div className="col-md-6">
-                            {data && data.Respondent
-                              ? data.Respondent.respondent_name
-                              : ""}
-                          </div>
+                          <div className="col-md-6">{data.respondent_name}</div>
                         </div>
 
                         <div className="row border">
@@ -589,7 +581,7 @@ export default function SingleCase() {
                     <h6 className="text-center pt-3">Case Attachment(s)</h6>
                   </div>
                   <div className="table-responsive">
-                    {attachment && attachment.length > 0 ? (
+                    {attachments && attachments.length > 0 ? (
                       <table className="table table-bordered table-striped">
                         <thead style={{ background: "#0A7E51" }}>
                           <tr>
@@ -620,8 +612,8 @@ export default function SingleCase() {
                           </tr>
                         </thead>
                         <tbody>
-                          {attachment.map((attach, index) => (
-                            <tr key={attach.id}>
+                          {attachments.map((attachment, index) => (
+                            <tr key={attachment.id}>
                               <td>{index + 1}</td>
                               <td>
                                 {attachment.FileType
@@ -630,7 +622,7 @@ export default function SingleCase() {
                               </td>
                               <td>
                                 <a
-                                  href={`${process.env.REACT_APP_UPLOAD_URL}${attach.doc_url}`}
+                                  href={`${process.env.REACT_APP_UPLOAD_URL}${attachment.doc_url}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"

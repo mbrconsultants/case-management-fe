@@ -5,6 +5,7 @@ import {
   Row,
   Card,
   FormGroup,
+  Modal,
   Button,
   Form,
 } from "react-bootstrap";
@@ -46,6 +47,17 @@ export default function CreateCase() {
   const [chamberLawyers, setChamberLawyers] = useState([]);
 
   const [documentTypeList, setDocumentTypeList] = useState([]);
+  const [attachments, setCaseAttachment] = useState([]);
+  const [attachmentsModal, setAttachmentsModal] = useState({
+    show: false,
+    doc_urls: [],
+    doc_type_id: "",
+  });
+
+  const [reportUpdate, setReportUpdate] = useState({
+    doc_urls: [],
+    doc_type_id: "",
+  });
 
   const [details, setDetails] = useState({
     case_type_id: "",
@@ -54,15 +66,15 @@ export default function CreateCase() {
     appellant_name: "",
     appellant_id: "",
     respondent_name: "",
-    judge_id: [],
+    // judge_id: [],
     respondent_id: "",
     chamber_solicitor_id: "",
-    chamber_lawyer_ids: [],
+    // chamber_lawyer_ids: [],
     court_id: "",
     case_description: "",
     hearing_date: "",
-    doc_urls: [],
-    doc_type_id: "",
+    // doc_urls: [],
+    // doc_type_id: "",
   });
   const {
     register,
@@ -97,6 +109,10 @@ export default function CreateCase() {
       .get(`/case/show/${id}`)
       .then((res) => {
         setDetails(res.data.data);
+        // console.log("Start ************************************************");
+        // console.log("details state", details);
+        // console.log("End ##################################################");
+        setCaseAttachment(res.data.data.CaseAttachments);
         setLoading(false);
       })
       .catch((err) => {
@@ -241,9 +257,9 @@ export default function CreateCase() {
 
   const handleCreateUser = async () => {
     setLoading(true);
-    const chamber_lawyer_ids = [
-      details.judge_id && details.judge_id.map((id) => id.value),
-    ];
+    // const chamber_lawyer_ids = [
+    //   details.judge_id && details.judge_id.map((id) => id.value),
+    // ];
     const data = new FormData();
 
     // console.log("==============doc_urls======================");
@@ -263,10 +279,10 @@ export default function CreateCase() {
     data.append("hearing_date", details.hearing_date);
     data.append("chamber_solicitor_id", details.chamber_solicitor_id);
     // data.append("chamber_lawyer_ids", JSON.stringify(chamber_lawyer_ids));
-    data.append("doc_type_id", details.doc_type_id);
-    for (let i = 0; i < details.doc_urls.length; i++) {
-      data.append("doc_urls", details.doc_urls[i]);
-    }
+    // data.append("doc_type_id", details.doc_type_id);
+    // for (let i = 0; i < details.doc_urls.length; i++) {
+    //   data.append("doc_urls", details.doc_urls[i]);
+    // }
 
     console.log("Add Case Payload:", data);
     for (let pair of data.entries()) {
@@ -275,12 +291,9 @@ export default function CreateCase() {
 
     // return;
     try {
-      if (id) {
+      {
         const res = await endpoint.put(`/case/edit/${id}`, data);
         SuccessAlert(res.data.message);
-        navigate(`${process.env.PUBLIC_URL}/cases`);
-      } else {
-        const res = await endpoint.post("/case/create", data);
         navigate(`${process.env.PUBLIC_URL}/cases`);
       }
     } catch (err) {
@@ -308,14 +321,14 @@ export default function CreateCase() {
     setRows(updatedRows);
 
     // Update files state
-    const updatedFiles = [...details.doc_urls];
+    const updatedFiles = [...reportUpdate.doc_urls];
     updatedFiles[index] = file;
-    setDetails({ ...details, doc_urls: updatedFiles });
+    setReportUpdate({ ...reportUpdate, doc_urls: updatedFiles });
   };
 
   //Function to handle document type change
   const handleTypeChange = (index, docType) => {
-    setDetails((prevState) => {
+    setReportUpdate((prevState) => {
       const newdoc_type_id = [...prevState.doc_type_id];
       newdoc_type_id[index] = docType;
       return { ...prevState, doc_type_id: newdoc_type_id };
@@ -332,15 +345,82 @@ export default function CreateCase() {
     const updatedRows = rows.filter((_, i) => i !== index);
     setRows(updatedRows);
 
-    const updatedFiles = details.doc_urls.filter((_, i) => i !== index);
-    setDetails({ ...details, doc_urls: updatedFiles });
+    const updatedFiles = setReportUpdate.doc_urls.filter((_, i) => i !== index);
+    setReportUpdate({ ...setReportUpdate, doc_urls: updatedFiles });
+  };
+
+  // Function to delete attachment
+  const handleDeleteAttachment = async (attachmentId) => {
+    await endpoint
+      .delete(`/case/reports/delete-attachment/${attachmentId}`)
+      .then((res) => {
+        // console.log(res.data)
+        SuccessAlert(res.data.message);
+        getSingleCase();
+        setLoading(false);
+      })
+      .catch((err) => {
+        ErrorAlert(err.response.data.message);
+        // console.log(err)
+      });
+  };
+
+  //Function to update report attachment
+  const handleUpdateAttachment = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("doc_type_id", reportUpdate.doc_type_id);
+      for (let i = 0; i < reportUpdate.doc_urls.length; i++) {
+        formData.append("doc_urls", reportUpdate.doc_urls[i]);
+      }
+      console.log("Update Attachment Payload:", formData);
+      for (let pair of formData.entries()) {
+        console.log("Payload Key Value Pair", pair[0] + ": " + pair[1]);
+      }
+
+      const response = await endpoint.post(
+        `/case/reports/add-more-attachment/${attachmentsModal.id}`,
+        formData
+      );
+      SuccessAlert(response.data.message);
+
+      // // Fetch updated report data
+      // const updatedReport = await endpoint.get(
+      //   `/case/reports/show/${attachmentsModal.report.id}`
+      // );
+
+      // Close modal and reset form fields
+      reset();
+      setAttachmentsModal({
+        show: false,
+        // attachments: updatedReport.data.CaseAttachments,
+        // report: null,
+      });
+      setReportUpdate({
+        doc_urls: [],
+        doc_type_id: "",
+      });
+      setRows([{ doc_url: "" }]);
+      getSingleCase();
+    } catch (err) {
+      console.log("Update Report Error", err);
+      ErrorAlert("An error occurred. Please try again.");
+    }
+  };
+
+  // Function to open the add attachment modal with the case ID
+  const handleAddAttachment = (caseId) => {
+    setAttachmentsModal({
+      show: true,
+      case_id: caseId,
+    });
   };
 
   return (
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">New Case</h1>
+          <h1 className="page-title">Case</h1>
           <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item className="breadcrumb-item" href="#">
               Registry
@@ -349,7 +429,7 @@ export default function CreateCase() {
               className="breadcrumb-item active breadcrumds"
               aria-current="page"
             >
-              New Case
+              Edit Case
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
@@ -374,7 +454,7 @@ export default function CreateCase() {
             <Card>
               <Card.Header>
                 <Col className="card-title text-center1">
-                  <span> Enter Case Details </span>
+                  <span> Edit Case Details </span>
                   <span className="fe fe-file"></span>
                 </Col>
               </Card.Header>
@@ -654,23 +734,119 @@ export default function CreateCase() {
                   </CCol>
                 </CRow>
               </Card.Body>
+              <CCol xs={12} className="text-center mb-3">
+                <CButton color="primary" type="submit">
+                  <span className="fe fe-plus"></span>
+                  {isLoading ? "Saving data..." : "Save"}
+                </CButton>
+              </CCol>
             </Card>
           </Col>
         </Row>
-
+      </CForm>
+      <div className="row g-3 needs-validation">
         <Row>
           <Col md={12} lg={12}>
             <Card>
-              <Card.Header>
-                <Col className="card-title text-center1">
-                  <span> Upload Case Attachements </span>
-                  <span className="fe fe-file"></span>
+              <Card.Header
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: "7px",
+                }}
+              >
+                <Col className="d-flex align-items-center">
+                  <span className="fw-bold">Update Case Attachments</span>
+                  <span className="fe fe-file ms-2"></span>
+                </Col>
+
+                <Col className="d-flex justify-content-end">
+                  <Button
+                    onClick={() => handleAddAttachment(id)}
+                    className="btn-green-dark"
+                  >
+                    Add
+                  </Button>
                 </Col>
               </Card.Header>
 
               <Card.Body>
                 <CRow>
-                  {rows.map((row, index) => (
+                  <div className="table-responsive">
+                    {attachments.length > 0 ? (
+                      <table className="table table-bordered table-striped">
+                        <thead style={{ background: "#0A7E51" }}>
+                          <tr>
+                            <th
+                              style={{
+                                width: "70px",
+                                color: "#fff",
+                                fontWeight: 900,
+                              }}
+                            >
+                              S/N
+                            </th>
+                            <th style={{ color: "#fff", fontWeight: 900 }}>
+                              Attachment Type
+                            </th>
+                            <th style={{ color: "#fff", fontWeight: 900 }}>
+                              Attachment
+                            </th>
+                            <th style={{ color: "#fff", fontWeight: 900 }}>
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {attachments.map((attachment, index) => (
+                            <tr key={attachment.id}>
+                              <td>{index + 1}</td>
+                              <td>
+                                {attachment.FileType
+                                  ? attachment.FileType.name
+                                  : "N/A"}
+                              </td>
+                              <td>
+                                <a
+                                  href={`${process.env.REACT_APP_UPLOAD_URL}${attachment.doc_url}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                                >
+                                  <span className="fa fa-eye"></span>{" "}
+                                  View/Download
+                                </a>
+                              </td>
+                              <td>
+                                <button
+                                  className="btn btn-dark btn-sm bright-btn btn-dark-bright"
+                                  // onClick={() =>
+                                  //   handleDeleteAttachment(attachment.id)
+                                  // }
+                                >
+                                  <span className="fe fe-trash"></span>
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p className="mt-3" style={{ textAlign: "center" }}>
+                        <img
+                          src="/img/folder_icn.png"
+                          alt="No attachments icon"
+                          height="50"
+                          width="50"
+                        />
+                        No attachments available.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* {rows.map((row, index) => (
                     <div className="row" key={index}>
                       <CCol md={6}>
                         <CFormLabel htmlFor="validationCustomUsername">
@@ -737,19 +913,121 @@ export default function CreateCase() {
                         <span className="fa fa-plus"></span> More Attachment
                       </button>
                     </CCol>
-                  </div>
+                  </div> */}
                 </CRow>
-                <CCol xs={12} className="text-center">
+                {/* <CCol xs={12} className="text-center">
                   <CButton color="primary" type="submit">
                     <span className="fe fe-plus"></span>
                     {isLoading ? "Saving data..." : "Save"}
                   </CButton>
-                </CCol>
+                </CCol> */}
               </Card.Body>
             </Card>
           </Col>
         </Row>
-      </CForm>
+      </div>
+
+      {/* Attachment Modal */}
+      {attachmentsModal.show && (
+        <Modal
+          show={attachmentsModal.show}
+          onHide={() => {
+            setAttachmentsModal({
+              ...attachmentsModal,
+              show: false,
+              report: null,
+            });
+          }}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Add Attachments</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <CForm onSubmit={handleSubmit(handleUpdateAttachment)}>
+              {rows.map((row, index) => (
+                <div key={index}>
+                  <div className="row">
+                    <CCol md={6}>
+                      <CFormLabel htmlFor="edit_validationCustomUsername">
+                        Attachment Type
+                      </CFormLabel>
+                      <select
+                        className="form-select"
+                        value={reportUpdate.doc_type_id[index] || ""}
+                        onChange={(e) =>
+                          handleTypeChange(index, e.target.value)
+                        }
+                      >
+                        <option value="">--select--</option>
+                        {documentTypeList.map((fileType, idx) => (
+                          <option key={idx} value={fileType.id}>
+                            {fileType.name}
+                          </option>
+                        ))}
+                      </select>
+                    </CCol>
+                    <CCol md={6}>
+                      <CFormLabel htmlFor="edit_validationCustomUsername">
+                        Attachment
+                      </CFormLabel>
+                      <CInputGroup className="has-validation">
+                        <CFormInput
+                          type="file"
+                          id="inputGroupFile01"
+                          aria-describedby="inputGroupFileAddon01"
+                          aria-label="Upload"
+                          onChange={(e) =>
+                            handleFileChange(index, e.target.files[0])
+                          }
+                        />
+                      </CInputGroup>
+                    </CCol>
+                  </div>
+                  <div className="row mt-2">
+                    <CCol md={12} className="d-flex justify-content-start">
+                      {index !== 0 && (
+                        <CButton
+                          className="me-2"
+                          size="sm"
+                          color="red"
+                          onClick={() => handleRemoveRow(index)}
+                        >
+                          Remove
+                        </CButton>
+                      )}
+                      {index === rows.length - 1 && (
+                        <CButton
+                          className="btn btn-secondary"
+                          size="sm"
+                          onClick={handleAddRow}
+                        >
+                          Add
+                        </CButton>
+                      )}
+                    </CCol>
+                  </div>
+                </div>
+              ))}
+              <Modal.Footer>
+                <CButton color="primary" type="submit">
+                  Update
+                </CButton>
+                <Button
+                  variant="red"
+                  onClick={() =>
+                    setAttachmentsModal({
+                      ...attachmentsModal,
+                      show: false,
+                    })
+                  }
+                >
+                  Close
+                </Button>
+              </Modal.Footer>
+            </CForm>
+          </Modal.Body>
+        </Modal>
+      )}
     </div>
   );
 }
