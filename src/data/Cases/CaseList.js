@@ -131,12 +131,12 @@ const CaseList = () => {
     // },
     {
       name: "Appellant",
-      selector: (row) => row.appellants,
+      selector: (row) => row.appellant,
       style: { textAlign: "right" },
       sortable: true,
       width: "150px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.appellants || ""}</div>
+        <div className="fs-12 fw-bold">{row.appellant_name || ""}</div>
       ),
     },
     {
@@ -146,7 +146,7 @@ const CaseList = () => {
       sortable: true,
       width: "150px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.respondent || ""}</div>
+        <div className="fs-12 fw-bold">{row.respondent_name || ""}</div>
       ),
     },
     {
@@ -214,7 +214,7 @@ const CaseList = () => {
             <span className="fe fe-eye"> </span>
           </Link>
           <Link
-            to={`/edit/case/${row.id}`}
+            to={`/edit-case/${row.id}`}
             className="btn btn-secondary btn-sm my-1 mx-1 bright-btn btn-secondary-bright"
           >
             <span className="fe fe-edit"> </span>
