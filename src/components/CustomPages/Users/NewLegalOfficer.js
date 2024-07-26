@@ -148,7 +148,10 @@ export default function CreateStaff() {
             <Card.Body>
               <CForm onSubmit={handleSubmit(handleCreateUser)} className="row g-3 needs-validation">
                 <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustomUsername">Title</CFormLabel>
+                  <CFormLabel htmlFor="validationCustomUsername">
+                    Title
+                    <span style={{ fontSize: "20px" }}></span>
+                  </CFormLabel>
                   <select
                     value={details.title_id}
                     className="form-control custom-select"
@@ -172,7 +175,10 @@ export default function CreateStaff() {
                 </CCol>
 
                 <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">Surname</CFormLabel>
+                  <CFormLabel htmlFor="validationCustom02">
+                    Surname
+                    <span style={{ fontSize: "20px" }}></span>
+                  </CFormLabel>
                   <CFormInput
                     defaultValue={details.surname}
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -187,7 +193,10 @@ export default function CreateStaff() {
                   />
                 </CCol>
                 <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom01">Firstname</CFormLabel>
+                  <CFormLabel htmlFor="validationCustom01">
+                    Firstname
+                    <span style={{ fontSize: "20px" }}></span>
+                  </CFormLabel>
                   <CFormInput
                     defaultValue={details.first_name}
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -203,7 +212,10 @@ export default function CreateStaff() {
                   />
                 </CCol>
                 <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">OtherName</CFormLabel>
+                  <CFormLabel htmlFor="validationCustom01">
+                    OtherName
+                    <span style={{ fontSize: "20px" }}></span>
+                  </CFormLabel>
                   <CFormInput
                     defaultValue={details.middle_name}
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -218,7 +230,10 @@ export default function CreateStaff() {
                   />
                 </CCol>
                 <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom01">Designation</CFormLabel>
+                  <CFormLabel htmlFor="validationCustom01">
+                    Designation
+                    <span style={{ fontSize: "20px" }}></span>
+                  </CFormLabel>
                   <CFormInput
                     defaultValue={details.designation}
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -235,10 +250,13 @@ export default function CreateStaff() {
                 </CCol>
                 <Col md={4}>
                   <FormGroup>
-                    <label htmlFor="exampleInputname1">Email address</label>
+                    <label htmlFor="exampleInputname1">
+                      Email address
+                    <span style={{ fontSize: "20px"}}></span>
+                    </label>
                     <Form.Control
                       type="email"
-                      className="form-control"
+                      // className="form-control"
                       defaultValue={details.email}
                       style={{ border: "1px solid #000", padding: "10px" }}
                       onChange={(e) =>
@@ -253,7 +271,10 @@ export default function CreateStaff() {
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <label htmlFor="exampleInputname1">Alternative Email address</label>
+                    <label htmlFor="exampleInputname1">
+                      Alternative Email address
+                    <span style={{ fontSize: "20px" }}></span>
+                    </label>
                     <Form.Control
                       type="email"
                       className="form-control"
@@ -270,7 +291,10 @@ export default function CreateStaff() {
                   </FormGroup>
                 </Col>
                 <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">Phone Number</CFormLabel>
+                  <CFormLabel htmlFor="validationCustom01">
+                    Phone Number
+                    <span style={{ fontSize: "20px" }}></span>
+                  </CFormLabel>
                   <CFormInput
                     defaultValue={details.phone}
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -288,7 +312,10 @@ export default function CreateStaff() {
                   )}
                 </CCol>
                 <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">Alternative Phone Number</CFormLabel>
+                  <CFormLabel htmlFor="validationCustom01">
+                    Alternative Phone Number
+                    <span style={{ fontSize: "20px" }}></span>
+                  </CFormLabel>
                   <CFormInput
                     defaultValue={details.phone_2}
                     style={{ border: "1px solid #000", padding: "10px" }}
@@ -303,7 +330,10 @@ export default function CreateStaff() {
                   />
                 </CCol>
                 <CCol md={4}>
-                  <CFormLabel htmlFor="validationCustom02">Signature</CFormLabel>
+                  <CFormLabel htmlFor="validationCustom02">
+                    Signature
+                    <span style={{ fontSize: "20px" }}></span>
+                  </CFormLabel>
                   <Form.Control
                     type="file"
                     className="form-control"
@@ -325,7 +355,7 @@ export default function CreateStaff() {
                       src={`${process.env.REACT_APP_UPLOAD_URL}${url}`}
                       alt="Signature"
                       crossOrigin="anonymous"
-                      style={{ maxWidth: '200px', height: 'auto' }}
+                      style={{ maxWidth: '150px', height: 'auto' }}
                     />
                   )}
                   {details.signature && (
@@ -333,7 +363,7 @@ export default function CreateStaff() {
                       src={details.signature instanceof Blob ? URL.createObjectURL(details.signature) : `${process.env.REACT_APP_UPLOAD_URL}${details.signature}`}
                       alt="Signature"
                       crossOrigin="anonymous"
-                      style={{ maxWidth: '200px', height: 'auto' }}
+                      style={{ maxWidth: '150px', height: 'auto' }}
                     />
                   )}
                 </CCol>

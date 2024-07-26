@@ -181,6 +181,10 @@ const ChamberList = () => {
     }
   };
 
+  // Utility function to convert text to capitalize the first letter of each word
+  const toTitleCase = (text) => {
+    return text.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+  };
 
   const columns = [
     { name: "#", cell: (row, index) => index + 1, width: "65px" },
@@ -191,7 +195,7 @@ const ChamberList = () => {
       sortable: true,
       width: "200px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.chamber_name.toUpperCase()}</div>
+        <div className="fs-12 fw-bold">{toTitleCase(row.chamber_name)}</div>
       ),
     },
     {
@@ -201,7 +205,7 @@ const ChamberList = () => {
       sortable: true,
       width: "200px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.chamber_head || ""}</div>
+        <div className="fs-12 fw-bold">{toTitleCase(row.chamber_head) || ""}</div>
       ),
     },
     {

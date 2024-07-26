@@ -74,10 +74,6 @@ const LegalOfficerList = () => {
     first_name: "",
     middle_name: "",
     title_id: "",
-    //   {/*court_id: "",
-    //   state_id: "",
-    //   lga_id: "",
-    // signature: null,*/}
     phone: "",
     phone_2: "",
     email: "",
@@ -112,6 +108,29 @@ const LegalOfficerList = () => {
     // getStatestList();
   }, []);
 
+
+  const deletechamber = async (id) => {
+    try {
+      const res = await endpoint.delete(`/legal-officer/delete/${id}`);
+      SuccessAlert(res.data.message);
+      getLegalOfficerListList();
+      setLoading(false);
+      setShowDeleteModal(false);
+    } catch (error) {
+      if (error.response) {
+        setLoading(false);
+        ErrorAlert(error.response.data.message);
+        setShowDeleteModal(false);
+
+      }
+    }
+  };
+
+   // Utility function to convert text to capitalize the first letter of each word
+   const toTitleCase = (text) => {
+    return text.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+  };
+
   // Columns for DataTable
   const columns = [
     { name: "#", cell: (row, index) => index + 1, width: "65px" },
@@ -123,13 +142,13 @@ const LegalOfficerList = () => {
       width: "300px",
       cell: (row) => (
         <div className="fs-12 fw-bold">
-          {(row.Title ? row.Title.name : "") +
+          {(row.Title ? toTitleCase(row.Title.name) : "") +
             " " +
-            row.surname.toUpperCase() +
+            toTitleCase(row.surname) +
             " " +
-            row.first_name.toUpperCase() +
+            toTitleCase(row.first_name) +
             " " +
-            row.middle_name.toUpperCase()}
+            toTitleCase(row.middle_name)}
         </div>
       ),
     },
@@ -149,26 +168,6 @@ const LegalOfficerList = () => {
       width: "180px",
       cell: (row) => <div className="fs-12 fw-bold">{row.phone || ""}</div>,
     },
-    // {
-    //   name: "Court",
-    //   selector: (row) => row.Court?.name,
-    //   style: { textAlign: "left" },
-    //   sortable: true,
-    //   width: "200px",
-    //   cell: (row) => (
-    //     <div className="fs-12 fw-bold">{row.Court?.name || ""}</div>
-    //   ),
-    // },
-    // {
-    //   name: "State",
-    //   selector: (row) => row.State?.name,
-    //   style: { textAlign: "right" },
-    //   sortable: true,
-    //   width: "200px",
-    //   cell: (row) => (
-    //     <div className="fs-12 fw-bold">{row.State?.name || ""}</div>
-    //   ),
-    // },
     {
       name: "Action",
       selector: (row) => row.id,
@@ -196,36 +195,8 @@ const LegalOfficerList = () => {
       ),
     },
   ];
-  //get states list
-  // const getStatestList = async () => {
-  //   setLoading(true);
-  //   await endpoint
-  //     .get("/state/list")
-  //     .then((res) => {
-  //       setStatesList(res.data.data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       setLoading(false);
-  //       console.log(err);
-  //     });
-  // };
-  const deletechamber = async (id) => {
-    setLoading(true);
-    await endpoint
-      .delete(`/legal-officer/delete/${id}`)
-      .then((res) => {
-        getLegalOfficerListList();
-        setLoading(false);
-        SuccessAlert(res.data.message);
-        setShowDeleteModal(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        setShowDeleteModal(false);
-        console.log(err);
-      });
-  };
+ 
+ 
   const tableDatas = { columns, data };
 
   return (

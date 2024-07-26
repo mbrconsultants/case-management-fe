@@ -6,7 +6,7 @@ import Loader from "../../../data/Loader/loader";
 
 export default function SingleChamber() {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState();
+  const [data, setData] = useState(null);
 
   const params = useParams();
   const id = params.id;
@@ -28,14 +28,11 @@ export default function SingleChamber() {
     }
   };
 
-  const parseJSON = (jsonString) => {
-    try {
-      return JSON.parse(jsonString);
-    } catch (error) {
-      console.error("Error parsing JSON string:", error);
-      return [];
-    }
+  // Utility function to convert text to capitalize the first letter of each word
+  const toTitleCase = (text) => {
+    return text.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
   };
+
 
   return (
     <>
@@ -66,11 +63,11 @@ export default function SingleChamber() {
                       <div className="col-md-12">
                         <div className="row border">
                           <div className="fw-bold col-md-6">Chamber Name:</div>
-                          <div className="col-md-6">{data.chamber_name}</div>
+                          <div className="col-md-6">{toTitleCase(data.chamber_name)}</div>
                         </div>
                         <div className="row border">
                           <div className="fw-bold col-md-6">Head of Chamber:</div>
-                          <div className="col-md-6">{data.chamber_head}</div>
+                          <div className="col-md-6">{toTitleCase(data.chamber_head)}</div>
                         </div>
                         <div className="row border">
                           <div className="fw-bold col-md-6">Email:</div>
@@ -105,17 +102,13 @@ export default function SingleChamber() {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {data.ChamberLawyers.map((lawyer, index) => {
-                                    const names = parseJSON(lawyer.lawyer_name);
-                                    const phones = parseJSON(lawyer.lawyer_phone);
-                                    return names.map((name, idx) => (
-                                      <tr key={`${index}-${idx}`}>
-                                        <td>{index * names.length + idx + 1}</td>
-                                        <td>{name || "N/A"}</td>
-                                        <td>{phones[idx] || "N/A"}</td>
-                                      </tr>
-                                    ));
-                                  })}
+                                  {data.ChamberLawyers.map((lawyer, index) => (
+                                    <tr key={index}>
+                                      <td>{index + 1}</td>
+                                      <td>{toTitleCase(lawyer.lawyer_name) || "N/A"}</td>
+                                      <td>{lawyer.lawyer_phone || "N/A"}</td>
+                                    </tr>
+                                  ))}
                                 </tbody>
                               </table>
                             </div>
