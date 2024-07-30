@@ -261,6 +261,7 @@ export default function CreateCase() {
     data.append("court_id", details.court_id);
     data.append("case_description", details.case_description);
     data.append("hearing_date", details.hearing_date);
+    data.append("chamber_solicitor_id", details.chamber_solicitor_id);
     // data.append("chamber_lawyer_ids", JSON.stringify(chamber_lawyer_ids));
     data.append("doc_type_id", details.doc_type_id);
     for (let i = 0; i < details.doc_urls.length; i++) {
@@ -272,22 +273,7 @@ export default function CreateCase() {
       console.log("Payload Key Value Pair", pair[0] + ": " + pair[1]);
     }
 
-    // Append doc_urls as a JSON string
-    // data.append(
-    //   "doc_urls",
-    //   JSON.stringify(
-    //     doc_urls.map((doc) => ({
-    //       doc_url: doc.doc_url.name, // only the filename is appended, you will need to handle the actual file upload separately
-    //       doc_type_id: doc.doc_type_id,
-    //     }))
-    //   )
-    // );
-
-    // Append files separately to maintain the file upload in FormData
-    // doc_urls.forEach((doc, index) => {
-    //   data.append(`file${index}`, doc.doc_url);
-    // });
-    return;
+    // return;
     try {
       if (id) {
         const res = await endpoint.put(`/case/edit/${id}`, data);
@@ -305,32 +291,6 @@ export default function CreateCase() {
   };
 
   const [rows, setRows] = useState([{ doc_url: "" }]);
-
-  // const handleAddRow = () => {
-  //   setRows([...rows, { doc_url: "", doc_type_id: "" }]);
-  // };
-
-  // const handleRemoveRow = (index) => {
-  //   const updatedRows = rows.filter((_, i) => i !== index);
-  //   setRows(updatedRows);
-  // };
-
-  // const handleFileChange = (index, file) => {
-  //   const updatedRows = [...rows];
-  //   updatedRows[index].doc_url = file;
-  //   setRows(updatedRows);
-  // }
-
-  // const handleTypeChange = (index, typeId) => {
-  //   const updatedRows = [...rows];
-  //   updatedRows[index].doc_type_id = typeId;
-  //   setRows(updatedRows);
-  // };
-
-  // const doc_urls = rows.map((row) => ({
-  //   doc_url: row.doc_url,
-  //   doc_type_id: row.doc_type_id,
-  // }));
 
   const setSelectedLawyers = (selectedOptions) => {
     setDetails({
@@ -698,66 +658,6 @@ export default function CreateCase() {
                     </CCol>
                   </CRow>
                 </fieldset>
-
-                {/* <fieldset
-                  style={{
-                    border: "3px solid #ccc",
-                    padding: "20px",
-                    margin: "20px 0",
-                  }}
-                >
-                  <legend style={{ fontSize: "1.5em", padding: "0 10px" }}>
-                    CHAMBER DETAILS
-                  </legend>
-                  <CRow>
-                    <CCol md={6}>
-                      <CFormLabel htmlFor="validationCustomUsername">
-                        Chamber Name
-                      </CFormLabel>
-                      <Form.Group>
-                        <select
-                          className="form-select"
-                          placeholder="Select a chamber..."
-                          name=""
-                          id=""
-                          defaultValue={details.chamber_solicitor_id}
-                          onChange={(e) => {
-                            setDetails({
-                              ...details,
-                              chamber_solicitor_id: e.target.value,
-                            });
-                            getChamberLawyers(e.target.value);
-                          }}
-                        >
-                          <option value="">--select--</option>
-                          {chamberList &&
-                            chamberList.map((chamber, index) => (
-                              <option value={chamber.id} key={index}>
-                                {chamber.chamber_name}
-                              </option>
-                            ))}
-                        </select>
-                      </Form.Group>
-                    </CCol>
-                    <CCol md={6}>
-                      <CFormLabel htmlFor="validationCustomUsername">
-                        Legal Council
-                      </CFormLabel>
-                      <Form.Group>
-                        <Select
-                          isMulti
-                          options={chamberLawyers.map((judge) => ({
-                            value: judge.id,
-                            label: `${judge.lawyer_name}`,
-                          }))}
-                          value={details.judge_id}
-                          onChange={setSelectedLawyers}
-                          getOptionLabel={(option) => option.label} // Function to specify how options are displayed
-                        />
-                      </Form.Group>
-                    </CCol>
-                  </CRow>
-                </fieldset> */}
                 <fieldset
                   style={{
                     border: "3px solid #ccc",

@@ -157,9 +157,8 @@ export default function CaseReport() {
     setLoading(true);
     try {
       const res = await endpoint.get(`/user/case-roster/show/${id}`);
-      console.log("Response Data:", res.data);
-      console.log("Response Data:", res);
-      setCaseList(res.data.data); // Setting the entire data array
+      console.log("Case Roster Data:", res.data);
+      setCaseList(res.data.data);
     } catch (err) {
       console.error("Error fetching case list:", err);
     } finally {
@@ -172,6 +171,7 @@ export default function CaseReport() {
     setLoading(true);
     try {
       const { data } = await endpoint.get(`/user/case-reports/show/${id}`);
+      console.log("User Report Data:", data.data);
       setData(data.data);
       setReports(data.data);
       setLoading(false);
@@ -188,7 +188,7 @@ export default function CaseReport() {
     await endpoint
       .get("/file-type/list")
       .then((res) => {
-        console.log("document type", res.data.data);
+        // console.log("document type", res.data.data);
         setReportDocumentTypeList(res.data.data);
         setLoading(false);
       })

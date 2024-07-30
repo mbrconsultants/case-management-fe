@@ -41,7 +41,8 @@ export default function SingleCase() {
   const [caseModal, setCaseModal] = useState(false);
   const [adjournCaseModal, setAdjournCaseModal] = useState(false);
   const [ChamberModal, setChamberModal] = useState(false);
-  const [attachment, setCaseAttachment] = useState([]);
+  const [attachments, setCaseAttachment] = useState([]);
+  const [processdocs, setProcessdocs] = useState([]);
   const [assigncouncils, setAssignCouncils] = useState([]);
   const [chamberOrSolicitor, setChamberOrSolicitor] = useState([]);
   const [motionData, setMotionData] = useState();
@@ -349,6 +350,39 @@ export default function SingleCase() {
   //     });
   // };
 
+  // Function to Formate Date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+
+    const getDayWithSuffix = (day) => {
+      const suffixes = ["th", "st", "nd", "rd"];
+      const value = day % 100;
+      return (
+        day + (suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0])
+      );
+    };
+
+    const day = getDayWithSuffix(date.getDate());
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${day} ${month}, ${year}`;
+  };
+
   return (
     <>
       <div>
@@ -393,11 +427,7 @@ export default function SingleCase() {
                               ? data.Appellant.appellant + ":"
                               : "Appellant"}
                           </div>
-                          <div className="col-md-6">
-                            {data && data.Appellant
-                              ? data.Appellant.appellant_name
-                              : ""}
-                          </div>
+                          <div className="col-md-6">{data.appellant_name}</div>
                         </div>
                         <div className="row border">
                           <div className="fw-bold col-md-6">
@@ -405,11 +435,7 @@ export default function SingleCase() {
                               ? data.Respondent.respondent + ":"
                               : "Respondent"}
                           </div>
-                          <div className="col-md-6">
-                            {data && data.Respondent
-                              ? data.Respondent.respondent_name
-                              : ""}
-                          </div>
+                          <div className="col-md-6">{data.respondent_name}</div>
                         </div>
 
                         <div className="row border">
@@ -445,7 +471,9 @@ export default function SingleCase() {
                         <div className="row border">
                           <div className="fw-bold col-md-6">Hearing Date:</div>
                           <div className="col-md-6">
-                            {data.hearing_date ? data.hearing_date : ""}
+                            {data.hearing_date
+                              ? formatDate(data.hearing_date)
+                              : ""}
                           </div>
                         </div>
                         <div className="row border">
@@ -589,7 +617,7 @@ export default function SingleCase() {
                     <h6 className="text-center pt-3">Case Attachment(s)</h6>
                   </div>
                   <div className="table-responsive">
-                    {attachment && attachment.length > 0 ? (
+                    {attachments && attachments.length > 0 ? (
                       <table className="table table-bordered table-striped">
                         <thead style={{ background: "#0A7E51" }}>
                           <tr>
@@ -620,8 +648,8 @@ export default function SingleCase() {
                           </tr>
                         </thead>
                         <tbody>
-                          {attachment.map((attach, index) => (
-                            <tr key={attach.id}>
+                          {attachments.map((attachment, index) => (
+                            <tr key={attachment.id}>
                               <td>{index + 1}</td>
                               <td>
                                 {attachment.FileType
@@ -630,7 +658,7 @@ export default function SingleCase() {
                               </td>
                               <td>
                                 <a
-                                  href={`${process.env.REACT_APP_UPLOAD_URL}${attach.doc_url}`}
+                                  href={`${process.env.REACT_APP_UPLOAD_URL}${attachment.doc_url}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
@@ -652,6 +680,95 @@ export default function SingleCase() {
                           width="50"
                         />
                         No attachments available.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Card.Body>
+            )}
+          </Card>
+        </Col>
+
+        <Col xl={12} md={12}>
+          <Card className="card border">
+            {loading && <Loader />}
+            {!loading && data && (
+              <Card.Body>
+                <div>
+                  <div
+                    className="container bg-primary text-white custom-height"
+                    style={{
+                      height: "40px",
+                      borderRadius: "2.5px",
+                      maxWidth: "300px",
+                    }}
+                  >
+                    <h6 className="text-center pt-3">Process Document(s)</h6>
+                  </div>
+                  <div className="table-responsive">
+                    {attachments && attachments.length > 0 ? (
+                      <table className="table table-bordered table-striped">
+                        <thead style={{ background: "#0A7E51" }}>
+                          <tr>
+                            <th
+                              style={{
+                                color: "#fff",
+                                fontWeight: 900,
+                              }}
+                            >
+                              S/N
+                            </th>
+                            <th
+                              style={{
+                                color: "#fff",
+                                fontWeight: 900,
+                              }}
+                            >
+                              Type
+                            </th>
+                            <th
+                              style={{
+                                color: "#fff",
+                                fontWeight: 900,
+                              }}
+                            >
+                              Document
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {attachments.map((attachment, index) => (
+                            <tr key={attachment.id}>
+                              <td>{index + 1}</td>
+                              <td>
+                                {attachment.FileType
+                                  ? attachment.FileType.name
+                                  : "N/A"}
+                              </td>
+                              <td>
+                                <a
+                                  href={`${process.env.REACT_APP_UPLOAD_URL}${attachment.doc_url}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                                >
+                                  <span className="fa fa-eye"></span>{" "}
+                                  View/Download
+                                </a>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p className="mt-3" style={{ textAlign: "center" }}>
+                        <img
+                          src="/img/folder_icn.png"
+                          alt="No attachments icon"
+                          height="50"
+                          width="50"
+                        />
+                        No documentss available.
                       </p>
                     )}
                   </div>

@@ -362,6 +362,9 @@ const CreateRoster = React.lazy(() =>
 const NewCase = React.lazy(() =>
   import("./components/CustomPages/Cases/NewCase")
 );
+const EditCase = React.lazy(() =>
+  import("./components/CustomPages/Cases/EditCase")
+);
 const CaseReport = React.lazy(() =>
   import("./components/CustomPages/Cases/CaseReport")
 );
@@ -539,6 +542,10 @@ const Root = () => {
                     element={<NewCase />}
                   />
                   <Route
+                    path={`${process.env.PUBLIC_URL}/edit-case/:id`}
+                    element={<EditCase />}
+                  />
+                  <Route
                     path={`${process.env.PUBLIC_URL}/reopen-case/:id`}
                     element={<ReopenCase />}
                   />
@@ -637,10 +644,10 @@ const Root = () => {
                     path={`${process.env.PUBLIC_URL}/single-chamber/:id`}
                     element={<SingleChamber />}
                   />
-                  <Route
+                  {/* <Route
                     path={`${process.env.PUBLIC_URL}/edit/case/:id`}
                     element={<NewCase />}
-                  />
+                  /> */}
                   <Route
                     path={`${process.env.PUBLIC_URL}/new-legal-officer/:id`}
                     element={<NewLegalOfficer />}

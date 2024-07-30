@@ -177,13 +177,13 @@ export const FileList = () => {
       width: "45%",
       cell: (row) => <h6 className="fs-12 fw-semibold">{row.description}</h6>,
     },
-    {
-      name: "Status",
-      selector: (row) => [row.status],
-      sortable: true,
-      // width: "25%",
-      cell: (row) => <>{row.status}</>,
-    },
+    // {
+    //   name: "Status",
+    //   selector: (row) => [row.status],
+    //   sortable: true,
+    //   // width: "25%",
+    //   cell: (row) => <>{row.status}</>,
+    // },
     {
       name: "Action",
       cell: (row) => (
