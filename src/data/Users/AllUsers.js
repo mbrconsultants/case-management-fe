@@ -110,7 +110,8 @@ export const AllUsers = () => {
     },
     { 
       name: "Role", 
-      selector: (row) => row.Role.role_name, 
+      // selector: (row) => row.Row ? row.Role.role_name : "",
+      selector: (row) => row.Role.role_name,
       sortable: true, 
       width: "200px" 
     },

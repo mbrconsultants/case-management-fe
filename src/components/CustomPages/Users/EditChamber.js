@@ -154,9 +154,9 @@ export default function EditChamber() {
 
   const updateCounselDetails = async (data) => {
     const data2 = new FormData();
-    data2.append("lawyerId", data.id);
+    data2.append("id", id);
     try {
-      const res = await endpoint.post(`/solicitor/counsel/edit/${id}`, data);
+      const res = await endpoint.post(`/solicitor/counsel/edit`, data);
       console.log("Edit details", res);
       SuccessAlert(res.data.message);
       getSingleStaff();
@@ -202,7 +202,7 @@ export default function EditChamber() {
 
   const deleteCounsel = async (data) => {
     try {
-      const res = await endpoint.post(`/solicitor/counsel/delete/${id}`, { data });
+      const res = await endpoint.post(`/solicitor/counsel/delete`, { data });
       SuccessAlert(res.data.message);
       getSingleStaff();
     } catch (error) {
