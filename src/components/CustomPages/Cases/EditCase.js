@@ -32,7 +32,8 @@ import { useForm } from "react-hook-form";
 import Select from "react-select";
 import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
 import "./styles.css";
-export default function CreateCase() {
+
+export default function EditCase() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [courtList, setCourtList] = useState([]);
@@ -50,6 +51,7 @@ export default function CreateCase() {
   const [attachments, setCaseAttachment] = useState([]);
   const [attachmentsModal, setAttachmentsModal] = useState({
     show: false,
+    case_id: "",
     doc_urls: [],
     doc_type_id: "",
   });
@@ -351,8 +353,10 @@ export default function CreateCase() {
 
   // Function to delete attachment
   const handleDeleteAttachment = async (attachmentId) => {
+    console.log("attachmentId:", attachmentId);
+    // return;
     await endpoint
-      .delete(`/case/reports/delete-attachment/${attachmentId}`)
+      .delete(`/case/attachment/delete/${attachmentId}`)
       .then((res) => {
         // console.log(res.data)
         SuccessAlert(res.data.message);
@@ -365,7 +369,7 @@ export default function CreateCase() {
       });
   };
 
-  //Function to update report attachment
+  //Function to update case attachment
   const handleUpdateAttachment = async (data) => {
     try {
       const formData = new FormData();
@@ -379,7 +383,7 @@ export default function CreateCase() {
       }
 
       const response = await endpoint.post(
-        `/case/reports/add-more-attachment/${attachmentsModal.id}`,
+        `/case/add-more-attachment/${attachmentsModal.case_id}`,
         formData
       );
       SuccessAlert(response.data.message);
@@ -404,7 +408,7 @@ export default function CreateCase() {
       getSingleCase();
     } catch (err) {
       console.log("Update Report Error", err);
-      ErrorAlert("An error occurred. Please try again.");
+      ErrorAlert(err.response.data.message);
     }
   };
 
@@ -413,6 +417,8 @@ export default function CreateCase() {
     setAttachmentsModal({
       show: true,
       case_id: caseId,
+      doc_urls: [],
+      doc_type_id: "",
     });
   };
 
@@ -822,9 +828,9 @@ export default function CreateCase() {
                               <td>
                                 <button
                                   className="btn btn-dark btn-sm bright-btn btn-dark-bright"
-                                  // onClick={() =>
-                                  //   handleDeleteAttachment(attachment.id)
-                                  // }
+                                  onClick={() =>
+                                    handleDeleteAttachment(attachment.id)
+                                  }
                                 >
                                   <span className="fe fe-trash"></span>
                                 </button>
