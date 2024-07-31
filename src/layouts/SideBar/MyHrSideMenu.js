@@ -101,7 +101,7 @@ const MyHrSideMenu = () => {
     // console.log("men", MENUITEMS);
     // console.log("men 2", newMenu);
     // return MENUITEMS;
-    if (user.user.role_id === 2) {
+    if (user.user.role_id === 1) {
       setMainn(newMenu);
       setMainMenu(newMenu);
     } else {
@@ -201,9 +201,7 @@ const MyHrSideMenu = () => {
 
   return (
     <>
-      <ul
-        className="side-menu"
-        id="sidebar-main">
+      <ul className="side-menu" id="sidebar-main">
         {mainn?.map((Item, i) => (
           <Fragment key={i}>
             <li className="sub-category">
@@ -214,7 +212,8 @@ const MyHrSideMenu = () => {
                 className={`text-white slide ${
                   menuItem.active ? "is-expanded" : ""
                 }`}
-                key={i}>
+                key={i}
+              >
                 {menuItem.type === "link" ? (
                   <NavLink
                     to={menuItem.path + "/"}
@@ -224,9 +223,11 @@ const MyHrSideMenu = () => {
                     onClick={() => {
                       toggletNavActive(menuItem);
                       setNavActive(menuItem);
-                    }}>
+                    }}
+                  >
                     <i
-                      className={`text-white side-menu__icon fe fe-${menuItem.icon}`}></i>
+                      className={`text-white side-menu__icon fe fe-${menuItem.icon}`}
+                    ></i>
                     <span className="side-menu__label">
                       {menuItem.title.toUpperCase()}
                     </span>
@@ -244,15 +245,18 @@ const MyHrSideMenu = () => {
                     onClick={(event) => {
                       event.preventDefault();
                       setNavActive(menuItem); //menuItem is the module that is clicked
-                    }}>
+                    }}
+                  >
                     <i
-                      className={`text-white side-menu__icon fe fe-${menuItem.icon}`}></i>
+                      className={`text-white side-menu__icon fe fe-${menuItem.icon}`}
+                    ></i>
                     <span className="side-menu__label">
                       {menuItem.title.toUpperCase()}
                     </span>
 
                     <i
-                      className={`${menuItem.background} fa angle fa-angle-right `}></i>
+                      className={`${menuItem.background} fa angle fa-angle-right `}
+                    ></i>
                   </NavLink>
                 ) : (
                   ""
@@ -268,7 +272,8 @@ const MyHrSideMenu = () => {
                             display: "block",
                           }
                         : { display: "none" }
-                    }>
+                    }
+                  >
                     {menuItem.children.map((childrenItem, index) => {
                       return (
                         <li key={index}>
@@ -279,7 +284,8 @@ const MyHrSideMenu = () => {
                               onClick={(event) => {
                                 event.preventDefault();
                                 toggletNavActive(childrenItem);
-                              }}>
+                              }}
+                            >
                               <span className="text-white sub-side-menu__label ">
                                 {childrenItem.title}
                               </span>
@@ -298,7 +304,8 @@ const MyHrSideMenu = () => {
                               className="text-white slide-item  custom-hover"
                               onClick={() => {
                                 toggletNavActive(childrenItem);
-                              }}>
+                              }}
+                            >
                               {childrenItem.title}
                             </Link>
                           ) : (
@@ -311,7 +318,8 @@ const MyHrSideMenu = () => {
                                 childrenItem.active
                                   ? { display: "block" }
                                   : { display: "none" }
-                              }>
+                              }
+                            >
                               {childrenItem.children.map(
                                 (childrenSubItem, key) => (
                                   <li key={key}>
@@ -321,7 +329,8 @@ const MyHrSideMenu = () => {
                                         className={`${"text-white sub-slide-item"}`}
                                         onClick={() =>
                                           toggletNavActive(childrenSubItem)
-                                        }>
+                                        }
+                                      >
                                         {childrenSubItem.title}
                                       </NavLink>
                                     ) : (
