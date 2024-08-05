@@ -42,7 +42,7 @@ export default function SingleCase() {
   const [adjournCaseModal, setAdjournCaseModal] = useState(false);
   const [ChamberModal, setChamberModal] = useState(false);
   const [attachments, setCaseAttachment] = useState([]);
-  const [processdocs, setProcessdocs] = useState([]);
+  const [motionattachments, setMotionAttachment] = useState([]);
   const [assigncouncils, setAssignCouncils] = useState([]);
   const [chamberOrSolicitor, setChamberOrSolicitor] = useState([]);
   const [motionData, setMotionData] = useState();
@@ -55,7 +55,7 @@ export default function SingleCase() {
     suite_no: "",
     motion_description: "",
     doc_type_id: "",
-    doc_url: null,
+    doc_urls: null,
   });
 
   const [reports, setReports] = useState([]); // State for storing multiple reports
@@ -146,6 +146,7 @@ export default function SingleCase() {
         setAssignCouncils(data.data.AssignCouncils);
         setChamberOrSolicitor(data.data.ChamberOrSolicitor);
         setCaseAttachment(data.data.CaseAttachments);
+        setMotionAttachment(data.data.MotionCase.MotionAttachments);
         setReports(data.data.CaseReports);
         setLoading(false);
       })
@@ -246,7 +247,13 @@ export default function SingleCase() {
       data.append("suite_no", motionData.suite_no);
       data.append("motion_description", motionDetails.motion_description);
       data.append("doc_type_id", motionDetails.doc_type_id);
-      data.append("doc_url", motionDetails.doc_url);
+      data.append("doc_urls", motionDetails.doc_urls);
+
+      // console.log("Add Process Payload:", data);
+      // for (let pair of data.entries()) {
+      //   console.log("Payload Key Value Pair", pair[0] + ": " + pair[1]);
+      // }
+      // return;
 
       const response = await endpoint.post(`/motion/create`, data);
       // navigate(`${process.env.PUBLIC_URL}/cases`);
@@ -385,125 +392,134 @@ export default function SingleCase() {
 
   return (
     <>
-      <div>
-        <Col xl={12} md={12}>
-          <Card className="card border">
-            {loading && <Loader />}
-            {!loading && data && (
-              <Card.Body>
-                <div className="text-center"></div>
-                <div className="mt-5">
-                  <div
-                    className="container bg-primary text-white custom-height"
-                    style={{ height: "50px", borderRadius: "5px" }}
-                  >
-                    <h4 className="text-center text-uppercase pt-3">
-                      Case Information
-                    </h4>
-                  </div>
-                  <hr className="my-4" />
-                  <div className="row m-5">
-                    {data && (
-                      <div className="col-md-12">
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Suite No:</div>
-                          <div className="col-md-6">{data.suite_no}</div>
-                        </div>
+      {!loading && data && (
+        <div>
+          <Col xl={12} md={12}>
+            <Card className="card border">
+              {loading && <Loader />}
+              {!loading && data && (
+                <Card.Body>
+                  <div className="text-center"></div>
+                  <div className="mt-5">
+                    <div
+                      className="container bg-primary text-white custom-height"
+                      style={{ height: "50px", borderRadius: "5px" }}
+                    >
+                      <h4 className="text-center text-uppercase pt-3">
+                        Case Information
+                      </h4>
+                    </div>
+                    <hr className="my-4" />
+                    <div className="row m-5">
+                      {data && (
+                        <div className="col-md-12">
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">Suite No:</div>
+                            <div className="col-md-6">{data.suite_no}</div>
+                          </div>
 
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Court:</div>
-                          <div className="col-md-6">
-                            {data.Court ? data.Court.name : ""}
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">Court:</div>
+                            <div className="col-md-6">
+                              {data.Court ? data.Court.name : ""}
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Parties:</div>
-                          <div className="col-md-6">{data.parties}</div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">
-                            {data && data.Appellant
-                              ? data.Appellant.appellant + ":"
-                              : "Appellant"}
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">Parties:</div>
+                            <div className="col-md-6">{data.parties}</div>
                           </div>
-                          <div className="col-md-6">{data.appellant_name}</div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">
-                            {data && data.Respondent
-                              ? data.Respondent.respondent + ":"
-                              : "Respondent"}
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">
+                              {data && data.Appellant
+                                ? data.Appellant.appellant + ":"
+                                : "Appellant"}
+                            </div>
+                            <div className="col-md-6">
+                              {data.appellant_name}
+                            </div>
                           </div>
-                          <div className="col-md-6">{data.respondent_name}</div>
-                        </div>
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">
+                              {data && data.Respondent
+                                ? data.Respondent.respondent + ":"
+                                : "Respondent"}
+                            </div>
+                            <div className="col-md-6">
+                              {data.respondent_name}
+                            </div>
+                          </div>
 
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Case Type:</div>
-                          <div className="col-md-6">
-                            <span
-                              className="btn bright-btn btn-secondary-bright m-1"
-                              style={{
-                                backgroundColor: `${
-                                  data.CaseType ? data.CaseType.case_color : ""
-                                }`,
-                                color: "white",
-                                paddingTop: "5px",
-                                paddingLeft: "7px",
-                                paddingRight: "7px",
-                                paddingBottom: "5px",
-                                borderRadius: "7px",
-                                boxShadow: "6px 6px 15px rgba(0, 0, 0, 0.7)",
-                              }}
-                            >
-                              {data.CaseType ? data.CaseType.case_type : ""}
-                            </span>
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">Case Type:</div>
+                            <div className="col-md-6">
+                              <span
+                                className="btn bright-btn btn-secondary-bright m-1"
+                                style={{
+                                  backgroundColor: `${
+                                    data.CaseType
+                                      ? data.CaseType.case_color
+                                      : ""
+                                  }`,
+                                  color: "white",
+                                  paddingTop: "5px",
+                                  paddingLeft: "7px",
+                                  paddingRight: "7px",
+                                  paddingBottom: "5px",
+                                  borderRadius: "7px",
+                                  boxShadow: "6px 6px 15px rgba(0, 0, 0, 0.7)",
+                                }}
+                              >
+                                {data.CaseType ? data.CaseType.case_type : ""}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">
-                            Case Description:
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">
+                              Case Description:
+                            </div>
+                            <div className="col-md-6">
+                              {data.case_description}
+                            </div>
                           </div>
-                          <div className="col-md-6">
-                            {data.case_description}
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">
+                              Hearing Date:
+                            </div>
+                            <div className="col-md-6">
+                              {data.hearing_date
+                                ? formatDate(data.hearing_date)
+                                : ""}
+                            </div>
                           </div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Hearing Date:</div>
-                          <div className="col-md-6">
-                            {data.hearing_date
-                              ? formatDate(data.hearing_date)
-                              : ""}
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">
+                              Legal Officer(s):
+                            </div>
+                            <div className="col-md-6">
+                              {assigncouncils && assigncouncils.length > 0 ? (
+                                <>
+                                  {assigncouncils.map((council, index) => (
+                                    <span key={index}>
+                                      <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                        {council.LegalOfficer.surname}{" "}
+                                        {council.LegalOfficer.first_name}
+                                      </h3>
+                                    </span>
+                                  ))}
+                                </>
+                              ) : (
+                                <p>No Legal Officer(s) Assigned</p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">
-                            Legal Officer(s):
-                          </div>
-                          <div className="col-md-6">
-                            {assigncouncils && assigncouncils.length > 0 ? (
-                              <>
-                                {assigncouncils.map((council, index) => (
-                                  <span key={index}>
-                                    <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
-                                      {council.LegalOfficer.surname}{" "}
-                                      {council.LegalOfficer.first_name}
-                                    </h3>
-                                  </span>
-                                ))}
-                              </>
-                            ) : (
-                              <p>No Legal Officer(s) Assigned</p>
-                            )}
-                          </div>
-                        </div>
 
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">
-                            Chamber/Solicitor:
-                          </div>
-                          <div className="col-md-6">
-                            {/* {chamberOrSolicitor &&
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">
+                              Chamber/Solicitor:
+                            </div>
+                            <div className="col-md-6">
+                              {/* {chamberOrSolicitor &&
                             chamberOrSolicitor.length > 0 ? (
                               <>
                                 {chamberOrSolicitor.map((solicitor, index) => (
@@ -520,292 +536,302 @@ export default function SingleCase() {
                             ) : (
                               <button>No Chamber/Solicitor Attached</button>
                             )} */}
-                            {chamberOrSolicitor ? (
-                              <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
-                                {chamberOrSolicitor.chamber_name}
-                              </h3>
-                            ) : (
-                              <p>No Chamber/Solicitor Attached</p>
-                            )}
+                              {chamberOrSolicitor ? (
+                                <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                  {chamberOrSolicitor.chamber_name}
+                                </h3>
+                              ) : (
+                                <p>No Chamber/Solicitor Attached</p>
+                              )}
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Case Status:</div>
-                          <div className="col-md-6">
-                            <a
-                              href={`#`}
-                              className="btn bright-btn btn-secondary-bright m-1"
-                            >
-                              {/* <i className="fa fa-file" aria-hidden="true"></i> */}
-                              {data.status == 1 ? "Pending" : " Closed"}
-                            </a>
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">Case Status:</div>
+                            <div className="col-md-6">
+                              <a
+                                href={`#`}
+                                className="btn bright-btn btn-secondary-bright m-1"
+                              >
+                                {/* <i className="fa fa-file" aria-hidden="true"></i> */}
+                                {data.status == 1 ? "Pending" : " Closed"}
+                              </a>
+                            </div>
                           </div>
-                        </div>
-                        <div className="row border">
-                          <div className="fw-bold col-md-6">Case Comments:</div>
-                          <div className="col-md-6">
-                            <a
-                              href={`${process.env.PUBLIC_URL}/comments/${id}`}
-                              className="btn bright-btn btn-secondary-bright m-1"
-                              target="_blank"
-                            >
-                              <i className="fa fa-file" aria-hidden="true"></i>{" "}
-                              View Comments
-                            </a>
+                          <div className="row border">
+                            <div className="fw-bold col-md-6">
+                              Case Comments:
+                            </div>
+                            <div className="col-md-6">
+                              <a
+                                href={`${process.env.PUBLIC_URL}/comments/${id}`}
+                                className="btn bright-btn btn-secondary-bright m-1"
+                                target="_blank"
+                              >
+                                <i
+                                  className="fa fa-file"
+                                  aria-hidden="true"
+                                ></i>{" "}
+                                View Comments
+                              </a>
+                            </div>
                           </div>
-                        </div>
-                        {/* <p style={{ color: "green" }}>
+                          {/* <p style={{ color: "green" }}>
                           {" "}
                           <a href="/comments">View Comments </a>
                         </p> */}
-                      </div>
-                    )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Card.Body>
-            )}
-
-            <div className="">
-              <button
-                className="btn btn-primary bright-btn btn-primary-bright mx-5"
-                onClick={openMotionModal}
-              >
-                Attach Process
-              </button>
-              <button
-                className="btn bright-btn btn-secondary-bright mx-5"
-                onClick={openAdjournCaseModal}
-              >
-                Adjourn Case
-              </button>
-              {data && (
-                <button
-                  className={`btn ${
-                    data.status === 2
-                      ? "btn-danger bright-btn btn-danger-bright"
-                      : "btn-danger bright-btn btn-danger-bright"
-                  } mx-5`}
-                  onClick={() => openCaseModal(data)}
-                >
-                  {data.status === 2 ? "Reopen Case" : "Close Case"}
-                </button>
+                </Card.Body>
               )}
-              {/* <button
+
+              <div className="">
+                {data && (
+                  <button
+                    className="btn btn-primary bright-btn btn-primary-bright mx-5"
+                    onClick={openMotionModal}
+                  >
+                    Attach Process
+                  </button>
+                )}
+                {data && (
+                  <button
+                    className="btn bright-btn btn-secondary-bright mx-5"
+                    onClick={openAdjournCaseModal}
+                  >
+                    Adjourn Case
+                  </button>
+                )}
+
+                {data && (
+                  <button
+                    className={`btn ${
+                      data.status === 2
+                        ? "btn-danger bright-btn btn-danger-bright"
+                        : "btn-danger bright-btn btn-danger-bright"
+                    } mx-5`}
+                    onClick={() => openCaseModal(data)}
+                  >
+                    {data.status === 2 ? "Reopen Case" : "Close Case"}
+                  </button>
+                )}
+                {/* <button
                 className="btn btn-warning bright-btn btn-primary-bright mx-5"
                 onClick={openAdjournCaseModal}>
                 Adjourn Case
               </button> */}
-            </div>
-          </Card>
-        </Col>
+              </div>
+            </Card>
+          </Col>
 
-        <Col xl={12} md={12}>
-          <Card className="card border">
-            {loading && <Loader />}
-            {!loading && data && (
-              <Card.Body>
-                <div>
-                  <div
-                    className="container bg-primary text-white custom-height"
-                    style={{
-                      height: "40px",
-                      borderRadius: "2.5px",
-                      maxWidth: "300px",
-                    }}
-                  >
-                    <h6 className="text-center pt-3">Case Attachment(s)</h6>
-                  </div>
-                  <div className="table-responsive">
-                    {attachments && attachments.length > 0 ? (
-                      <table className="table table-bordered table-striped">
-                        <thead style={{ background: "#0A7E51" }}>
-                          <tr>
-                            <th
-                              style={{
-                                color: "#fff",
-                                fontWeight: 900,
-                              }}
-                            >
-                              S/N
-                            </th>
-                            <th
-                              style={{
-                                color: "#fff",
-                                fontWeight: 900,
-                              }}
-                            >
-                              Attachment Type
-                            </th>
-                            <th
-                              style={{
-                                color: "#fff",
-                                fontWeight: 900,
-                              }}
-                            >
-                              Attachment
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {attachments.map((attachment, index) => (
-                            <tr key={attachment.id}>
-                              <td>{index + 1}</td>
-                              <td>
-                                {attachment.FileType
-                                  ? attachment.FileType.name
-                                  : "N/A"}
-                              </td>
-                              <td>
-                                <a
-                                  href={`${process.env.REACT_APP_UPLOAD_URL}${attachment.doc_url}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
-                                >
-                                  <span className="fa fa-eye"></span>{" "}
-                                  View/Download
-                                </a>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <p className="mt-3" style={{ textAlign: "center" }}>
-                        <img
-                          src="/img/folder_icn.png"
-                          alt="No attachments icon"
-                          height="50"
-                          width="50"
-                        />
-                        No attachments available.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </Card.Body>
-            )}
-          </Card>
-        </Col>
-
-        <Col xl={12} md={12}>
-          <Card className="card border">
-            {loading && <Loader />}
-            {!loading && data && (
-              <Card.Body>
-                <div>
-                  <div
-                    className="container bg-primary text-white custom-height"
-                    style={{
-                      height: "40px",
-                      borderRadius: "2.5px",
-                      maxWidth: "300px",
-                    }}
-                  >
-                    <h6 className="text-center pt-3">Process Document(s)</h6>
-                  </div>
-                  <div className="table-responsive">
-                    {attachments && attachments.length > 0 ? (
-                      <table className="table table-bordered table-striped">
-                        <thead style={{ background: "#0A7E51" }}>
-                          <tr>
-                            <th
-                              style={{
-                                color: "#fff",
-                                fontWeight: 900,
-                              }}
-                            >
-                              S/N
-                            </th>
-                            <th
-                              style={{
-                                color: "#fff",
-                                fontWeight: 900,
-                              }}
-                            >
-                              Type
-                            </th>
-                            <th
-                              style={{
-                                color: "#fff",
-                                fontWeight: 900,
-                              }}
-                            >
-                              Document
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {attachments.map((attachment, index) => (
-                            <tr key={attachment.id}>
-                              <td>{index + 1}</td>
-                              <td>
-                                {attachment.FileType
-                                  ? attachment.FileType.name
-                                  : "N/A"}
-                              </td>
-                              <td>
-                                <a
-                                  href={`${process.env.REACT_APP_UPLOAD_URL}${attachment.doc_url}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
-                                >
-                                  <span className="fa fa-eye"></span>{" "}
-                                  View/Download
-                                </a>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <p className="mt-3" style={{ textAlign: "center" }}>
-                        <img
-                          src="/img/folder_icn.png"
-                          alt="No attachments icon"
-                          height="50"
-                          width="50"
-                        />
-                        No documentss available.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </Card.Body>
-            )}
-          </Card>
-        </Col>
-
-        <Col xl={12} md={12}>
-          <Card className="card border">
-            {loading && <Loader />}
-            {!loading && data && (
-              <Card.Body>
-                <div>
-                  <div
-                    className="container d-flex flex-column align-items-center justify-content-center text-white custom-height"
-                    style={{ height: "30vh" }}
-                  >
-                    <img
-                      src="/img/Roster_Icon.png"
-                      alt="No reports icon"
-                      height="150"
-                      width="150"
-                    />
-                    <Link
-                      to={`${process.env.PUBLIC_URL}/case-reports/${id}`}
-                      className="btn btn-primary btn-icon text-center pt-3"
-                      target="_blank"
+          <Col xl={12} md={12}>
+            <Card className="card border">
+              {loading && <Loader />}
+              {!loading && data && (
+                <Card.Body>
+                  <div>
+                    <div
+                      className="container bg-primary text-white custom-height"
+                      style={{
+                        height: "40px",
+                        borderRadius: "2.5px",
+                        maxWidth: "300px",
+                      }}
                     >
-                      <span>
-                        <i className="fe fe-eye"></i>&nbsp;
-                      </span>
-                      View Case Reports
-                    </Link>
+                      <h6 className="text-center pt-3">Case Attachment(s)</h6>
+                    </div>
+                    <div className="table-responsive">
+                      {attachments && attachments.length > 0 ? (
+                        <table className="table table-bordered table-striped">
+                          <thead style={{ background: "#0A7E51" }}>
+                            <tr>
+                              <th
+                                style={{
+                                  color: "#fff",
+                                  fontWeight: 900,
+                                }}
+                              >
+                                S/N
+                              </th>
+                              <th
+                                style={{
+                                  color: "#fff",
+                                  fontWeight: 900,
+                                }}
+                              >
+                                Attachment Type
+                              </th>
+                              <th
+                                style={{
+                                  color: "#fff",
+                                  fontWeight: 900,
+                                }}
+                              >
+                                Attachment
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {attachments.map((attachment, index) => (
+                              <tr key={attachment.id}>
+                                <td>{index + 1}</td>
+                                <td>
+                                  {attachment.FileType
+                                    ? attachment.FileType.name
+                                    : "N/A"}
+                                </td>
+                                <td>
+                                  <a
+                                    href={`${process.env.REACT_APP_UPLOAD_URL}${attachment.doc_url}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                                  >
+                                    <span className="fa fa-eye"></span>{" "}
+                                    View/Download
+                                  </a>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p className="mt-3" style={{ textAlign: "center" }}>
+                          <img
+                            src="/img/folder_icn.png"
+                            alt="No attachments icon"
+                            height="50"
+                            width="50"
+                          />
+                          No attachments available.
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  {/* <div className="mt-4">
+                </Card.Body>
+              )}
+            </Card>
+          </Col>
+
+          <Col xl={12} md={12}>
+            <Card className="card border">
+              {loading && <Loader />}
+              {!loading && data && (
+                <Card.Body>
+                  <div>
+                    <div
+                      className="container bg-primary text-white custom-height"
+                      style={{
+                        height: "40px",
+                        borderRadius: "2.5px",
+                        maxWidth: "300px",
+                      }}
+                    >
+                      <h6 className="text-center pt-3">Process Document(s)</h6>
+                    </div>
+                    <div className="table-responsive">
+                      {motionattachments && motionattachments.length > 0 ? (
+                        <table className="table table-bordered table-striped">
+                          <thead style={{ background: "#0A7E51" }}>
+                            <tr>
+                              <th
+                                style={{
+                                  color: "#fff",
+                                  fontWeight: 900,
+                                }}
+                              >
+                                S/N
+                              </th>
+                              <th
+                                style={{
+                                  color: "#fff",
+                                  fontWeight: 900,
+                                }}
+                              >
+                                Type
+                              </th>
+                              <th
+                                style={{
+                                  color: "#fff",
+                                  fontWeight: 900,
+                                }}
+                              >
+                                Document
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {motionattachments.map((attachment, index) => (
+                              <tr key={attachment.id}>
+                                <td>{index + 1}</td>
+                                <td>
+                                  {attachment.FileType
+                                    ? attachment.FileType.name
+                                    : "N/A"}
+                                </td>
+                                <td>
+                                  <a
+                                    href={`${process.env.REACT_APP_UPLOAD_URL}${attachment.doc_url}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                                  >
+                                    <span className="fa fa-eye"></span>{" "}
+                                    View/Download
+                                  </a>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p className="mt-3" style={{ textAlign: "center" }}>
+                          <img
+                            src="/img/folder_icn.png"
+                            alt="No attachments icon"
+                            height="50"
+                            width="50"
+                          />
+                          No documentss available.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Card.Body>
+              )}
+            </Card>
+          </Col>
+
+          <Col xl={12} md={12}>
+            <Card className="card border">
+              {loading && <Loader />}
+              {!loading && data && (
+                <Card.Body>
+                  <div>
+                    <div
+                      className="container d-flex flex-column align-items-center justify-content-center text-white custom-height"
+                      style={{ height: "30vh" }}
+                    >
+                      <img
+                        src="/img/Roster_Icon.png"
+                        alt="No reports icon"
+                        height="150"
+                        width="150"
+                      />
+                      <Link
+                        to={`${process.env.PUBLIC_URL}/case-reports/${id}`}
+                        className="btn btn-primary btn-icon text-center pt-3"
+                        target="_blank"
+                      >
+                        <span>
+                          <i className="fe fe-eye"></i>&nbsp;
+                        </span>
+                        View Case Reports
+                      </Link>
+                    </div>
+                    {/* <div className="mt-4">
                     {reports && reports.length > 0 ? (
                       <div className="table-responsive">
                         <table className="table table-bordered table-striped">
@@ -854,337 +880,362 @@ export default function SingleCase() {
                       </p>
                     )}
                   </div> */}
-                </div>
-              </Card.Body>
-            )}
-          </Card>
-        </Col>
-
-        <Modal show={LegalModal}>
-          <Modal.Header>
-            <Button onClick={closeLegalModal} className="btn-close" variant="">
-              x
-            </Button>
-          </Modal.Header>
-
-          <Modal.Body>
-            <div>
-              <Card>
-                <Card.Header>
-                  <Card.Title as="h3">Attach legal Officer </Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Col lg={12} md={12}>
-                    <p>Please select legal Officers</p>
-                    <Select
-                      isMulti
-                      options={legalOfficers.map((judge) => ({
-                        value: judge.id,
-                        label: `${
-                          judge.surname +
-                          " " +
-                          judge.first_name +
-                          " " +
-                          judge.middle_name
-                        }`,
-                      }))}
-                      value={legalOfficerId}
-                      onChange={setSelectedCouncil}
-                      getOptionLabel={(option) => option.label}
-                    />
-                  </Col>
+                  </div>
                 </Card.Body>
-              </Card>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="dark" className="me-1" onClick={closeLegalModal}>
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              className="me-1"
-              onClick={(e) => handleAddLegalOfficer(e, params.id)}
-            >
-              Assign
-            </Button>
-          </Modal.Footer>
-        </Modal>
+              )}
+            </Card>
+          </Col>
 
-        <Modal show={ChamberModal}>
-          <Modal.Header>
-            <Button
-              onClick={closeChamberModal}
-              className="btn-close"
-              variant=""
-            >
-              x
-            </Button>
-          </Modal.Header>
-
-          <Modal.Body>
-            <div>
-              <Card>
-                <Card.Header>
-                  <Card.Title as="h3">Attach Chamber </Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Col lg={12} md={12}>
-                    <p>Please select Chamber</p>
-                    <Select
-                      isMulti
-                      options={chambers.map((chamber) => ({
-                        value: chamber.id,
-                        label: `${chamber.chamber_name}`,
-                      }))}
-                      value={legalOfficerId}
-                      onChange={setSelectedChamber}
-                      getOptionLabel={(option) => option.label}
-                    />
-                  </Col>
-                </Card.Body>
-              </Card>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="dark" className="me-1" onClick={closeChamberModal}>
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              className="me-1"
-              onClick={(e) => handleAddChamberOfficer(e)}
-            >
-              Assign
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
-        <Modal show={motionModal} size="lg">
-          <Modal.Header>
-            <Button onClick={closeMotionModal} className="btn-close" variant="">
-              x
-            </Button>
-          </Modal.Header>
-
-          <Modal.Body>
-            <div>
-              <Card>
-                <Card.Header>
-                  <Card.Title as="h3">Attach Process </Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Col lg={12} md={12}>
-                    <p>
-                      Please complete the details to attach process to{" "}
-                      {motionData && motionData.suite_no}
-                    </p>
-                  </Col>
-                  <Row className="my-5">
-                    <Col md={6}>
-                      <label htmlFor="document type">Document Type</label>
-                      <select
-                        className="form-select"
-                        name=""
-                        id=""
-                        onChange={(e) =>
-                          setMotionDetails({
-                            ...motionDetails,
-                            doc_type_id: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="">--select--</option>
-                        {fileType &&
-                          fileType.map((file) => (
-                            <option value={file.id} key={file.id}>
-                              {file.name}
-                            </option>
-                          ))}
-                      </select>
-                    </Col>
-                    <Col md={6}>
-                      <label htmlFor="document type">Document </label>
-                      <input
-                        onChange={(e) =>
-                          setMotionDetails({
-                            ...motionDetails,
-                            doc_url: e.target.files[0],
-                          })
-                        }
-                        className="form-control"
-                        type="file"
-                        name=""
-                        id=""
-                      />
-                    </Col>
-                  </Row>
-                  <Row className="my-5">
-                    <Col md={12}>
-                      <label htmlFor="document type">Process Description</label>
-                      <textarea
-                        className="form-control"
-                        onChange={(e) =>
-                          setMotionDetails({
-                            ...motionDetails,
-                            motion_description: e.target.value,
-                          })
-                        }
-                      ></textarea>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="dark" className="me-1" onClick={closeMotionModal}>
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              className="me-1"
-              onClick={(e) => handleAddMotion(e)}
-            >
-              Attach
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
-        {openCaseModalData && (
-          <Modal show={caseModal} size="lg">
-            <Modal.Header></Modal.Header>
+          <Modal show={LegalModal}>
+            <Modal.Header>
+              <Button
+                onClick={closeLegalModal}
+                className="btn-close"
+                variant=""
+              >
+                x
+              </Button>
+            </Modal.Header>
 
             <Modal.Body>
               <div>
                 <Card>
                   <Card.Header>
-                    <Card.Title as="h3">
-                      {openCaseModalData.status === 2
-                        ? "Reopen Case"
-                        : "Close Case"}{" "}
-                    </Card.Title>
+                    <Card.Title as="h3">Attach legal Officer </Card.Title>
                   </Card.Header>
                   <Card.Body>
                     <Col lg={12} md={12}>
-                      <p>
-                        Are you sure you want to{" "}
-                        {openCaseModalData.status === 2
-                          ? "Reopen Case"
-                          : "Close Case"}
-                        ?
-                      </p>
-                      {openCaseModalData.status !== 2 && (
-                        <form className="row g-3 needs-validation">
-                          <Col md={12}>
-                            <label
-                              htmlFor="validationCustomUsername"
-                              className="form-label"
-                            >
-                              Comment
-                            </label>
-                            <textarea
-                              className="form-control has-validation"
-                              defaultValue=""
-                              onChange={(e) => setComment(e.target.value)}
-                              aria-describedby="inputGroupPrepend"
-                              name="comment"
-                            ></textarea>
-                          </Col>
-                        </form>
-                      )}
+                      <p>Please select legal Officers</p>
+                      <Select
+                        isMulti
+                        options={legalOfficers.map((judge) => ({
+                          value: judge.id,
+                          label: `${
+                            judge.surname +
+                            " " +
+                            judge.first_name +
+                            " " +
+                            judge.middle_name
+                          }`,
+                        }))}
+                        value={legalOfficerId}
+                        onChange={setSelectedCouncil}
+                        getOptionLabel={(option) => option.label}
+                      />
                     </Col>
                   </Card.Body>
                 </Card>
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="dark" className="me-1" onClick={closeCaseModal}>
-                Cancel
+              <Button variant="dark" className="me-1" onClick={closeLegalModal}>
+                Close
               </Button>
-
-              <button
-                className={`btn ${
-                  openCaseModalData.status === 2
-                    ? "btn-danger bright-btn btn-danger-bright"
-                    : "btn-danger bright-btn btn-danger-bright"
-                } mx-5`}
-                onClick={
-                  openCaseModalData.status === 2
-                    ? () => handleReopenCaseClick(openCaseModalData.id)
-                    : handleCloseCase
-                }
+              <Button
+                variant="primary"
+                className="me-1"
+                onClick={(e) => handleAddLegalOfficer(e, params.id)}
               >
-                {openCaseModalData.status === 2 ? `Reopen Case` : "Close Case"}
-              </button>
+                Assign
+              </Button>
             </Modal.Footer>
           </Modal>
-        )}
 
-        <Modal show={adjournCaseModal} size="md">
-          <Modal.Header>
-            <Button
-              onClick={closeAdjournCaseModal}
-              className="btn-close"
-              variant=""
-            >
-              x
-            </Button>
-          </Modal.Header>
+          <Modal show={ChamberModal}>
+            <Modal.Header>
+              <Button
+                onClick={closeChamberModal}
+                className="btn-close"
+                variant=""
+              >
+                x
+              </Button>
+            </Modal.Header>
 
-          <Modal.Body>
-            <div>
-              <Card>
-                <Card.Header>
-                  <Card.Title as="h3">Adjourn Case</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Row className="my-5">
-                    <Col md={12}>
-                      <label htmlFor="adjournment_date">Date</label>
-                      <input
-                        name="adjournment_date"
-                        className="form-control"
-                        type="date"
-                        value={adjournCaseData.adjournment_date}
-                        onChange={handleInputChange}
+            <Modal.Body>
+              <div>
+                <Card>
+                  <Card.Header>
+                    <Card.Title as="h3">Attach Chamber </Card.Title>
+                  </Card.Header>
+                  <Card.Body>
+                    <Col lg={12} md={12}>
+                      <p>Please select Chamber</p>
+                      <Select
+                        isMulti
+                        options={chambers.map((chamber) => ({
+                          value: chamber.id,
+                          label: `${chamber.chamber_name}`,
+                        }))}
+                        value={legalOfficerId}
+                        onChange={setSelectedChamber}
+                        getOptionLabel={(option) => option.label}
                       />
                     </Col>
-                  </Row>
-                  <Row className="my-5">
-                    <Col md={12}>
-                      <label htmlFor="comment">Comment</label>
-                      <textarea
-                        name="comment"
-                        className="form-control"
-                        placeholder="Add a reason for the adjournment"
-                        value={adjournCaseData.comment}
-                        onChange={handleInputChange}
-                      ></textarea>
+                  </Card.Body>
+                </Card>
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="dark"
+                className="me-1"
+                onClick={closeChamberModal}
+              >
+                Close
+              </Button>
+              <Button
+                variant="primary"
+                className="me-1"
+                onClick={(e) => handleAddChamberOfficer(e)}
+              >
+                Assign
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          <Modal show={motionModal} size="lg">
+            <Modal.Header>
+              <Button
+                onClick={closeMotionModal}
+                className="btn-close"
+                variant=""
+              >
+                x
+              </Button>
+            </Modal.Header>
+
+            <Modal.Body>
+              <div>
+                <Card>
+                  <Card.Header>
+                    <Card.Title as="h3">Attach Process </Card.Title>
+                  </Card.Header>
+                  <Card.Body>
+                    <Col lg={12} md={12}>
+                      <p>
+                        Please complete the details to attach process to{" "}
+                        {motionData && motionData.suite_no}
+                      </p>
                     </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="dark"
-              className="me-1"
-              onClick={closeAdjournCaseModal}
-            >
-              Close
-            </Button>
-            <Button
-              variant="primary"
-              className="me-1"
-              onClick={handleAdjournCase}
-            >
-              Adjourn
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </div>
+                    <Row className="my-5">
+                      <Col md={6}>
+                        <label htmlFor="document type">Document Type</label>
+                        <select
+                          className="form-select"
+                          name=""
+                          id=""
+                          onChange={(e) =>
+                            setMotionDetails({
+                              ...motionDetails,
+                              doc_type_id: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">--select--</option>
+                          {fileType &&
+                            fileType.map((file) => (
+                              <option value={file.id} key={file.id}>
+                                {file.name}
+                              </option>
+                            ))}
+                        </select>
+                      </Col>
+                      <Col md={6}>
+                        <label htmlFor="document type">Document </label>
+                        <input
+                          onChange={(e) =>
+                            setMotionDetails({
+                              ...motionDetails,
+                              doc_urls: e.target.files[0],
+                            })
+                          }
+                          className="form-control"
+                          type="file"
+                          name=""
+                          id=""
+                        />
+                      </Col>
+                    </Row>
+                    <Row className="my-5">
+                      <Col md={12}>
+                        <label htmlFor="document type">
+                          Process Description
+                        </label>
+                        <textarea
+                          className="form-control"
+                          onChange={(e) =>
+                            setMotionDetails({
+                              ...motionDetails,
+                              motion_description: e.target.value,
+                            })
+                          }
+                        ></textarea>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="dark"
+                className="me-1"
+                onClick={closeMotionModal}
+              >
+                Close
+              </Button>
+              <Button
+                variant="primary"
+                className="me-1"
+                onClick={(e) => handleAddMotion(e)}
+              >
+                Attach
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {openCaseModalData && (
+            <Modal show={caseModal} size="lg">
+              <Modal.Header></Modal.Header>
+
+              <Modal.Body>
+                <div>
+                  <Card>
+                    <Card.Header>
+                      <Card.Title as="h3">
+                        {openCaseModalData.status === 2
+                          ? "Reopen Case"
+                          : "Close Case"}{" "}
+                      </Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <Col lg={12} md={12}>
+                        <p>
+                          Are you sure you want to{" "}
+                          {openCaseModalData.status === 2
+                            ? "Reopen Case"
+                            : "Close Case"}
+                          ?
+                        </p>
+                        {openCaseModalData.status !== 2 && (
+                          <form className="row g-3 needs-validation">
+                            <Col md={12}>
+                              <label
+                                htmlFor="validationCustomUsername"
+                                className="form-label"
+                              >
+                                Comment
+                              </label>
+                              <textarea
+                                className="form-control has-validation"
+                                defaultValue=""
+                                onChange={(e) => setComment(e.target.value)}
+                                aria-describedby="inputGroupPrepend"
+                                name="comment"
+                              ></textarea>
+                            </Col>
+                          </form>
+                        )}
+                      </Col>
+                    </Card.Body>
+                  </Card>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="dark"
+                  className="me-1"
+                  onClick={closeCaseModal}
+                >
+                  Cancel
+                </Button>
+
+                <button
+                  className={`btn ${
+                    openCaseModalData.status === 2
+                      ? "btn-danger bright-btn btn-danger-bright"
+                      : "btn-danger bright-btn btn-danger-bright"
+                  } mx-5`}
+                  onClick={
+                    openCaseModalData.status === 2
+                      ? () => handleReopenCaseClick(openCaseModalData.id)
+                      : handleCloseCase
+                  }
+                >
+                  {openCaseModalData.status === 2
+                    ? `Reopen Case`
+                    : "Close Case"}
+                </button>
+              </Modal.Footer>
+            </Modal>
+          )}
+
+          <Modal show={adjournCaseModal} size="md">
+            <Modal.Header>
+              <Button
+                onClick={closeAdjournCaseModal}
+                className="btn-close"
+                variant=""
+              >
+                x
+              </Button>
+            </Modal.Header>
+
+            <Modal.Body>
+              <div>
+                <Card>
+                  <Card.Header>
+                    <Card.Title as="h3">Adjourn Case</Card.Title>
+                  </Card.Header>
+                  <Card.Body>
+                    <Row className="my-5">
+                      <Col md={12}>
+                        <label htmlFor="adjournment_date">Date</label>
+                        <input
+                          name="adjournment_date"
+                          className="form-control"
+                          type="date"
+                          value={adjournCaseData.adjournment_date}
+                          onChange={handleInputChange}
+                        />
+                      </Col>
+                    </Row>
+                    <Row className="my-5">
+                      <Col md={12}>
+                        <label htmlFor="comment">Comment</label>
+                        <textarea
+                          name="comment"
+                          className="form-control"
+                          placeholder="Add a reason for the adjournment"
+                          value={adjournCaseData.comment}
+                          onChange={handleInputChange}
+                        ></textarea>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="dark"
+                className="me-1"
+                onClick={closeAdjournCaseModal}
+              >
+                Close
+              </Button>
+              <Button
+                variant="primary"
+                className="me-1"
+                onClick={handleAdjournCase}
+              >
+                Adjourn
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
+      )}
     </>
   );
 }

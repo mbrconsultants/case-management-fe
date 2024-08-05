@@ -26,11 +26,13 @@ export const RosterList = () => {
   const [isLoading, setLoading] = useState(false);
   const [headerText, setHeaderText] = useState("");
   const [hearingdate, setHearingdate] = useState({ hearing_date: "" });
+  const [hearingmonth, setHearingmonth] = useState({ hearing_month: "" });
   const [RosterModal, setRosterModal] = useState(false);
   const [caseList, setCaseList] = useState([]);
   const [rosterAssignment, setRosterAssignment] = useState([]);
   const [legalOfficers, setLegalOfficers] = useState([]);
   const [selectedSuitNo, setSelectedSuitNo] = useState(null);
+  // const [selectedMonth, setselectedMonth] = useState(null);
   const [selectedCouncils, setSelectedCouncils] = useState([]);
 
   const navigate = useNavigate();
@@ -57,6 +59,7 @@ export const RosterList = () => {
     retrieveHeaderText();
     // getRosterAssignment();
     handleGetCases();
+    handleGetMonthCases();
     getCaseList();
     getLegalOfficer();
   }, []);
@@ -77,12 +80,6 @@ export const RosterList = () => {
   const year = currentDate.getFullYear();
 
   const handleGetCases = async () => {
-    // e.preventDefault();
-
-    // if (!hearingdate.hearing_date) {
-    //     setHeaderText(`COURT ROSTER LIST`);
-    // }
-
     const date = new Date(hearingdate.hearing_date);
     const month = date.toLocaleString("default", { month: "long" });
     const year = date.getFullYear();
@@ -98,6 +95,36 @@ export const RosterList = () => {
         `/case/list-by-hearing-date`,
         hearingdate
       );
+
+      setLoading(true);
+      setRosterAssignment(res.data.data);
+      setLoading(false);
+      // SuccessAlert(res.data.message);
+      // getRosterAssignment();
+    } catch (err) {
+      setLoading(false);
+      ErrorAlert(err.response.data.message);
+      console.error(err);
+    }
+  };
+
+  const handleGetMonthCases = async () => {
+    const date = new Date(hearingdate.hearing_date);
+    const month = date.toLocaleString("default", { month: "long" });
+    const year = date.getFullYear();
+    // console.log(date);
+    setHeaderText(
+      hearingdate.hearing_date
+        ? `COURT ROSTER FOR THE MONTH OF ${month.toUpperCase()}, ${year}`
+        : `COURT ROSTER LIST`
+    );
+
+    try {
+      const res = await endpoint.post(
+        `/case/list-by-hearing-month`,
+        hearingdate
+      );
+
       setLoading(true);
       setRosterAssignment(res.data.data);
       setLoading(false);
@@ -158,16 +185,20 @@ export const RosterList = () => {
   // Function to Create Roster
   const handleCreateRoster = async () => {
     try {
+      console.log("Adams", selectedSuitNo);
       const formData = new FormData();
-      formData.append("case_id", selectedSuitNo?.value || "");
+      formData.append("case_id", selectedSuitNo?.value || undefined);
       // formData.append("suite_no", selectedSuitNo?.value || "");
       formData.append(
         "legal_officer_id",
-        JSON.stringify(selectedCouncils.map((council) => council.value))
+        selectedCouncils.map((council) => council.value)
+        // JSON.stringify(selectedCouncils.map((council) => council.value))
       );
-      console.log("Payload:", formData);
 
+      console.log("formData", formData);
       const response = await endpoint.post(`/case/create-roster`, formData);
+
+      console.log("Payload:", response.data);
       SuccessAlert(response.data.message);
       reset();
       setSelectedSuitNo(null);
@@ -175,9 +206,13 @@ export const RosterList = () => {
       setRosterModal(false);
       getRosterAssignment();
     } catch (err) {
-      console.log(err);
-      // setLoading(false);
-      ErrorAlert("An error occurred. Please try again.");
+      if (err.response && err.response.data && err.response.data.message) {
+        ErrorAlert(err.response.data.message); // Display the error message
+      } else if (err.message) {
+        ErrorAlert(err.message); // Fallback to the generic error message
+      } else {
+        ErrorAlert("An error occurred. Please try again."); // Default error message
+      }
     }
   };
   // Function to parse chamber lawyer name from json data
@@ -201,6 +236,21 @@ export const RosterList = () => {
     document.title = originalTitle; // Restore original document title after printing
   };
 
+  // const monthSearch = [
+  //   { id: 1, month_search: "January" },
+  //   { id: 2, month_search: "February" },
+  //   { id: 3, month_search: "March" },
+  //   { id: 4, month_search: "April" },
+  //   { id: 5, month_search: "May" },
+  //   { id: 6, month_search: "June" },
+  //   { id: 7, month_search: "July" },
+  //   { id: 8, month_search: "August" },
+  //   { id: 9, month_search: "September" },
+  //   { id: 10, month_search: "October" },
+  //   { id: 11, month_search: "November" },
+  //   { id: 12, month_search: "December" },
+  // ];
+
   return (
     <div>
       <div className="box box-default">
@@ -222,9 +272,8 @@ export const RosterList = () => {
         <div className="container-fluid">
           <br />
           <br />
-          <Row className="justify-content-center">
-            <Col xs={12} md={8}>
-              <br />
+          <Row className="row g-0">
+            <Col xs={6}>
               <Card>
                 <Card.Body>
                   <div className="d-flex justify-content-center align-items-center">
@@ -250,7 +299,33 @@ export const RosterList = () => {
                   </div>
                 </Card.Body>
               </Card>
-              <br />
+            </Col>
+            <Col xs={6}>
+              <Card>
+                <Card.Body>
+                  <div className="d-flex justify-content-center align-items-center">
+                    <label className="me-2 mb-0">Search by Month</label>
+                    <input
+                      type="date"
+                      className="form-control me-3"
+                      value={hearingdate.hearing_date}
+                      onChange={(e) =>
+                        setHearingdate({
+                          hearing_date: e.target.value,
+                        })
+                      }
+                      required
+                      style={{ width: "auto" }}
+                    />
+                    <Button
+                      className="btn btn-success"
+                      onClick={handleGetMonthCases}
+                    >
+                      Get Roster by Month
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
             </Col>
           </Row>
         </div>
@@ -290,85 +365,56 @@ export const RosterList = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {rosterAssignment.map((row, rowIndex) => {
-                      // console.log(row);
-                      return (
-                        <tr key={rowIndex}>
-                          <td>{rowIndex + 1}</td>
-                          <td>{row.hearing_date ? row.hearing_date : ""}</td>
-                          <td>
-                            <span style={{ fontWeight: "bold" }}>
-                              {row.suite_no}
-                            </span>
-                            <br /> {row.parties}
-                          </td>
-                          <td>{row.Court ? row.Court.name : ""}</td>
-                          <td>
-                            {row.AssignCouncils &&
-                            row.AssignCouncils.length > 0 ? (
-                              <ul
-                                style={{
-                                  listStyleType: "disc",
-                                  paddingLeft: "10px",
-                                }}
-                              >
-                                {row.AssignCouncils.map((council, index) => (
-                                  <li key={index}>
-                                    {council.LegalOfficer
-                                      ? council.LegalOfficer.surname +
-                                        " " +
-                                        council.LegalOfficer.first_name
-                                      : ""}
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              ""
-                            )}
-                          </td>
-                          <td>
-                            {/* {console.log(row.ChamberOrSolicitor)} */}
-                            <h4>
-                              {row.ChamberOrSolicitor &&
-                                row.ChamberOrSolicitor.chamber_name}
-                            </h4>
-
-                            {/* <br />
-                            {row.ChamberLawyers &&
-                            row.ChamberLawyers.length > 0 ? (
-                              <ul
-                              // style={{
-                              //   listStyleType: "disc",
-                              //   paddingLeft: "20px",
-                              // }}
-                              >
-                                {row.ChamberLawyers.map(
-                                  (lawyer, lawyerIndex) => (
-                                    <li key={lawyerIndex}>
-                                      <ul
-                                        style={{
-                                          listStyleType: "disc",
-                                          paddingLeft: "10px",
-                                        }}
-                                      >
-                                        {parseLawyerName(
-                                          lawyer.lawyer_name
-                                        ).map((name, nameIndex) => (
-                                          <li key={nameIndex}>{name}</li>
-                                        ))}
-                                      </ul>
+                    {rosterAssignment
+                      .filter((row) => row.AssignCouncils.length > 0)
+                      .map((row, index) => {
+                        // console.log(row);
+                        // if (row.AssignCouncils && row.AssignCouncils.length > 0) {
+                        return (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{row.hearing_date ? row.hearing_date : ""}</td>
+                            <td>
+                              <span style={{ fontWeight: "bold" }}>
+                                {row.suite_no}
+                              </span>
+                              <br /> {row.parties}
+                            </td>
+                            <td>{row.Court ? row.Court.name : ""}</td>
+                            <td>
+                              {row.AssignCouncils &&
+                              row.AssignCouncils.length > 0 ? (
+                                <ul
+                                  style={{
+                                    listStyleType: "disc",
+                                    paddingLeft: "10px",
+                                  }}
+                                >
+                                  {row.AssignCouncils.map((council, index) => (
+                                    <li key={index}>
+                                      {council.LegalOfficer
+                                        ? council.LegalOfficer.surname +
+                                          " " +
+                                          council.LegalOfficer.first_name
+                                        : ""}
                                     </li>
-                                  )
-                                )}
-                              </ul>
-                            ) : (
-                              ""
-                            )} */}
-                          </td>
-                          <td>{row.adjournment_date}</td>
-                        </tr>
-                      );
-                    })}
+                                  ))}
+                                </ul>
+                              ) : (
+                                ""
+                              )}
+                            </td>
+                            <td>
+                              <h4>
+                                {row.ChamberOrSolicitor &&
+                                  row.ChamberOrSolicitor.chamber_name}
+                              </h4>
+                            </td>
+                            <td>{row.adjournment_date}</td>
+                          </tr>
+                        );
+                        // }
+                      })}
                   </tbody>
                 </table>
               </div>

@@ -68,20 +68,18 @@ export function Header() {
   return (
     <Navbar
       expand="md"
-      className="app-header header sticky bg-primary-gradient">
-      <Container
-        fluid
-        className="main-container">
+      className="app-header header sticky bg-primary-gradient"
+    >
+      <Container fluid className="main-container">
         <div className="d-flex align-items-center">
           <Link
             aria-label="Hide Sidebar"
             className="app-sidebar__toggle"
             to="#"
-            onClick={() => openCloseSidebar()}></Link>
+            onClick={() => openCloseSidebar()}
+          ></Link>
           <div className="responsive-logo">
-            <Link
-              to={`${process.env.PUBLIC_URL}/`}
-              className="header-logo">
+            <Link to={`${process.env.PUBLIC_URL}/`} className="header-logo">
               {/* <h4 style={{fontWeight:  "bold", fontSize: "16px", marginTop: "10px"}}>AUDIT MANAGEMENT SYSTEM</h4> */}
 
               <img
@@ -103,7 +101,8 @@ export function Header() {
           <div>
             <Link
               className="logo-horizontal "
-              to={`${process.env.PUBLIC_URL}/`}>
+              to={`${process.env.PUBLIC_URL}/`}
+            >
               <img
                 src={require("../../assets/images/brand/njc-logo.png")}
                 // src={require("../../assets/images/brand/logo.png")}
@@ -133,27 +132,31 @@ export function Header() {
               display: "flex",
               justifyContent: "right",
               marginRight: "20px",
-            }}>
+            }}
+          >
             {/* <h4  style={{fontWeight:  "bold", fontSize: "20px", marginTop: "10px", marginLeft: "200px", color: "#05A850"}} >CASE MANAGEMENT SYSTEM</h4> */}
           </div>
           <div className="d-flex order-lg-2 ms-auto header-right-icons">
             <Navbar.Toggle
               aria-controls="navbarScroll"
               className="navresponsive-toggler d-lg-none ms-auto"
-              type="button">
+              type="button"
+            >
               <span className="navbar-toggler-icon fe fe-more-vertical text-dark"></span>
             </Navbar.Toggle>
 
             <div className="navbar navbar-collapse responsive-navbar p-0">
               <Navbar.Collapse
                 className="navbar-collapse"
-                id="navbarSupportedContent-4">
+                id="navbarSupportedContent-4"
+              >
                 <div className="d-flex order-lg-2">
                   <div className="dropdown d-block d-lg-none">
                     <Link
                       to="#"
                       className="nav-link icon"
-                      onClick={() => responsivesearch()}>
+                      onClick={() => responsivesearch()}
+                    >
                       {/* <i className="fe fe-search"></i> */}
                     </Link>
                     <div className="dropdown-menu header-search dropdown-menu-start">
@@ -164,9 +167,7 @@ export function Header() {
                           placeholder="Search...."
                         />
                         <div className="input-group-text btn btn-primary">
-                          <i
-                            className="fa fa-search"
-                            aria-hidden="true"></i>
+                          <i className="fa fa-search" aria-hidden="true"></i>
                         </div>
                       </div>
                     </div>
@@ -387,7 +388,8 @@ export function Header() {
                   <Dropdown className=" d-md-flex profile-1">
                     <Dropdown.Toggle
                       className="nav-link profile leading-none d-flex px-1"
-                      variant="">
+                      variant=""
+                    >
                       <span>
                         {!currentUser?.image ? (
                           <>
@@ -418,8 +420,9 @@ export function Header() {
                     </Dropdown.Toggle>
                     <Dropdown.Menu
                       className="dropdown-menu-end dropdown-menu-arrow"
-                      style={{ margin: 0 }}>
-                      <div className="drop-heading">
+                      style={{ margin: 0 }}
+                    >
+                      {/* <div className="drop-heading">
                         <div className="text-center">
                           <h5 className="text-dark mb-0">
                             {currentUser?.name}
@@ -428,12 +431,12 @@ export function Header() {
                             {currentUser?.user_role}
                           </small>
                         </div>
-                      </div>
-                      <div className="dropdown-divider m-0"></div>
-                      <Dropdown.Item
+                      </div> */}
+                      {/* <div className="dropdown-divider m-0"></div> */}
+                      {/* <Dropdown.Item
                         href={`${process.env.PUBLIC_URL}/userprofile/${currentUser.id}`}>
                         <i className="dropdown-icon fe fe-user"></i> Profile
-                      </Dropdown.Item>
+                      </Dropdown.Item> */}
                       {/* <Dropdown.Item
                         href={`${process.env.PUBLIC_URL}/pages/mailInbox/`}
                       >
