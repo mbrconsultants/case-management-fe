@@ -501,7 +501,10 @@ export default function SingleCase() {
                                 <>
                                   {assigncouncils.map((council, index) => (
                                     <span key={index}>
-                                      <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                      <h3
+                                        className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                                        style={{ fontSize: "16px" }}
+                                      >
                                         {council.LegalOfficer.surname}{" "}
                                         {council.LegalOfficer.first_name}
                                       </h3>
@@ -537,7 +540,10 @@ export default function SingleCase() {
                               <button>No Chamber/Solicitor Attached</button>
                             )} */}
                               {chamberOrSolicitor ? (
-                                <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                <h3
+                                  className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                                  style={{ fontSize: "16px" }}
+                                >
                                   {chamberOrSolicitor.chamber_name}
                                 </h3>
                               ) : (
