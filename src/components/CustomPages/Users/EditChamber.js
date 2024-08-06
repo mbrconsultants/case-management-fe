@@ -64,13 +64,13 @@ export default function EditChamber() {
     data.append("chamber_head", editDetails.chamber_head);
     data.append("address", editDetails.address);
     data.append("email", editDetails.email);
-    data.append("email_2", editDetails.email_2);
+    data.append("email_2", editDetails.email_2 || '');  // Ensure empty strings are appended
     data.append("phone", editDetails.phone);
-    data.append("phone_2", editDetails.phone_2);
+    data.append("phone_2", editDetails.phone_2 || '');  // Ensure empty strings are appended
   
     try {
       if (id) {
-       const resp = await endpoint.put(`/solicitor/edit/${id}`, data);
+        const resp = await endpoint.put(`/solicitor/edit/${id}`, data);
         SuccessAlert(resp.data.message);
         // window.location.reload(); // Reload the page after successful edit
       } else {
@@ -81,6 +81,7 @@ export default function EditChamber() {
       ErrorAlert(err.response?.data?.description);
     }
   };
+  
   
 
   const handleShowEditModal = (lawyer) => {
@@ -253,132 +254,126 @@ export default function EditChamber() {
             </Card.Header>
 
             <Card.Body>
-              <CForm
-                onSubmit={handleSubmit(handleEditChamber)}
-                className="row g-3 needs-validation"
-              >
-                <CCol md={6}>
-                  <CFormLabel htmlFor="chamberName">
-                    Chamber's Name
-                    <span style={{ color: "red", fontSize: "20px" }}>*</span>
-                  </CFormLabel>
-                  <CFormInput
-                    id="chamberName"
-                    style={{ border: "1px solid #000", padding: "10px" }}
-                    value={editDetails.chamber_name}
-                    onChange={(e) =>
-                      setEditDetails({
-                        ...editDetails,
-                        chamber_name: e.target.value,
-                      })
-                    }
-                    type="text"
-                    name="chamberName"
-                  />
-                </CCol>
-                <CCol md={6}>
-                  <CFormLabel htmlFor="chamberHead">
-                    Head of Chamber
-                    <span style={{ color: "red", fontSize: "20px" }}>*</span>
-                  </CFormLabel>
-                  <CFormInput
-                    id="chamberHead"
-                    style={{ border: "1px solid #000", padding: "10px" }}
-                    value={editDetails.chamber_head}
-                    onChange={(e) =>
-                      setEditDetails({
-                        ...editDetails,
-                        chamber_head: e.target.value,
-                      })
-                    }
-                    type="text"
-                    name="chamberHead"
-                  />
-                </CCol>
+            <CForm onSubmit={handleSubmit(handleEditChamber)} className="row g-3 needs-validation">
+              <CCol md={6}>
+                <CFormLabel htmlFor="chamberName">
+                  Chamber's Name <span style={{ color: "red", fontSize: "20px" }}>*</span>
+                </CFormLabel>
+                <CFormInput
+                  id="chamberName"
+                  required
+                  style={{ border: "1px solid #000", padding: "10px" }}
+                  value={editDetails.chamber_name}
+                  onChange={(e) =>
+                    setEditDetails({ ...editDetails, chamber_name: e.target.value })
+                  }
+                  type="text"
+                  name="chamberName"
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="chamberHead">
+                  Head of Chamber <span style={{ color: "red", fontSize: "20px" }}>*</span>
+                </CFormLabel>
+                <CFormInput
+                  id="chamberHead"
+                  required
+                  style={{ border: "1px solid #000", padding: "10px" }}
+                  value={editDetails.chamber_head}
+                  onChange={(e) =>
+                    setEditDetails({ ...editDetails, chamber_head: e.target.value })
+                  }
+                  type="text"
+                  name="chamberHead"
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="email">
+                  Email <span style={{ color: "red", fontSize: "20px" }}>*</span>
+                </CFormLabel>
+                <CFormInput
+                  id="email"
+                  required
+                  style={{ border: "1px solid #000", padding: "10px" }}
+                  value={editDetails.email}
+                  onChange={(e) =>
+                    setEditDetails({ ...editDetails, email: e.target.value })
+                  }
+                  type="email"
+                  name="email"
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="email2">
+                  Alternative Email <span style={{ color: "red", fontSize: "20px" }}></span>
+                </CFormLabel>
+                <CFormInput
+                  id="email2"
+                  style={{ border: "1px solid #000", padding: "10px" }}
+                  value={editDetails.email_2}
+                  onChange={(e) =>
+                    setEditDetails({ ...editDetails, email_2: e.target.value })
+                  }
+                  type="email"
+                  name="email2"
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="phone">
+                  Phone Number <span style={{ color: "red", fontSize: "20px" }}>*</span>
+                </CFormLabel>
+                <CFormInput
+                  id="phone"
+                  required
+                  style={{ border: "1px solid #000", padding: "10px" }}
+                  value={editDetails.phone}
+                  onChange={(e) =>
+                    setEditDetails({ ...editDetails, phone: e.target.value })
+                  }
+                  type="text"
+                  name="phone"
+                />
+              </CCol>
+              <CCol md={6}>
+                <CFormLabel htmlFor="phone2">
+                  Alternative Phone Number <span style={{ color: "red", fontSize: "20px" }}></span>
+                </CFormLabel>
+                <CFormInput
+                  id="phone2"
+                  style={{ border: "1px solid #000", padding: "10px" }}
+                  value={editDetails.phone_2}
+                  onChange={(e) =>
+                    setEditDetails({ ...editDetails, phone_2: e.target.value })
+                  }
+                  type="text"
+                  name="phone2"
+                />
+              </CCol>
+              <CCol md={12}>
+                <CFormLabel htmlFor="address">
+                  Address <span style={{ color: "red", fontSize: "20px" }}>*</span>
+                </CFormLabel>
+                <CFormInput
+                  id="address"
+                  required
+                  style={{ border: "1px solid #000", padding: "10px" }}
+                  value={editDetails.address}
+                  onChange={(e) =>
+                    setEditDetails({ ...editDetails, address: e.target.value })
+                  }
+                  type="text"
+                  name="address"
+                />
+              </CCol>
+              <CCol md={12} className="mt-5 text-center mb-5">
+                <CButton type="submit" color="primary">
+                  Update Chamber
+                </CButton>
+              </CCol>
+            </CForm>
 
-                <CCol md={6}>
-                  <CFormLabel htmlFor="email">
-                    Email
-                    <span style={{ color: "red", fontSize: "20px" }}>*</span>
-                  </CFormLabel>
-                  <CFormInput
-                    id="email"
-                    style={{ border: "1px solid #000", padding: "10px" }}
-                    value={editDetails.email}
-                    onChange={(e) =>
-                      setEditDetails({ ...editDetails, email: e.target.value })
-                    }
-                    type="email"
-                    name="email"
-                  />
-                </CCol>
-                <CCol md={6}>
-                  <CFormLabel htmlFor="email">
-                    Alternative Email
-                    <span style={{ color: "red", fontSize: "20px" }}></span>
-                  </CFormLabel>
-                  <CFormInput
-                    id="email2"
-                    style={{ border: "1px solid #000", padding: "10px" }}
-                    value={editDetails.email_2}
-                    onChange={(e) =>
-                      setEditDetails({
-                        ...editDetails,
-                        email_2: e.target.value,
-                      })
-                    }
-                    type="email"
-                    name="email2"
-                  />
-                </CCol>
-                <CCol md={6}>
-                  <CFormLabel htmlFor="phone">
-                    Phone Number
-                    <span style={{ color: "red", fontSize: "20px" }}>*</span>
-                  </CFormLabel>
-                  <CFormInput
-                    id="phone"
-                    style={{ border: "1px solid #000", padding: "10px" }}
-                    value={editDetails.phone}
-                    onChange={(e) =>
-                      setEditDetails({ ...editDetails, phone: e.target.value })
-                    }
-                    type="text"
-                    name="phone"
-                  />
-                </CCol>
-                <CCol md={6}>
-                  <CFormLabel htmlFor="phone">
-                    Alternative Phone Number
-                    <span style={{ color: "red", fontSize: "20px" }}></span>
-                  </CFormLabel>
-                  <CFormInput
-                    id="phone2"
-                    style={{ border: "1px solid #000", padding: "10px" }}
-                    value={editDetails.phone_2}
-                    onChange={(e) =>
-                      setEditDetails({ ...editDetails, phone_2: e.target.value })
-                    }
-                    type="text"
-                    name="phone2"
-                  />
-                </CCol>
-                <CCol md={12}>
-                  <CFormLabel htmlFor="address">
-                    Address
-                    <span style={{ color: "red", fontSize: "20px" }}>*</span>
-                  </CFormLabel>
-                  <CFormInput
-                    id="address"
-                    style={{ border: "1px solid #000", padding: "10px" }}
-                    value={editDetails.address}
-                    onChange={(e) =>
-                      setEditDetails({ ...editDetails, address: e.target.value })
-                    }
-                    type="text"
-                    name="address"
-                  />
-                </CCol>
+
+
 
                 <CCol md={12} className="mt-5">
                   <CFormLabel htmlFor="counsels" className="d-flex justify-content-between align-items-center">
@@ -426,12 +421,7 @@ export default function EditChamber() {
                   </table>
                 </CCol>
 
-                <CCol md={12} className="mt-3 text-center mt-5">
-                  <CButton type="submit" color="primary">
-                    Update Chamber
-                  </CButton>
-                </CCol>
-              </CForm>
+              
             </Card.Body>
           </Card>
         </Col>

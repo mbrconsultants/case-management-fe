@@ -163,7 +163,7 @@ export default function CreateChamber() {
                     <span style={{color: 'red', fontSize: '20px'}}>*</span>
                   </CFormLabel>
                   <CFormInput
-                    id="chamberName"
+                    id="chamberName" required
                     style={{ border: "1px solid #000", padding: "10px" }}
                     value={details.chamber_name}
                     onChange={(e) =>
@@ -179,7 +179,7 @@ export default function CreateChamber() {
                     <span style={{color: 'red', fontSize: '20px'}}>*</span>
                     </CFormLabel>
                   <CFormInput
-                    id="chamberHead"
+                    id="chamberHead" required
                     style={{ border: "1px solid #000", padding: "10px" }}
                     value={details.chamber_head}
                     onChange={(e) =>
@@ -196,7 +196,7 @@ export default function CreateChamber() {
                     <span style={{color: 'red', fontSize: '20px'}}>*</span>
                   </CFormLabel>
                   <CFormInput
-                    id="email"
+                    id="email" required
                     style={{ border: "1px solid #000", padding: "10px" }}
                     value={details.email}
                     onChange={(e) =>
@@ -228,7 +228,7 @@ export default function CreateChamber() {
                     <span style={{color: 'red', fontSize: '20px'}}>*</span>
                   </CFormLabel>
                   <CFormInput
-                    id="phone"
+                    id="phone" required
                     style={{ border: "1px solid #000", padding: "10px" }}
                     value={details.phone}
                     onChange={(e) =>
@@ -261,7 +261,7 @@ export default function CreateChamber() {
                     <span style={{color: 'red', fontSize: '20px'}}>*</span>
                   </CFormLabel>
                   <CFormTextarea
-                    id="address"
+                    id="address" required
                     style={{ border: "1px solid #000", padding: "10px" }}
                     value={details.address}
                     onChange={(e) =>
