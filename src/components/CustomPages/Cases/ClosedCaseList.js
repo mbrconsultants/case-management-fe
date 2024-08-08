@@ -14,17 +14,16 @@ export default function Caselist() {
     <div>
       <div className="page-header ">
         <div>
-          <h1 className="page-title">Cases List </h1>
+          <h1 className="page-title">Closed Cases </h1>
           <Breadcrumb className="breadcrumb">
-            <Breadcrumb.Item
-              className="breadcrumb-item"
-              href="#">
+            <Breadcrumb.Item className="breadcrumb-item" href="#">
               Home
             </Breadcrumb.Item>
             <Breadcrumb.Item
               className="breadcrumb-item active breadcrumds"
-              aria-current="page">
-              Cases List
+              aria-current="page"
+            >
+              Closed Cases List
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
@@ -33,18 +32,14 @@ export default function Caselist() {
       {/* <Search.SearchStaff handleSearch={handleSearch} data={data}/> */}
 
       <Row>
-        <Col
-          sm={12}
-          className="col-12">
+        <Col sm={12} className="col-12">
           <Card>
             <Card.Header>
               <div className="d-flex align-items-center w-100">
                 <div className="card-title text-center mb-0 flex-grow-1">
-                  CASES LIST{" "}
+                  CLOSED CASES LIST{" "}
                 </div>
-                <Link
-                  className="btn btn-primary ml-auto"
-                  to={"/new-case"}>
+                <Link className="btn btn-primary ml-auto" to={"/new-case"}>
                   New Case
                 </Link>
               </div>

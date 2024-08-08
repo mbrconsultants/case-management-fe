@@ -15,6 +15,8 @@ import Parties from "./components/CustomPages/Users/Parties";
 import LegalOfficerlist from "./components/CustomPages/Users/LegalOfficerlist";
 import CourtRoster from "./components/CustomPages/Users/CourtRoster";
 import TestRoster from "./components/CustomPages/Users/TestRoster";
+import Courts from "./components/CustomPages/Courts/Courts";
+import Divisions from "./components/CustomPages/Courts/Divisions";
 
 const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -358,6 +360,9 @@ const NewLegalOfficer = React.lazy(() =>
 const CreateRoster = React.lazy(() =>
   import("./components/CustomPages/Users/CreateRoster")
 );
+const CaseAssignmentHistory = React.lazy(() =>
+  import("./components/CustomPages/Cases/CaseAssignmentHistory")
+);
 
 const NewCase = React.lazy(() =>
   import("./components/CustomPages/Cases/NewCase")
@@ -408,6 +413,12 @@ const EditChamber = React.lazy(() =>
 const ChamberList = React.lazy(() =>
   import("./components/CustomPages/Users/ChamberList")
 );
+// const Courts = React.lazy(() =>
+//   import("./components/CustomPages/Court/Courts")
+// );
+// const Divisions = React.lazy(() =>
+//   import("./components/CustomPages/Court/Divisions")
+// );
 const SingleChamber = React.lazy(() =>
   import("./components/CustomPages/Users/SingleChamber")
 );
@@ -568,6 +579,15 @@ const Root = () => {
                     }
                   />
                   <Route
+                    path={`${process.env.PUBLIC_URL}/case-assignment-history`}
+                    element={
+                      // user ?
+                      <CaseAssignmentHistory />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
                     path={`${process.env.PUBLIC_URL}/case-type`}
                     element={
                       // user ?
@@ -693,6 +713,24 @@ const Root = () => {
                     element={
                       // user ?
                       <ChamberList />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/courts`}
+                    element={
+                      // user ?
+                      <Courts />
+                      // :
+                      // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
+                    }
+                  />
+                  <Route
+                    path={`${process.env.PUBLIC_URL}/division`}
+                    element={
+                      // user ?
+                      <Divisions />
                       // :
                       // <Navigate to={`${process.env.PUBLIC_URL}/login`}/>
                     }

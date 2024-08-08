@@ -365,7 +365,7 @@ export const RosterList = () => {
                   </thead>
                   <tbody>
                     {rosterAssignment
-                      .filter((row) => row.AssignCouncils.length > 0)
+                      .filter((row) => row.ActiveRoster.length > 0)
                       .map((row, index) => {
                         // console.log(row);
                         // if (row.AssignCouncils && row.AssignCouncils.length > 0) {
@@ -381,15 +381,15 @@ export const RosterList = () => {
                             </td>
                             <td>{row.Court ? row.Court.name : ""}</td>
                             <td>
-                              {row.AssignCouncils &&
-                              row.AssignCouncils.length > 0 ? (
+                              {row.ActiveRoster &&
+                              row.ActiveRoster.length > 0 ? (
                                 <ul
                                   style={{
                                     listStyleType: "disc",
                                     paddingLeft: "10px",
                                   }}
                                 >
-                                  {row.AssignCouncils.map((council, index) => (
+                                  {row.ActiveRoster.map((council, index) => (
                                     <li key={index}>
                                       {council.LegalOfficer
                                         ? council.LegalOfficer.surname +
