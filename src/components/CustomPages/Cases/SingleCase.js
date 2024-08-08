@@ -27,6 +27,7 @@ import { useForm } from "react-hook-form";
 import Loader from "../../../data/Loader/loader";
 import { trim } from "lodash";
 import { ErrorAlert, SuccessAlert } from "../../../data/Toast/toast";
+import "./SingleCase.css";
 
 export default function SingleCase() {
   const [loading, setLoading] = useState(false);
@@ -275,7 +276,7 @@ export default function SingleCase() {
     await endpoint
       .post(`/case/close/${id}`, { comment })
       .then((res) => {
-        console.log("case gateway", res);
+        // console.log("case gateway", res);
         setData(data.data);
         getCase(); // Refresh case data
         SuccessAlert(res.data.message);
@@ -338,24 +339,6 @@ export default function SingleCase() {
       console.log(error);
     }
   };
-  // const handleAdjournCase = async () => {
-  //   await endpoint
-  //     .patch(`/case/adjourn/${id}`, { adjournCaseData })
-  //     .then((res) => {
-  //       console.log("case adjournment", res);
-  //       setData(data.data);
-  //       getCase();  // Refresh case data
-  //       SuccessAlert(res.data.message);
-  //       setLoading(false);
-  //       closeAdjournCaseModal();
-  //     })
-  //     .catch((err) => {
-  //       setLoading(false);
-  //       closeAdjournCaseModal();
-  //       ErrorAlert(err.response.data.message);
-  //       // console.log(err);
-  //     });
-  // };
 
   // Function to Formate Date
   const formatDate = (dateString) => {
@@ -388,6 +371,17 @@ export default function SingleCase() {
     const year = date.getFullYear();
 
     return `${day} ${month}, ${year}`;
+  };
+
+  // Case Description Ellipses Block
+  const [showModal, setShowModal] = useState(false);
+
+  const handleViewMore = () => {
+    setShowModal(true);
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
   };
 
   return (
@@ -479,7 +473,20 @@ export default function SingleCase() {
                               Case Description:
                             </div>
                             <div className="col-md-6">
-                              {data.case_description}
+                              <div className="ellipsis-text casedesc-txt">
+                                {data.case_description}
+                              </div>
+                              <div className="casedesc-txt text-end">
+                                {data.case_description.length > 200 && ( // Adjust this condition based on content length
+                                  <button
+                                    // className="btn btn-link p-0 mt-2"
+                                    className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1 mt-2"
+                                    onClick={() => setShowModal(true)}
+                                  >
+                                    View More
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <div className="row border">
@@ -501,7 +508,10 @@ export default function SingleCase() {
                                 <>
                                   {assigncouncils.map((council, index) => (
                                     <span key={index}>
-                                      <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                      <h3
+                                        className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                                        style={{ fontSize: "16px" }}
+                                      >
                                         {council.LegalOfficer.surname}{" "}
                                         {council.LegalOfficer.first_name}
                                       </h3>
@@ -519,25 +529,11 @@ export default function SingleCase() {
                               Chamber/Solicitor:
                             </div>
                             <div className="col-md-6">
-                              {/* {chamberOrSolicitor &&
-                            chamberOrSolicitor.length > 0 ? (
-                              <>
-                                {chamberOrSolicitor.map((solicitor, index) => (
-                                  <span key={index}>
-                                    <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
-                                      {
-                                        solicitor.ChamberOrSolicitor
-                                          .chamber_name
-                                      }
-                                    </h3>
-                                  </span>
-                                ))}
-                              </>
-                            ) : (
-                              <button>No Chamber/Solicitor Attached</button>
-                            )} */}
                               {chamberOrSolicitor ? (
-                                <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                                <h3
+                                  className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1"
+                                  style={{ fontSize: "16px" }}
+                                >
                                   {chamberOrSolicitor.chamber_name}
                                 </h3>
                               ) : (
@@ -576,10 +572,6 @@ export default function SingleCase() {
                               </a>
                             </div>
                           </div>
-                          {/* <p style={{ color: "green" }}>
-                          {" "}
-                          <a href="/comments">View Comments </a>
-                        </p> */}
                         </div>
                       )}
                     </div>
@@ -617,11 +609,6 @@ export default function SingleCase() {
                     {data.status === 2 ? "Reopen Case" : "Close Case"}
                   </button>
                 )}
-                {/* <button
-                className="btn btn-warning bright-btn btn-primary-bright mx-5"
-                onClick={openAdjournCaseModal}>
-                Adjourn Case
-              </button> */}
               </div>
             </Card>
           </Col>
@@ -831,55 +818,6 @@ export default function SingleCase() {
                         View Case Reports
                       </Link>
                     </div>
-                    {/* <div className="mt-4">
-                    {reports && reports.length > 0 ? (
-                      <div className="table-responsive">
-                        <table className="table table-bordered table-striped">
-                          <thead>
-                            <tr>
-                              <th>S/N</th>
-                              <th>Date</th>
-                              <th>Description</th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {reports.map((report, index) => (
-                              <tr key={report.id}>
-                                <td>{index + 1}</td>
-                                <td>{report.date}</td>
-                                <td>{report.description}</td>
-                                <td>
-                                  <Button
-                                    variant="info"
-                                    onClick={() => handleViewReport(report.id)}
-                                  >
-                                    View
-                                  </Button>
-                                  <Button
-                                    variant="secondary"
-                                    onClick={() => handleEditReport(report.id)}
-                                  >
-                                    Edit
-                                  </Button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <p style={{ textAlign: "center" }}>
-                        <img
-                          src="/img/folder_icn.png"
-                          alt="No reports icon"
-                          height="50"
-                          width="50"
-                        />
-                        No reports available.
-                      </p>
-                    )}
-                  </div> */}
                   </div>
                 </Card.Body>
               )}
@@ -1231,6 +1169,21 @@ export default function SingleCase() {
                 onClick={handleAdjournCase}
               >
                 Adjourn
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/* Modal to show full case description */}
+          <Modal show={showModal} onHide={handleClose} centered>
+            <Modal.Header closeButton>
+              <Modal.Title>Full Case Description</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="casedesc-txt">{data.case_description}</div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="dark" onClick={handleClose}>
+                Close
               </Button>
             </Modal.Footer>
           </Modal>

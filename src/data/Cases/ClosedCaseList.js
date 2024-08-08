@@ -80,7 +80,12 @@ const CaseList = () => {
       sortable: true,
       width: "120px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.suite_no.toUpperCase()}</div>
+        <div>
+          <div className="fs-12 fw-bold">{row.suite_no.toUpperCase()}</div>
+          <br />
+          <div className="fs-12 fw-bold">{row.appellant_name || ""}</div>
+          <div className="fs-12 fw-bold">{row.respondent_name || ""}</div>
+        </div>
       ),
     },
     {
@@ -100,7 +105,8 @@ const CaseList = () => {
             display: "flex", // Added to enable flexbox
             justifyContent: "center", // Centers content horizontally
             alignItems: "center", // Centers content vertically
-          }}>
+          }}
+        >
           <span className="text-xl m-3 p-3">
             {row.CaseType ? row.CaseType.case_type : ""}
           </span>
@@ -125,26 +131,26 @@ const CaseList = () => {
     //   width: "200px",
     //   cell: (row) => <div className="fs-12 fw-bold">{row.parties || ""}</div>,
     // },
-    {
-      name: "Appellant",
-      selector: (row) => row.appellants,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "150px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.appellants || ""}</div>
-      ),
-    },
-    {
-      name: "Respondent",
-      selector: (row) => row.respondent,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "150px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.respondent || ""}</div>
-      ),
-    },
+    // {
+    //   name: "Appellant",
+    //   selector: (row) => row.appellants,
+    //   style: { textAlign: "right" },
+    //   sortable: true,
+    //   width: "150px",
+    //   cell: (row) => (
+    //     <div className="fs-12 fw-bold">{row.appellants || ""}</div>
+    //   ),
+    // },
+    // {
+    //   name: "Respondent",
+    //   selector: (row) => row.respondent,
+    //   style: { textAlign: "right" },
+    //   sortable: true,
+    //   width: "150px",
+    //   cell: (row) => (
+    //     <div className="fs-12 fw-bold">{row.respondent || ""}</div>
+    //   ),
+    // },
     {
       name: "Legal Officer",
       selector: (row) => row.LegalOfficer,
@@ -153,13 +159,23 @@ const CaseList = () => {
       width: "180px",
       cell: (row) => (
         <div className="fs-12 fw-bold">
-          {row.LegalOfficer
+          {Array.isArray(row.AssignCouncils) && row.AssignCouncils.length > 0
+            ? row.AssignCouncils.map((council, index) => (
+                <span key={index}>
+                  <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+                    {council.LegalOfficer.surname}{" "}
+                    {council.LegalOfficer.first_name}
+                  </h3>
+                </span>
+              ))
+            : "No Assignment"}
+          {/* {row.LegalOfficer
             ? row.LegalOfficer.surname +
               " " +
               row.LegalOfficer.first_name +
               " " +
               row.LegalOfficer.middle_name
-            : "Not yet assigned"}
+            : "Not yet assigned"} */}
         </div>
       ),
     },
@@ -170,22 +186,34 @@ const CaseList = () => {
       sortable: true,
       width: "180px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">
-          {row.ChamberOrSolicitor
-            ? row.ChamberOrSolicitor.name
-            : "Not yet assigned"}
+        <div>
+          {row.ChamberOrSolicitor && row.ChamberOrSolicitor.chamber_name}
         </div>
+        // <div className="fs-12 fw-bold">
+        //   {Array.isArray(row.AssignSolicitors) &&
+        //   row.AssignSolicitors.length > 0
+        //     ? row.AssignSolicitors.map((solicitor, index) => (
+        //         <span key={index}>
+        //           <h3 className="btn btn-sm btn-primary bright-btn btn-secondary-bright m-1">
+        //             {solicitor.ChamberOrSolicitor.chamber_name}
+        //           </h3>
+        //         </span>
+        //       ))
+        //     : "Not yet assigned"}
+        // </div>
       ),
     },
     {
       name: "Action",
       selector: (row) => row.id,
+      // width: "180px",
       style: { textAlign: "right" },
       cell: (row) => (
         <div className="fs-12 fw-bold d-flex justify-content-end align-items-center">
           <Link
             to={`/closed-case/${row.id}`}
-            className="btn btn-primary btn-sm my-1 mx-1 bright-btn btn-primary-bright">
+            className="btn btn-primary btn-sm my-1 mx-1 bright-btn btn-primary-bright"
+          >
             <span className="fe fe-eye"> </span>
           </Link>
           {/* <Link
@@ -243,18 +271,14 @@ const CaseList = () => {
         )}
       </DataTableExtensions>
 
-      <Modal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}>
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Remove Unit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Card>
             <Card.Body>
-              <Col
-                lg={12}
-                md={12}>
+              <Col lg={12} md={12}>
                 Please confirm you are about to delete the case with suite
                 number of {value.suite_no}?
               </Col>
@@ -262,15 +286,11 @@ const CaseList = () => {
           </Card>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="warning"
-            onClick={() => setShowDeleteModal(false)}>
+          <Button variant="warning" onClick={() => setShowDeleteModal(false)}>
             Close
           </Button>
           {/* Implement the delete logic here */}
-          <Button
-            variant="danger"
-            onClick={() => deletechamber(value.id)}>
+          <Button variant="danger" onClick={() => deletechamber(value.id)}>
             Delete
           </Button>
         </Modal.Footer>

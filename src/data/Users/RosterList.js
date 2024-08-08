@@ -109,21 +109,20 @@ export const RosterList = () => {
   };
 
   const handleGetMonthCases = async () => {
-    const date = new Date(hearingdate.hearing_date);
+    const date = new Date(hearingmonth.hearing_date);
     const month = date.toLocaleString("default", { month: "long" });
     const year = date.getFullYear();
-    // console.log(date);
+    console.log("date data", hearingmonth.hearing_date);
     setHeaderText(
-      hearingdate.hearing_date
+      hearingmonth.hearing_date
         ? `COURT ROSTER FOR THE MONTH OF ${month.toUpperCase()}, ${year}`
         : `COURT ROSTER LIST`
     );
 
     try {
-      const res = await endpoint.post(
-        `/case/list-by-hearing-month`,
-        hearingdate
-      );
+      const res = await endpoint.post(`/case/list-by-hearing-month`, {
+        month: hearingmonth.hearing_date,
+      });
 
       setLoading(true);
       setRosterAssignment(res.data.data);
@@ -308,9 +307,9 @@ export const RosterList = () => {
                     <input
                       type="date"
                       className="form-control me-3"
-                      value={hearingdate.hearing_date}
+                      value={hearingmonth.hearing_date}
                       onChange={(e) =>
-                        setHearingdate({
+                        setHearingmonth({
                           hearing_date: e.target.value,
                         })
                       }
@@ -366,7 +365,7 @@ export const RosterList = () => {
                   </thead>
                   <tbody>
                     {rosterAssignment
-                      .filter((row) => row.AssignCouncils.length > 0)
+                      .filter((row) => row.ActiveRoster.length > 0)
                       .map((row, index) => {
                         // console.log(row);
                         // if (row.AssignCouncils && row.AssignCouncils.length > 0) {
@@ -382,15 +381,15 @@ export const RosterList = () => {
                             </td>
                             <td>{row.Court ? row.Court.name : ""}</td>
                             <td>
-                              {row.AssignCouncils &&
-                              row.AssignCouncils.length > 0 ? (
+                              {row.ActiveRoster &&
+                              row.ActiveRoster.length > 0 ? (
                                 <ul
                                   style={{
                                     listStyleType: "disc",
                                     paddingLeft: "10px",
                                   }}
                                 >
-                                  {row.AssignCouncils.map((council, index) => (
+                                  {row.ActiveRoster.map((council, index) => (
                                     <li key={index}>
                                       {council.LegalOfficer
                                         ? council.LegalOfficer.surname +

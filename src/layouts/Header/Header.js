@@ -7,16 +7,18 @@ import endpoint from "../../context/endpoint";
 export function Header() {
   const { user, dispatch } = useContext(Context);
   const currentUser = user?.user;
+  const navigate = useNavigate();
 
-  const handleSignout = async () => {
-    try {
-      await endpoint.get(`/auth/logout`);
-      dispatch({ type: "LOGOUT" });
-      localStorage.removeItem("modules");
-      window.location.replace("/login");
-    } catch (error) {
-      // console.log(error)
-    }
+  const handleSignout = () => {
+    // try {
+    // await endpoint.get(`/auth/logout`);
+    dispatch({ type: "LOGOUT" });
+    localStorage.removeItem("modules");
+    navigate("/login");
+    // window.location.replace("/login");
+    // } catch (error) {
+    //   // console.log(error)
+    // }
   };
   //full screen
   function Fullscreen() {
@@ -418,11 +420,11 @@ export function Header() {
                         </span>
                       </span>
                     </Dropdown.Toggle>
-                    <Dropdown.Menu
+                    {/* <Dropdown.Menu
                       className="dropdown-menu-end dropdown-menu-arrow"
                       style={{ margin: 0 }}
                     >
-                      {/* <div className="drop-heading">
+                      <div className="drop-heading">
                         <div className="text-center">
                           <h5 className="text-dark mb-0">
                             {currentUser?.name}
@@ -432,9 +434,22 @@ export function Header() {
                           </small>
                         </div>
                       </div> */}
+                    <Dropdown.Menu
+                      className="dropdown-menu-end dropdown-menu-arrow"
+                      style={{ margin: 0 }}
+                    >
+                      <div className="">
+                        <div className="">
+                          <h5 className="">{currentUser?.name}</h5>
+                          <small className="text-muted">
+                            {currentUser?.user_role}
+                          </small>
+                        </div>
+                      </div>
                       {/* <div className="dropdown-divider m-0"></div> */}
                       {/* <Dropdown.Item
-                        href={`${process.env.PUBLIC_URL}/userprofile/${currentUser.id}`}>
+                        href={`${process.env.PUBLIC_URL}/userprofile/${currentUser.id}`}
+                      >
                         <i className="dropdown-icon fe fe-user"></i> Profile
                       </Dropdown.Item> */}
                       {/* <Dropdown.Item

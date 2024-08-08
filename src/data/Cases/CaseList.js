@@ -83,7 +83,12 @@ const CaseList = () => {
       sortable: true,
       width: "120px",
       cell: (row) => (
-        <div className="fs-12 fw-bold">{row.suite_no.toUpperCase()}</div>
+        <div>
+          <div className="fs-12 fw-bold">{row.suite_no.toUpperCase()}</div>
+          <br />
+          <div className="fs-12 fw-bold">{row.appellant_name || ""}</div>
+          <div className="fs-12 fw-bold">{row.respondent_name || ""}</div>
+        </div>
       ),
     },
     {
@@ -129,26 +134,26 @@ const CaseList = () => {
     //   width: "200px",
     //   cell: (row) => <div className="fs-12 fw-bold">{row.parties || ""}</div>,
     // },
-    {
-      name: "Appellant",
-      selector: (row) => row.appellant,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "150px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.appellant_name || ""}</div>
-      ),
-    },
-    {
-      name: "Respondent",
-      selector: (row) => row.respondent,
-      style: { textAlign: "right" },
-      sortable: true,
-      width: "150px",
-      cell: (row) => (
-        <div className="fs-12 fw-bold">{row.respondent_name || ""}</div>
-      ),
-    },
+    // {
+    //   name: "Appellant",
+    //   selector: (row) => row.appellant,
+    //   style: { textAlign: "right" },
+    //   sortable: true,
+    //   width: "150px",
+    //   cell: (row) => (
+    //     <div className="fs-12 fw-bold">{row.appellant_name || ""}</div>
+    //   ),
+    // },
+    // {
+    //   name: "Respondent",
+    //   selector: (row) => row.respondent,
+    //   style: { textAlign: "right" },
+    //   sortable: true,
+    //   width: "150px",
+    //   cell: (row) => (
+    //     <div className="fs-12 fw-bold">{row.respondent_name || ""}</div>
+    //   ),
+    // },
     {
       name: "Legal Officer",
       selector: (row) => row.LegalOfficer,
