@@ -7,13 +7,15 @@ import endpoint from "../../context/endpoint";
 export function Header() {
   const { user, dispatch } = useContext(Context);
   const currentUser = user?.user;
+  const navigate = useNavigate();
 
   const handleSignout = () => {
     // try {
     // await endpoint.get(`/auth/logout`);
     dispatch({ type: "LOGOUT" });
     localStorage.removeItem("modules");
-    window.location.replace("/login");
+    navigate("/login");
+    // window.location.replace("/login");
     // } catch (error) {
     //   // console.log(error)
     // }

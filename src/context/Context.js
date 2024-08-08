@@ -2,7 +2,14 @@ import { createContext, useEffect, useReducer } from "react";
 import LoginReducer from "./LoginReducer";
 
 const INITIAL_STATE = {
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  user: (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user")) || null;
+    } catch (error) {
+      console.error("Error parsing JSON from localStorage:", error);
+      return null; // or a fallback value if desired
+    }
+  })(),
   isFetching: false,
   error: false,
 };

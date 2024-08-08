@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
-import { hrMenu,getMenuItem } from "./SideMenu";
+import { hrMenu, getMenuItem } from "./SideMenu";
 import MyHrSideMenu from "./MyHrSideMenu";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import Scrollbars from "react-custom-scrollbars";
@@ -7,38 +7,37 @@ import { LogoutOutlined } from "@mui/icons-material";
 import { Context } from "../../context/Context";
 import endpoint from "../../context/endpoint";
 
-
 const Sidebar = () => {
- 
   const [mainmenu, setMainMenu] = useState([]);
   const [mainn, setMainn] = useState([]);
   const { dispatch } = useContext(Context);
-  const [hrSideBar, setHrSideBar] = useState([])
-  
-  const handleSignout =()=>{
-    dispatch({type: "LOGOUT"});
+  const [hrSideBar, setHrSideBar] = useState([]);
+  const navigate = useNavigate();
+
+  const handleSignout = () => {
+    dispatch({ type: "LOGOUT" });
     localStorage.removeItem("modules");
-    window.location.replace('/login')
-  }
- 
+    // window.location.replace('/login')
+    navigate("/login");
+  };
+
   useEffect(() => {
     // const mySideBar = hrMenu
     // const mySideBar = MyHrSideMenu
     // setHrSideBar(mySideBar)
     // console.log('my side', mySideBar)
 
-    getMenuItem().then((response)=>{
+    getMenuItem().then((response) => {
       var MENUITEMS = response;
       // console.log('sidebar response', response);
       //  console.log(MENUITEMS);
       //  console.log("MENUITEMS");
       setMainMenu(MENUITEMS);
       setMainn(MENUITEMS);
-       
-     });
-  
+    });
+
     const currentUrl = window.location.pathname.slice(0, -1);
-     
+
     mainn.map((items) => {
       items.Items.filter((Items) => {
         if (Items.path === currentUrl) setNavActive(Items);
@@ -63,13 +62,12 @@ const Sidebar = () => {
   }, []);
 
   const setNavActive = (item) => {
-
     mainn?.map((menuItems) => {
       menuItems.Items.filter((Items) => {
         if (Items !== item) {
           Items.active = false;
         }
-        
+
         if (Items.children && Items.children.includes(item)) {
           Items.active = true;
         }
@@ -89,48 +87,46 @@ const Sidebar = () => {
       return menuItems;
     });
     item.active = !item.active;
-    setMainMenu({mainmenu:mainn});
+    setMainMenu({ mainmenu: mainn });
   };
-//   const navigate = useNavigate();
-//   const dispatch = useAuthDispatch() // read dispatch method from context
-//   // const userDetails = useAuthState()
-//   const handleLogout = () => {
-//     logout(dispatch) //call the logout action
-    
-//    navigate('/login') //navigate to logout page on logout
-// }
+  //   const navigate = useNavigate();
+  //   const dispatch = useAuthDispatch() // read dispatch method from context
+  //   // const userDetails = useAuthState()
+  //   const handleLogout = () => {
+  //     logout(dispatch) //call the logout action
+
+  //    navigate('/login') //navigate to logout page on logout
+  // }
   const toggletNavActive = (item) => {
-    let mainn=mainmenu;
+    let mainn = mainmenu;
     // console.log(mainn);
     if (window.innerWidth <= 991) {
       if (item.type === "sub") {
-
       }
     }
     if (!item.active) {
-      
       mainn.map((a) => {
-          a.Items.filter((Items) => {
-            if (a.Items.includes(item)) Items.active = false;
-            if (!Items.children) return false;
-            Items.children.forEach((b) => {
-              if (Items.children.includes(item)) {
-                b.active = false;
+        a.Items.filter((Items) => {
+          if (a.Items.includes(item)) Items.active = false;
+          if (!Items.children) return false;
+          Items.children.forEach((b) => {
+            if (Items.children.includes(item)) {
+              b.active = false;
+            }
+            if (!b.children) return false;
+            b.children.forEach((c) => {
+              if (b.children.includes(item)) {
+                c.active = false;
               }
-              if (!b.children) return false;
-              b.children.forEach((c) => {
-                if (b.children.includes(item)) {
-                  c.active = false;
-                }
-              });
             });
-            return Items;
           });
-          return a;
+          return Items;
         });
+        return a;
+      });
     }
-      item.active = !item.active;
-      setMainMenu({mainmenu:mainn});
+    item.active = !item.active;
+    setMainMenu({ mainmenu: mainn });
   };
 
   //Hover effect
@@ -146,7 +142,7 @@ const Sidebar = () => {
     <div className="sticky">
       <div className="app-sidebar__overlay"></div>
       <aside
-        className="app-sidebar bg-primary-gradient" 
+        className="app-sidebar bg-primary-gradient"
         onMouseOver={() => Onhover()}
         onMouseOut={() => Outhover()}
       >
@@ -378,7 +374,7 @@ const Sidebar = () => {
               ))}
             </ul> */}
 
-             {/* <ul className="side-menu" id="sidebar-main">
+            {/* <ul className="side-menu" id="sidebar-main">
               {hrSideBar?.map((Item, i) => (
                 <Fragment key={i}>
                   <li className="sub-category">
@@ -555,7 +551,7 @@ const Sidebar = () => {
             </ul> */}
 
             <ul className="side-menu" id="sidebar-main">
-              <MyHrSideMenu/>
+              <MyHrSideMenu />
             </ul>
 
             <div className="slide-right" id="slide-right">
@@ -581,19 +577,21 @@ const Sidebar = () => {
               </svg>
             </div>
           </div>
-            <div style={{
-              display: 'flex',
+          <div
+            style={{
+              display: "flex",
               gap: "10px",
               alignItems: "center",
-              padding: '10px 5px',
+              padding: "10px 5px",
               cursor: "pointer",
-              marginLeft: "20px"
-            }} 
+              marginLeft: "20px",
+            }}
             className="text-white"
-            onClick={handleSignout}>
-                <LogoutOutlined />
-              <span>Sign out</span>
-            </div>
+            onClick={handleSignout}
+          >
+            <LogoutOutlined />
+            <span>Sign out</span>
+          </div>
         </Scrollbars>
       </aside>
     </div>
